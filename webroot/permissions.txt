@@ -1,0 +1,7 @@
+sudo find . -type d -exec chmod 0755 {} \;
+sudo find . -type f -exec chmod 0644 {} \;
+
+sudo chmod 777 -R .
+
+//17-7-20
+ALTER TABLE `contractions` ADD `intensity` VARCHAR(255) NOT NULL DEFAULT 'Mild' AFTER `user_id`;

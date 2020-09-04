@@ -1,0 +1,237 @@
+@font-face {
+    font-family: 'Ridley Grotesk';
+    src: url('../font/RidleyGrotesk-Bold.eot');
+    src: url('../font/RidleyGrotesk-Bold.eot?#iefix') format('embedded-opentype'),
+    url('../font/RidleyGrotesk-Bold.woff2') format('woff2'),
+    url('../font/RidleyGrotesk-Bold.woff') format('woff'),
+    url('../font/RidleyGrotesk-Bold.ttf') format('truetype'),
+    url('../font/RidleyGrotesk-Bold.svg#RidleyGrotesk-Bold') format('svg');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Ridley Grotesk';
+    src: url('../font/RidleyGrotesk-Regular.eot');
+    src: url('../font/RidleyGrotesk-Regular.eot?#iefix') format('embedded-opentype'),
+    url('../font/RidleyGrotesk-Regular.woff2') format('woff2'),
+    url('../font/RidleyGrotesk-Regular.woff') format('woff'),
+    url('../font/RidleyGrotesk-Regular.ttf') format('truetype'),
+    url('../font/RidleyGrotesk-Regular.svg#RidleyGrotesk-Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Ridley Grotesk';
+	font-size: 1rem;
+	font-weight: normal;
+	/*line-height: 1.5;*/
+	color: #292b2c;
+	background-color: #fff;
+}
+
+.login-reg .logo {
+	margin-top:1%;
+}
+
+.login-layout .logo, .register-layout .logo{
+	margin-top:2%;
+}
+
+
+h2, .h2 {
+    font-weight: bold;
+	font-family:'Ridley Grotesk'
+}
+.g-brd-gray-light-v4 {
+ /*   overflow: hidden;*/
+}
+
+h3 {
+	font-size: 20px!important;
+}
+h3, h4, h5, h6 {
+	font:inherit;
+    font-weight: bold;
+}
+
+.privacy ol {
+    margin-top: 0;
+	padding:10px 0px 0px 10px;
+    margin-bottom: 0rem;
+	
+}
+.privacy  h3 {
+	font-size:20px;
+/*	color:blue;*/
+	
+}
+.carousel-caption h1 {
+	font-size: 60px;
+	font-weight: bold;
+	letter-spacing: -1.5px;
+	color:#fff;
+}
+.carousel-caption h4 {
+	font-size: 18px;
+	font-weight: bold;
+	color:#fff;
+}
+
+.carousel-caption h3 {
+	color:#fff;
+}
+.new-special {
+	background-color: transparent;
+	border: 3px solid #fff;
+	color: #fff;
+	border-radius: 0px;
+    font-family: 'Ridley Grotesk';
+    font-weight: bold;
+}
+.new-special:hover {
+	background-color: #fff;
+	border: 3px solid #fff;
+	color: #000;
+}
+.logo {
+	position: absolute;
+	top: 6%;
+	z-index: 1;
+	left: 10%;
+}
+#mainNav {
+	position: absolute;
+	z-index: 1;
+	right: 10%;
+	top: 6%;
+}
+.carousel-caption {
+	top: 40%!important;
+}
+hr {
+	border-top: 1px solid #fff;
+}
+.nav-link {
+	color: #fff;
+	text-transform: uppercase;
+}
+.nav-link:hover {
+	color: #fff;
+}
+.box1 {
+	background-color: #0060af;
+	color: #fff;
+	padding: 20px;
+}
+.box1 ul {
+	min-height: 120px;
+}
+.box2 {
+	background-color: #4072b8;
+	color: #fff;
+	padding: 20px;
+}
+
+
+.box2 h2{
+	color: #fff;
+	}
+.box2 ul {
+	min-height: 120px;
+}
+.box3 {
+	padding: 20px;
+	background-color: #6089c3;
+	color: #fff;
+}
+.box3 ul {
+	min-height: 120px;
+}
+
+.testimonial-section {
+	position:absolute!important;
+	top:20%!important;
+}
+
+.crnrmission {
+		margin-left:-11%;
+}
+
+
+.crnrmission p {
+	font-size: 1rem;
+}
+
+.hamburger-inner, .hamburger-inner:after, .hamburger-inner:before {
+    background-color: #ffffff !important;
+}
+
+
+.about-sec {
+background-image:url(../img/full_about_width.jpg);
+	padding:50px;
+	background-repeat:no-repeat;	
+	background-position: center;
+	
+}
+
+.box-about-2 {
+	/*background-image:url(../img/about-for-realtor.png);*/
+
+	background-repeat:no-repeat;
+
+}
+
+.color-black{
+	
+	color:#000!important;
+}
+
+.color-black:hover{
+	
+	color:#000!important;
+}
+.box-about-1 {
+
+/*background-image:url(../img/about-for-apartments.png);*/
+	
+	background-repeat:no-repeat;
+}
+
+.bg-secondary {
+
+/*    background-color: #024dec !important;*/
+
+}
+
+
+@media (max-width:768px) {
+	
+.profile-home-header{
+	margin-left: 0px !important;
+}
+.crnrmission {
+		margin-left:0%;
+}
+	
+	.testimonial-section {
+	position:absolute!important;
+	top:5%!important;
+}
+
+	.nav{display:none;}
+	
+	.carousel-caption h1 {
+	font-size: 28px;
+	font-weight: bold;
+	letter-spacing: 0px;
+}
+.carousel-caption h4 {
+	font-size: 14px;
+	font-weight: bold;
+}
+	
+
+}

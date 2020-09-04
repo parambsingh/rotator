@@ -1,0 +1,44 @@
+Admins
+sudo bin/cake bake migration CreateAdmins name:string email:string password:string forgot_password_token:string role:string  image_id:biginteger created modified
+
+Users
+sudo bin/cake bake migration CreateUsers distibuter_id:biginteger first_name:string last_name:string email:string lead_email:string password:string forgot_password_token:string image_id:biginteger phone:string address:string city:string state:string zip:string role:string status:boolean created modified
+
+Images
+sudo bin/cake bake migration CreateImages category:string image:string small_thumb:string medium_thumb:string large_thumb:string created modified
+
+Leads
+sudo bin/cake bake migration CreateLeads first_name:string last_name:string email:string home_email:string work_email:string other_email:string password:string forgot_password_token:string image_id:biginteger phone:string home_phone:string work_phone:string other_phone:string address:string city:string state:string zip:string role:string company:string interest:string note:text status:boolean created modified
+
+UsersLeads
+sudo bin/cake bake migration CreateUsersLeads user_id:biginteger lead_id:biginteger created modified
+
+UsersPositions
+sudo bin/cake bake migration CreateUsersPositions user_id:biginteger subscription_id:biginteger position_no:integer position_order:integer subscription_status:string created modified
+
+RotatorLoops
+sudo bin/cake bake migration CreateRotatorLoops round_no:biginteger user_position_id:biginteger lead_id:biginteger lead_status:string rf_status:string rf_response_json:text created modified
+
+Campaigns
+sudo bin/cake bake migration CreateCampaigns user_id:biginteger name:string no_of_leads:biginteger created modified
+
+CampaignsLeads
+sudo bin/cake bake migration CreateCampaignsLeads campaign_id:biginteger lead_id:biginteger created modified
+
+Email Templates
+sudo bin/cake bake migration CreateEmailTemplates user_id:biginteger label:string subject:biginteger template:text note:text status:boolean created modified
+
+EmailCampaigns
+sudo bin/cake bake migration CreateEmailCampaigns name:string from_email:string email_template_id:biginteger send_at:datetime scheduled_count:biginteger sent_count:biginteger failed_count:biginteger opened_count:biginteger status:boolean created modified
+
+EmailCampaignRecipients
+sudo bin/cake bake migration CreateEmailCampaignRecipients email_campaign_id:biginteger to_email:string user_id:biginteger lead_id:biginteger status:string no_of_attempts:integer created modified
+
+Plans
+sudo bin/cake bake migration CreatePlans name:string description:text type:string price:decimal no_of_subscriptions:integer status:boolean created modified
+
+Subscriptions
+sudo bin/cake bake migration CreateSubscriptions plan_id:biginteger user_id:biginteger coupon_id:biginteger subscription_token:string amount:decimal discount:decimal start_at:datetime end_at:datetime response_json:text status:string cancelled_at:datetime created modified
+
+Coupons
+sudo bin/cake bake migration CreateCoupons name:string description:text type:string discount:decimal no_of_usage:biginteger status:boolean created modified

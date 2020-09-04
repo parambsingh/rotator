@@ -1,0 +1,63 @@
+*::-ms-backdrop, .plans .media .media-body .row,
+*::-ms-backdrop, .flyer .media .media-body .row,
+*::-ms-backdrop, .standard .media .media-body .row {
+    width: 800px !important;
+}
+.form-control:focus {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.jquery-spelling-incorrect {
+    color: red;
+    text-decoration: underline;
+}
+
+/*.unseen {*/
+    /*background-color: #fd7e14 !important;*/
+    /*color: #ffffff !important;*/
+/*}*/
+
+/*.unseen label {color:#fff !important;}*/
+
+.hide-me {
+    display: none !important;
+}
+
+.apt-spc {
+    display: none;
+}
+
+.apartment-special .apt-spc {
+    display: block;
+}
+
+.apartment-special {
+    color: #007eef !important;
+    background-color: rgba(230, 168, 33, 0.15) !important;
+}
+
+.apartment-special .g-color-gray-dark-v5, .apartment-special .g-color-gray-light-v1 {
+    color: #007eef !important;
+}
+
+.active-chat {
+    background-color: #007eef !important;
+    color: #ffffff !important;
+}
+
+.active-chat .g-color-gray-dark-v5, .active-chat .g-color-gray-light-v1 {
+    color: #ffffff !important;
+}
+
+.g-bg-gray-light-v8--hover:hover .g-color-gray-dark-v5, .g-bg-gray-light-v8--hover:hover .g-color-gray-light-v1, .g-bg-gray-light-v8--hover:hover h3 {
+    color: #999 !important
+}
+
+.fp-table tr th, .every-message label {
+    color: #007eef !important;
+}
+
+.my-msg .media .message-here .msg-bg{ background-color: #d2f5ff ;}
+.their-msg  .media .message-here  .msg-bg{ background-color: #f7ffbc ;}
+.msg-sender-name{font-weight: bold; font-size: 16px;}
