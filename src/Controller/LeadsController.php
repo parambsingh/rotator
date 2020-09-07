@@ -116,6 +116,11 @@ class LeadsController extends AppController {
 
 
     public function wpLead() {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Headers: *');
+        header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+        header('Content-Type: application/json');
+        
         $this->loadComponent('RapidFunnel');
         $this->loadModel('LeadLogs');
 
