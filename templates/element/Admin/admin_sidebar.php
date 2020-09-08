@@ -8,35 +8,62 @@ $menuItems = [
         'icon_class'       => 'fa fa-dashboard',
         'default_sub_menu' => false
     ],
-//    [
-//        'label'            => 'Notification Center',
-//        'controller'       => 'Activities',
-//        'icon_class'       => 'fa fa-bell',
-//        'default_sub_menu' => false,
-//        'custom_sub_menu'  => [
-//            [
-//                'label'      => 'Send Notification',
-//                'controller' => 'Activities',
-//                'action'     => 'sendNotification',
-//                'icon_class' => 'fa fa-send',
-//            ],
-//            [
-//                'label'      => 'Sent Notifications',
-//                'controller' => 'Activities',
-//                'action'     => 'sentNotifications',
-//                'icon_class' => 'fa fa-send',
-//            ],
-//        ]
-//    ],
+    //    [
+    //        'label'            => 'Notification Center',
+    //        'controller'       => 'Activities',
+    //        'icon_class'       => 'fa fa-bell',
+    //        'default_sub_menu' => false,
+    //        'custom_sub_menu'  => [
+    //            [
+    //                'label'      => 'Send Notification',
+    //                'controller' => 'Activities',
+    //                'action'     => 'sendNotification',
+    //                'icon_class' => 'fa fa-send',
+    //            ],
+    //            [
+    //                'label'      => 'Sent Notifications',
+    //                'controller' => 'Activities',
+    //                'action'     => 'sentNotifications',
+    //                'icon_class' => 'fa fa-send',
+    //            ],
+    //        ]
+    //    ],
 
     [
-        'controller' => 'Users',
-        'label' => ' Distributors',
-        'icon_class' => 'fa fa-user',
+        'controller'      => 'Distributors',
+        'icon_class'      => 'fa fa-user',
+        'custom_sub_menu' => [
+            [
+                'label'      => 'Manage Positions',
+                'controller' => 'Distributors',
+                'action'     => 'managePositions',
+                'icon_class' => 'fa fa-braille',
+            ],
+            [
+                'label'      => 'Import Distributors',
+                'controller' => 'Distributors',
+                'action'     => 'import',
+                'icon_class' => 'fa fa-upload',
+            ],
+        ]
     ],
     [
         'controller' => 'Leads',
         'icon_class' => 'fa fa-users',
+        'custom_sub_menu' => [
+            [
+                'label'      => 'Import Leads',
+                'controller' => 'Leads',
+                'action'     => 'import',
+                'icon_class' => 'fa fa-upload',
+            ],
+            [
+                'label'      => 'Lead Logs',
+                'controller' => 'Leads',
+                'action'     => 'logs',
+                'icon_class' => 'fa fa-history',
+            ],
+        ]
     ],
     [
         'label'            => 'Email Campaigns',
@@ -51,8 +78,7 @@ $menuItems = [
                 'action'     => 'add',
                 'icon_class' => 'fa fa-plus',
             ],
-            [
-                'label'      => 'List Campaigns',
+            ['label'      => 'List Campaigns',
                 'controller' => 'EmailCampaigns',
                 'action'     => 'index',
                 'icon_class' => 'fa fa-list',
@@ -78,8 +104,8 @@ $menuItems = [
         ]
     ],
     [
-        'controller' => 'Subscriptions',
-        'icon_class' => 'fa fa-cc',
+        'controller'       => 'Subscriptions',
+        'icon_class'       => 'fa fa-cc',
         'default_sub_menu' => false,
     ],
     [
@@ -92,13 +118,13 @@ $menuItems = [
     ],
 
 
-//    [
-//        'label'            => 'Cron Jobs',
-//        'controller'       => 'Admins',
-//        'action'           => 'crons',
-//        'icon_class'       => 'fa fa-gear',
-//        'default_sub_menu' => false
-//    ],
+    //    [
+    //        'label'            => 'Cron Jobs',
+    //        'controller'       => 'Admins',
+    //        'action'           => 'crons',
+    //        'icon_class'       => 'fa fa-gear',
+    //        'default_sub_menu' => false
+    //    ],
 
 
 ];

@@ -25,6 +25,9 @@ class SidebarHelper extends Helper {
 
     public function create($menuItems = null) {
         if (!empty($menuItems)) {
+
+            $ctrl = $this->getView()->getRequest()->getParam('controller');
+            $ctrl = ($ctrl == "Users") ? "Distributors" : $ctrl;
             ?>
             <ul id="sideNavMenu"
                 class="u-sidebar-navigation-v1-menu u-side-nav--top-level-menu g-min-height-100vh mb-0">
@@ -43,9 +46,9 @@ class SidebarHelper extends Helper {
 
 
                     <?php if( $this->getView()->getRequest()->getParam('action') == "trainingVideo") {  ?>
-                    var _this = $('[id*="nav_<?= $this->getView()->getRequest()->getParam('controller') . $this->getView()->getRequest()->getParam('action') . implode("", $this->getView()->getRequest()->getParam('pass')); ?>"]');
+                    var _this = $('[id*="nav_<?=  $ctrl. $this->getView()->getRequest()->getParam('action') . implode("", $this->getView()->getRequest()->getParam('pass')); ?>"]');
                     <?php } else { ?>
-                    var _this = $('[id*="nav_<?= $this->getView()->getRequest()->getParam('controller') . str_replace("/", "", $this->getView()->getRequest()->getParam('action')); ?>"]');
+                    var _this = $('[id*="nav_<?= $ctrl . str_replace("/", "", $this->getView()->getRequest()->getParam('action')); ?>"]');
                     <?php }?>
 
 

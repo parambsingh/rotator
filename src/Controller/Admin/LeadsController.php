@@ -95,4 +95,42 @@ class LeadsController extends AppController {
 
         return $this->redirect(['action' => 'index']);
     }
+
+    public function import() {
+
+    }
+
+    /**
+     * Index method
+     *
+     * @return \Cake\Http\Response|null|void Renders view
+     */
+    public function logs() {
+        $this->loadModel('LeadLogs');
+        $leads = $this->paginate($this->LeadLogs);
+
+        $this->set(compact('leads'));
+    }
+
+    public function viewLog($id = null) {
+        $this->loadModel('LeadLogs');
+        $lead = $this->LeadLogs->get($id, [
+            'contain' => [],
+        ]);
+
+        $this->set(compact('lead'));
+    }
+
+    public function deleteLog($id = null) {
+        $this->request->allowMethod(['post', 'delete']);
+        $this->loadModel('LeadLogs');
+        $lead = $this->LeadLogs->get($id);
+        if ($this->LeadLogs->delete($lead)) {
+            $this->Flash->success(__('The lead log has been deleted.'));
+        } else {
+            $this->Flash->error(__('The lead log could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'logs']);
+    }
 }

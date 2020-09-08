@@ -51,10 +51,7 @@ class UsersTable extends Table {
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Distibuters', [
-            'foreignKey' => 'distibuter_id',
-            'joinType'   => 'LEFT',
-        ]);
+
         $this->belongsTo('Images', [
             'foreignKey' => 'image_id',
             'joinType'   => 'LEFT',
@@ -131,8 +128,6 @@ class UsersTable extends Table {
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
         $rules->add($rules->isUnique(['email']), ['errorField' => 'email']);
-        $rules->add($rules->existsIn(['distibuter_id'], 'Distibuters'), ['errorField' => 'distibuter_id']);
-        $rules->add($rules->existsIn(['image_id'], 'Images'), ['errorField' => 'image_id']);
 
         return $rules;
     }

@@ -1,48 +1,132 @@
 <?php
-/**
- * @var \App\View\AppView $this
- * @var \Cake\Datasource\EntityInterface $lead
- */
+$params = [
+    'form'   => [
+        'options' => [
+            'type'       => 'post',
+            'novalidate' => true,
+            'id'         => 'addForm'
+        ],
+        'heading' => 'New Lead'
+    ],
+    'fields' => [
+        [
+            'name'  => 'status',
+            'type'  => 'hidden',
+            'value' => 1
+        ],
+        ['name'  => 'first_name'],
+        ['name'  => 'last_name'],
+        [
+            'name'     => 'email',
+            'validate' => [
+                'rules' => [
+                    'required' => true,
+                    'email'    => true,
+                    'remote'   => SITE_URL . 'admin/admins/isUniqueEmail',
+                ],
+
+            ]
+        ],
+        [
+            'name'     => 'home_email',
+            'validate' => [
+                'rules' => [
+                    'required' => false,
+                    'email'    => true,
+                ],
+
+            ]
+        ],
+        [
+            'name'     => 'work_email',
+            'validate' => [
+                'rules' => [
+                    'required' => false,
+                    'email'    => true,
+                ],
+
+            ]
+        ],
+        [
+            'name'     => 'other_email',
+            'validate' => [
+                'rules' => [
+                    'required' => false,
+                    'email'    => true,
+                ],
+
+            ]
+        ],
+        [
+            'name' => 'phone',
+            'validate' => [
+                'rules' => [
+                    'required'  => false,
+                    'maxlength' => 13,
+                ]
+            ]
+        ],
+        [
+            'name' => 'home_phone',
+            'validate' => [
+                'rules' => [
+                    'required'  => false,
+                    'maxlength' => 13,
+                ]
+            ]
+        ],
+        [
+            'name' => 'work_phone',
+            'validate' => [
+                'rules' => [
+                    'required'  => false,
+                    'maxlength' => 13,
+                ]
+            ]
+        ],
+        [
+            'name' => 'other_phone',
+            'validate' => [
+                'rules' => [
+                    'required'  => false,
+                    'maxlength' => 13,
+                ]
+            ]
+        ],
+        [
+            'name' => 'address',
+            'validate' => [
+                'rules' => [
+                    'required' => false
+                ]
+            ]
+        ],
+        [
+            'name'    => 'state',
+            'validate' => [
+                'rules' => [
+                    'required' => false
+                ]
+            ]
+        ],
+        [
+            'name'    => 'city',
+            'validate' => [
+                'rules' => [
+                    'required' => false
+                ]
+            ]
+        ],
+        [
+            'name'     => 'zip',
+            'validate' => [
+                'rules' => [
+                    'required'  => false,
+                    'maxlength' => 5,
+                ]
+            ]
+        ],
+    ]
+];
+$this->AdminForm->create($params);
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('List Leads'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column-responsive column-80">
-        <div class="leads form content">
-            <?= $this->Form->create($lead) ?>
-            <fieldset>
-                <legend><?= __('Add Lead') ?></legend>
-                <?php
-                    echo $this->Form->control('first_name');
-                    echo $this->Form->control('last_name');
-                    echo $this->Form->control('email');
-                    echo $this->Form->control('home_email');
-                    echo $this->Form->control('work_email');
-                    echo $this->Form->control('other_email');
-                    echo $this->Form->control('password');
-                    echo $this->Form->control('forgot_password_token');
-                    echo $this->Form->control('image_id');
-                    echo $this->Form->control('phone');
-                    echo $this->Form->control('home_phone');
-                    echo $this->Form->control('work_phone');
-                    echo $this->Form->control('other_phone');
-                    echo $this->Form->control('address');
-                    echo $this->Form->control('city');
-                    echo $this->Form->control('state');
-                    echo $this->Form->control('zip');
-                    echo $this->Form->control('role');
-                    echo $this->Form->control('company');
-                    echo $this->Form->control('interest');
-                    echo $this->Form->control('note');
-                    echo $this->Form->control('status');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
-    </div>
-</div>

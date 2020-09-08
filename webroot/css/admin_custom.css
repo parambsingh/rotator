@@ -3,6 +3,8 @@ a.active {
     color: #e68c23 !important;
 }
 
+.hide-me{display: none;}
+
 /* For Firefox */
 input[type='number'] {
     -moz-appearance:textfield;

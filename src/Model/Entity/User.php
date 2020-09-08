@@ -46,11 +46,10 @@ class User extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'distibuter_id'             => true,
-        'first_name'                => true,
-        'last_name'                 => true,
+        'distributor_id'            => true,
+        'name'                      => true,
         'email'                     => true,
-        'lead_email'                => true,
+        'rf_email'                  => true,
         'password'                  => true,
         'forgot_password_token'     => true,
         'image_id'                  => true,
@@ -63,7 +62,6 @@ class User extends Entity {
         'status'                    => true,
         'created'                   => true,
         'modified'                  => true,
-        'distibuter'                => true,
         'image'                     => true,
         'email_campaign_recipients' => true,
         'email_templates'           => true,

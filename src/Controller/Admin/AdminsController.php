@@ -201,9 +201,9 @@ class AdminsController extends AppController {
             if ((new DefaultPasswordHasher)->check($this->request->getData('current_password'), $admin->password)) {
                 if ($this->request->getData('new_password') == $this->request->getData('confirm_password')) {
                     $admin->password = $this->request->getData('new_password');
-                     if ($this->Admins->save($admin)) {
-                                $this->Flash->success(__('Password has been reset.'));
-                          } else {
+                    if ($this->Admins->save($admin)) {
+                        $this->Flash->success(__('Password has been reset.'));
+                    } else {
                         $this->Flash->error(__('Password has not been set.'));
                     }
                 } else {
@@ -338,6 +338,162 @@ class AdminsController extends AppController {
 
     public function crons() {
 
+    }
+
+    public function import() {
+        $this->autoRender = false;
+        $this->responseCode = CODE_BAD_REQUEST;
+        $filePath = $this->request->getData('file_path');
+        $model = $this->request->getData('model');
+        $requiredFields = $this->request->getData('required_fields');
+        $fieldMap = $this->request->getData('field_map');
+        $defaultFields = $this->request->getData('default_value');
+        $logs = [];
+        $totalToImport = 0;
+        $successfullyImported = 0;
+        $notImported = 0;
+
+        $this->loadModel($model);
+
+        if (($handle = fopen($filePath, "r")) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+
+                if ($totalToImport > 0) {
+
+
+                    foreach ($requiredFields as $requiredField => $dataIndex) {
+                        $conditions[$requiredField] = $data[$dataIndex];
+                    }
+
+                    $entity = $this->{$model}->find()->where($conditions)->first();
+
+                    $fullName = '<b>' . $data[0] . '</b>';
+
+                    if (empty($entity)) {
+
+                        $entity = $this->{$model}->newEmptyEntity();
+
+
+
+//                        $fieldMap = array_filter($fieldMap);
+//
+//                        pr($fieldMap);
+
+                        foreach ($fieldMap as $field => $dIndex) {
+                            //var_dump($dIndex);
+                            $dIndex = ($dIndex === 0) ? (int)$dIndex : $dIndex;
+
+                            if (!empty($data[$dIndex]) || $dIndex === 0) {
+                                $entity->{$field} = trim($data[$dIndex]);
+                            }
+                        }
+
+//                        pr($entity);
+//
+//                        die;
+
+
+                        foreach ($defaultFields as $field => $value) {
+                            if (!empty($value)) {
+                                $entity->{$field} = $value;
+                            }
+                        }
+
+
+                        if ($this->{$model}->save($entity)) {
+                            $successfullyImported++;
+                            $logs[] = $fullName . " Saved Successfully";
+                        } else {
+                            $logs[] = $fullName . " Could not save.";
+                            $notImported++;
+                        }
+
+                    } else {
+                        $logs[] = $fullName . " already exists.";
+                    }
+
+                }
+
+                $totalToImport++;
+            }
+            fclose($handle);
+        }
+
+        $this->responseCode = SUCCESS_CODE;
+        $this->responseData['totalToImport'] = $totalToImport - 1;
+        $this->responseData['successfullyImported'] = $successfullyImported;
+        $this->responseData['notImported'] = $notImported;
+        $this->responseData['logs'] = $logs;
+
+        echo $this->responseFormat();
+        exit;
+    }
+
+    public function uploadImportCsv() {
+        $this->autoRender = false;
+        $this->responseCode = CODE_BAD_REQUEST;
+
+
+        if ($this->request->is(['patch', 'post', 'put'])) {
+
+            $file = $this->request->getData('file');
+            $clientFileName = $file->getClientFilename();
+            $fileSize = $file->getSize();
+
+            $this->fileExt = pathinfo($clientFileName, PATHINFO_EXTENSION);
+
+            $this->fileName = uniqid() . "." . $this->fileExt;
+            $filePath = WWW_ROOT . 'files/csvs/' . $this->fileName;
+            $fileUrl = SITE_URL . 'files/csvs/' . $this->fileName;
+
+
+            if (!is_writable(WWW_ROOT . 'files/csvs/')) {
+
+                if (!file_exists(WWW_ROOT . 'files')) {
+                    mkdir(WWW_ROOT . 'files');
+                }
+                if (!file_exists(WWW_ROOT . 'files/csvs')) {
+                    mkdir(WWW_ROOT . 'files/csvs');
+                }
+                chmod(WWW_ROOT . 'files', 0777);
+            }
+
+
+            if ($fileSize <= 50320921) {
+                if (in_array(strtolower($this->fileExt), ['csv'])) {
+                    $file->moveTo($filePath);
+
+                    $this->responseCode = SUCCESS_CODE;
+                    $this->responseData['path'] = $fileUrl;
+
+                    if (($handle = fopen($fileUrl, "r")) !== FALSE) {
+                        $row = 0;
+                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+
+                            if ($row <= 0) {
+                                $this->responseData['fields'] = $data;
+                                break;
+                            }
+
+                            $row++;
+                        }
+                        fclose($handle);
+                    }
+
+
+                } else {
+                    $this->responseMessage = __("Only CSV files are allowed.");
+                }
+            } else {
+                $this->responseMessage = __("Sorry, the file is too large.");
+            }
+        } else {
+            $this->responseMessage = __("Video file is too large, file must be less than 50 MB in size.");
+        }
+
+
+        echo $this->responseFormat();
+        exit;
     }
 
 }

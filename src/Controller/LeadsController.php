@@ -126,6 +126,7 @@ class LeadsController extends AppController {
             $lead = $this->Leads->newEmptyEntity();
             if ($this->request->is('post')) {
                 $lead = $this->Leads->patchEntity($lead, $this->request->getData());
+                $lead->status = true;
                 if ($this->Leads->save($lead)) {
                     $this->responseCode = SUCCESS_CODE;
                     $this->responseMessage = 'The lead has been saved.';
@@ -143,6 +144,32 @@ class LeadsController extends AppController {
             $status = "Already Exists";
         }
 
+        $url = "https://apiv2.rapidfunnel.com/v1/contacts";
+
+        $this->loadModel('UsersLeads');
+
+        $userLead = $this->UsersLeads->find('all')->first();
+
+        $params = [
+            'userId'    => ($userLead->user_id == 1) ? 181405 : 181406,
+            'firstName' => empty($requestData['first_name']) ? 'NA' : $requestData['first_name'],
+            'lastName'  => empty($requestData['last_name']) ? 'na@na.com' : $requestData['last_name'],
+            'email'     => empty($requestData['email']) ? 'NA' : $requestData['email'],
+            'phone[]'   => empty($requestData['phone']) ? 'NA' : $requestData['phone'],
+            'company'   => empty($requestData['company']) ? 'NA' : $requestData['company'],
+            'note'      => empty($requestData['note']) ? 'NA' : $requestData['note'],
+            //'campaignId' => 564, // 564, 560
+        ];
+
+        $userLead->user_id = ($userLead->user_id == 1) ? 2 : 1;
+
+        $this->UsersLeads->save($userLead);
+
+        $requestData['API_PARAMS'] = $params;
+
+        $this->loadComponent('RapidFunnel');
+        $responseData = $this->RapidFunnel->postRf($url, $params, true);
+
 
         $leadLog = $this->LeadLogs->newEmptyEntity();
 
@@ -151,8 +178,9 @@ class LeadsController extends AppController {
         $leadLog->last_name = $lead->last_name;
         $leadLog->email = $lead->email;
         $leadLog->ip = $requestData['ip'];
-        $leadLog->request_json = $requestData['lead_from'];
-        $leadLog->response_json = json_encode($requestData);
+        $leadLog->lead_from = $requestData['lead_from'];
+        $leadLog->request_json = json_encode($requestData);
+        $leadLog->response_json = json_encode($responseData);
         $leadLog->status = $status;
 
         $this->LeadLogs->save($leadLog);

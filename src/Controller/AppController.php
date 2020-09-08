@@ -64,9 +64,9 @@ class AppController extends Controller {
                         ]
                     ]
                 ],
-                'loginAction'    => ['controller' => 'Users', 'action' => 'home'],
-                'loginRedirect'  => ['controller' => 'Users', 'action' => 'referral'],
-                'logoutRedirect' => ['controller' => 'Users', 'action' => 'home'],
+                'loginAction'    => ['controller' => 'Users', 'action' => 'login'],
+                'loginRedirect'  => ['controller' => 'Users', 'action' => 'dashboard'],
+                'logoutRedirect' => ['controller' => 'Users', 'action' => 'login'],
             ]
         );
 
@@ -75,11 +75,10 @@ class AppController extends Controller {
         //pr($this->Auth->user()); die;
         if ($this->Auth->user()) {
             $this->set('authUser', $this->Auth->user());
-            $this->viewBuilder()->setLayout('home');
-
+            $this->viewBuilder()->setLayout('outer');
             $this->searchConditions();
         } else {
-            $this->viewBuilder()->setLayout('home');
+            $this->viewBuilder()->setLayout('outer');
 
         }
 

@@ -1,37 +1,49 @@
 <?php
-/**
- * @var \App\View\AppView $this
- * @var \Cake\Datasource\EntityInterface $coupon
- */
+$params = [
+    'form'   => [
+        'options' => [
+            'type'       => 'post',
+            'novalidate' => true,
+            'id'         => 'addForm'
+        ],
+        'heading' => 'Edit Coupon'
+    ],
+    'fields' => [
+        [
+            'name'  => 'status',
+            'type'  => 'hidden',
+            'value' => 1
+        ],
+        [
+            'name'  => 'no_of_subscriptions',
+            'type'  => 'hidden',
+            'value' => 0
+        ],
+        [ 'name'  => 'name'],
+        [ 'name'  => 'empty'],
+        [
+            'name'     => 'description',
+            'type'     => 'textarea',
+            'validate' => [
+                'rules' => [
+                    'required' => false
+                ],
+
+            ]
+        ],
+        [ 'name'  => 'empty'],
+        [
+            'name' => 'type',
+            'type' => 'select',
+            'options' => ['$'=>'$', '%'=>'%'],
+            'style' => "height:42px !important;",
+        ],
+        [ 'name'  => 'empty'],
+        [
+            'name' => 'discount',
+            'type' => 'number',
+        ],
+    ]
+];
+$this->AdminForm->create($params);
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $coupon->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $coupon->id), 'class' => 'side-nav-item']
-            ) ?>
-            <?= $this->Html->link(__('List Coupons'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column-responsive column-80">
-        <div class="coupons form content">
-            <?= $this->Form->create($coupon) ?>
-            <fieldset>
-                <legend><?= __('Edit Coupon') ?></legend>
-                <?php
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('description');
-                    echo $this->Form->control('type');
-                    echo $this->Form->control('discount');
-                    echo $this->Form->control('no_of_usage');
-                    echo $this->Form->control('status');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
-    </div>
-</div>

@@ -35,6 +35,7 @@ class BreadcrumbHelper extends Helper {
         $controller = $this->getView()->getRequest()->getParam('controller');
         $action = $this->getView()->getRequest()->getParam('action');
         $pass = $this->getView()->getRequest()->getParam('pass');
+        $controller = ($controller == "Users") ? "Distributors" : $controller;
         
         $plural = Inflector::humanize(Inflector::underscore($controller));
         $singular = Inflector::singularize($plural);

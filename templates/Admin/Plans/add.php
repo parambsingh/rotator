@@ -1,32 +1,49 @@
 <?php
-/**
- * @var \App\View\AppView $this
- * @var \Cake\Datasource\EntityInterface $plan
- */
+$params = [
+    'form'   => [
+        'options' => [
+            'type'       => 'post',
+            'novalidate' => true,
+            'id'         => 'addForm'
+        ],
+        'heading' => 'New Plan'
+    ],
+    'fields' => [
+        [
+            'name'  => 'status',
+            'type'  => 'hidden',
+            'value' => 1
+        ],
+        [
+            'name'  => 'no_of_subscriptions',
+            'type'  => 'hidden',
+            'value' => 0
+        ],
+        [ 'name'  => 'name'],
+        [ 'name'  => 'empty'],
+        [
+            'name'     => 'description',
+            'type'     => 'textarea',
+            'validate' => [
+                'rules' => [
+                    'required' => false
+                ],
+
+            ]
+        ],
+        [ 'name'  => 'empty'],
+        [
+            'name' => 'type',
+            'type' => 'select',
+            'options' => ['$'=>'$', '%'=>'%'],
+            'style' => "height:42px !important;",
+        ],
+        [ 'name'  => 'empty'],
+        [
+            'name' => 'price',
+            'type' => 'number',
+        ],
+    ]
+];
+$this->AdminForm->create($params);
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('List Plans'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column-responsive column-80">
-        <div class="plans form content">
-            <?= $this->Form->create($plan) ?>
-            <fieldset>
-                <legend><?= __('Add Plan') ?></legend>
-                <?php
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('description');
-                    echo $this->Form->control('type');
-                    echo $this->Form->control('price');
-                    echo $this->Form->control('no_of_subscriptions');
-                    echo $this->Form->control('status');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
-    </div>
-</div>

@@ -33,6 +33,9 @@ Router::prefix('Admin', ['_namePrefix' => 'admin:'], function (RouteBuilder $rou
 
     $routes->connect('/', ['controller' => 'Admins', 'action' => 'login']);
     $routes->connect('/dashboard', ['controller' => 'Admins', 'action' => 'dashboard']);
+    $routes->connect('/distributors/*', ['controller' => 'Users']);
+    $routes->connect('/distributors/:action/*', ['controller' => 'Users']);
+    $routes->connect('/distributors/manage-positions/*', ['controller' => 'Users', 'action'=>'managePositions']);
     $routes->fallbacks(DashedRoute::class);
 });
 
@@ -54,7 +57,9 @@ $routes->scope('/', function (RouteBuilder $builder) {
      * its action called 'display', and we pass a param to select the view file
      * to use (in this case, templates/Pages/home.php)...
     */
-    $builder->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
+    $builder->connect('/', ['controller' => 'Pages', 'action' => 'home']);
+    $builder->connect('/sign-in', ['controller' => 'Users', 'action' => 'login']);
+    $builder->connect('/sign-up', ['controller' => 'Users', 'action' => 'register']);
 
     /*
      * ...and connect the rest of 'Pages' controller's URLs.

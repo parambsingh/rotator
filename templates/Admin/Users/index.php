@@ -1,15 +1,19 @@
 <?php
 $params = [
-    'fields' => [
+    'heading' => 'Distributors',
+    'fields'  => [
         [
             'name'     => 'image_id',
             'type'     => 'image',
             'sortable' => false,
             'label'    => '<i class="fa fa-picture-o"></i>'
         ],
-        ['name' => 'first_name'],
-        ['name' => 'last_name'],
+        ['name' => 'name'],
         ['name' => 'email'],
+    //        [
+    //            'name' => 'rf_email',
+    //            'label' => 'RF Email',
+    //        ],
         ['name' => 'phone'],
         [
             'name'  => 'status',
@@ -18,7 +22,7 @@ $params = [
             'model' => 'Users',
         ],
     ],
-    'search' => [
+    'search'  => [
         'match' => [
             'Users' => ['first_name', 'last_name', 'email', 'phone']
         ]

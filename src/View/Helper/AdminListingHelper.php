@@ -25,6 +25,7 @@ class AdminListingHelper extends Helper {
     public $view;
     public $srNo = false;
     public $heading = false;
+    public $deleteMessage = "Are you sure you want delete this?";
 
     public function create($params = null, $actions = ['view', 'edit', 'delete']) {
         $this->srNo = isset($params['srNo']) ? $params['srNo'] : false;
@@ -202,11 +203,11 @@ class AdminListingHelper extends Helper {
                         <i class="hs-icon hs-icon-close"></i>
                     </button>
                     <h4 class="h4 g-mb-20">
-                        Delete <?= Inflector::humanize(Inflector::singularize(Inflector::underscore($this->controller))) ?></h4>
+                        Delete</h4>
                     <div calss="modal-body" style="position: relative;">
                         <div class="row">
                             <div class="col-md-12">
-                                <h5 class="h5">Are you sure you want delete this?</h5>
+                                <h5 class="h5"><?= $this->deleteMessage; ?></h5>
                             </div>
                             <div class="col-md-7"></div>
                             <div class="col-md-5">
@@ -244,7 +245,6 @@ class AdminListingHelper extends Helper {
                                 data-setup="{}"
                         ></video>
                         <script src="https://vjs.zencdn.net/7.7.5/video.js"></script>
-
                     </div>
                     <div class="clear-both"></div>
                 </div>
@@ -389,9 +389,9 @@ class AdminListingHelper extends Helper {
         }
 
         if (isset($this->field['short']) && !empty($this->objectFieldValue)) {
-			if(strlen($this->objectFieldValue) > $this->field['short']){
-				$this->objectFieldValue = substr($this->objectFieldValue, 0, $this->field['short']) ."..";
-			}
+            if (strlen($this->objectFieldValue) > $this->field['short']) {
+                $this->objectFieldValue = substr($this->objectFieldValue, 0, $this->field['short']) . "..";
+            }
         }
 
 
@@ -545,12 +545,18 @@ class AdminListingHelper extends Helper {
         ?>
         <td class="actions">
             <?php
-            foreach ($actions as $action) {
-                if (is_array($action)) {
-                    $this->customAction($action);
+            foreach ($actions as $action => $actionParams) {
+
+                if (in_array(strtolower($action), ['edit', 'view', 'delete'])) {
+                    $this->{$action}($actionParams);
                 } else {
-                    $this->{$action}();
+                    if (is_array($actionParams)) {
+                        $this->customAction($actionParams);
+                    } else {
+                        $this->{$actionParams}();
+                    }
                 }
+
             }
             ?>
         </td>
@@ -559,15 +565,22 @@ class AdminListingHelper extends Helper {
 
     public function customAction($action = []) {
 
-        if (isset($action['id']) && !empty($action['id'])) {
-            $action['url'][] = $this->obj->id;
+
+        if (!empty($action['id'])) {
+            $id = $action['id'] === true ? $this->obj->id : $this->obj->{$action['id']};
+        } else {
+
+            $id = $this->obj->id;
         }
 
+
+        $action['url'][] = $id;
         $url = Router::url($action['url']);
         $classes = empty($action['class']) ? "btn-u btn-u-sea btn-u-sm rounded" : $action['class'];
+        $target = empty($action['target']) ? "_self" : $action['target'];
         ?>
         <a href="<?= $url; ?>" class=" <?= $classes; ?>"
-           style="float: left; margin-left: 10px;">
+           style="float: left; margin-left: 10px;" target="<?= $target; ?>" data-id="<?= $id; ?>">
             <i class='<?= empty($action['icon']) ? "fa fa-circle-o" : $action['icon']; ?>'></i> <?= $action['label']; ?>
         </a>
         <?php
@@ -591,14 +604,29 @@ class AdminListingHelper extends Helper {
         <?php
     }
 
-    public function delete() {
-        $url = ['controller' => $this->controller, 'action' => 'delete', $this->obj->id];
+    public function delete($actionParams = null) {
+
+        if (!empty($actionParams['id'])) {
+            $id = $actionParams['id'] === true ? $this->obj->id : $this->obj->{$actionParams['id']};
+        } else {
+            $id = $this->obj->id;
+        }
+
+        if (empty($actionParams['url'])) {
+            $url = ['controller' => $this->controller, 'action' => 'delete', $id];
+        } else {
+            $url = $actionParams['url'];
+            $url[] = $id;
+        }
+        if (!empty($actionParams['deleteMessage'])) {
+            $this->deleteMessage = $actionParams['deleteMessage'];
+        }
         //$url = 'javascript:void(0);';
         ?>
-        <?= $this->view->Form->create(null, ['url' => $url, 'id' => 'delete_' . $this->obj->id . '_form']); ?>
+        <?= $this->view->Form->create(null, ['url' => $url, 'id' => 'delete_' . $id . '_form']); ?>
         <button data-modal-target="#deleteConfirmModal"
                 data-modal-effect="slide" class="btn-u btn-u-red btn-u-sm rounded delete-btn"
-                style="float: left; margin-left: 10px;" id="delete_<?= $this->obj->id; ?>_btn"><i
+                style="float: left; margin-left: 10px;" id="delete_<?= $id; ?>_btn"><i
                     class="hs-admin-close"></i> Delete
         </button>
         <?= $this->view->Form->end(); ?>
