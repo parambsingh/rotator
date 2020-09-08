@@ -173,7 +173,7 @@ class LeadsController extends AppController {
         $requestData['API_PARAMS'] = $params;
 
         $this->loadComponent('RapidFunnel');
-        $responseData = $this->RapidFunnel->postRf($url, $params, true);
+        $responseData = $this->RapidFunnel->postRf($url, $params);
 
 
         $leadLog = $this->LeadLogs->newEmptyEntity();
