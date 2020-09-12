@@ -202,7 +202,7 @@
 
         #templateHeader {
 
-            background-color: #f4cee8;
+            background-color: rgba(240, 143, 47, 0.46);;
 
             background-image: none;
 
@@ -266,7 +266,7 @@
 
         #templateBody {
 
-            background-color: #f4cee8;
+            background-color: rgba(240, 143, 47, 0.46);;
 
             background-image: none;
 
@@ -287,7 +287,7 @@
 
         .bodyContainer {
 
-            background-color: #f4cee8;
+            background-color: rgba(240, 143, 47, 0.46);;
 
             background-image: none;
 
@@ -330,7 +330,7 @@
 
         #templateFooter {
 
-            background-color: #f4cee8;
+            background-color: rgba(240, 143, 47, 0.46);
 
             background-image: none;
 
@@ -652,7 +652,7 @@
 
 
                                                                 <img alt=""
-                                                                     src="http://mama.strategiclight.com/img/logo.png"
+                                                                     src="<?= SITE_URL; ?>img/logo.png"
 
                                                                      class="mcnImage" height="120" align="middle"
                                                                      style="max-height: 150px;padding-bottom:0;display:inline !important;vertical-align:bottom;border-width:0;height:auto;outline-style:none;text-decoration:none;-ms-interpolation-mode:bicubic;">
@@ -667,7 +667,7 @@
                                                         </tr>
 
                                                         <tr>
-                                                            <td style="background-color:#f4cee8;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%; padding: 10px 0px;">
+                                                            <td style="background-color:rgba(240, 143, 47, 0.46);;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%; padding: 10px 0px;">
                                                                 &nbsp;
                                                             </td>
                                                         </tr>
@@ -721,7 +721,7 @@
                                                         <tbody>
                                                         <tr>
                                                             <td class="mcnTextContent"
-                                                                style="padding:20px 18px 20px 18px; text-align: left; font-size: 14px; line-height: 150%; font-family: Helvetica; background-color: #f4cee8;"
+                                                                style="padding:20px 18px 20px 18px; text-align: left; font-size: 14px; line-height: 150%; font-family: Helvetica; background-color: rgba(240, 143, 47, 0.46);;"
                                                                 valign="top">
                                                                 <?= $this->fetch('content'); ?>
                                                             </td>
@@ -768,7 +768,7 @@
                                                style="min-width:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;table-layout:fixed !important;">
                                             <tbody class="mcnDividerBlockOuter">
                                             <tr>
-                                                <td style="background-color:#f4cee8;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%; padding: 10px 0px;">
+                                                <td style="background-color:rgba(240, 143, 47, 0.46);;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%; padding: 10px 0px;">
                                                     &nbsp;
                                                 </td>
                                             </tr>
@@ -778,7 +778,7 @@
                                                     <table class="mcnDividerContent"
 
                                                            width="100%" cellspacing="0" cellpadding="0" border="0"
-                                                           style="min-width:100%;border-top-width:2px;border-top-style:solid;border-top-color:#f4cee8;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
+                                                           style="min-width:100%;border-top-width:2px;border-top-style:solid;border-top-color:rgba(240, 143, 47, 0.46);;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                                                         <tbody>
                                                         <tr>
                                                             <td style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
@@ -821,7 +821,8 @@
                                                                 valign="top"
                                                                 style="padding-top:0;padding-right:18px;padding-bottom:9px;padding-left:18px;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;word-break:break-word;color:#4a89dc;font-family:Helvetica;font-size:12px;line-height:150%;text-align:center;">
 
-                                                                <em>Copyright © </em><?= date('Y'); ?> <?= SITE_TITLE; ?><em>, All
+                                                                <em>Copyright
+                                                                    © </em><?= date('Y'); ?> <?= SITE_TITLE; ?><em>, All
                                                                     rights reserved.</em><br>
                                                                 <br>
                                                             </td>

@@ -24,7 +24,7 @@ $params = [
     ],
     'search'  => [
         'match' => [
-            'Users' => ['first_name', 'last_name', 'email', 'phone']
+            'Users' => ['name', 'email', 'phone']
         ]
     ]
 ];

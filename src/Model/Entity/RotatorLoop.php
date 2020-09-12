@@ -36,8 +36,6 @@ class RotatorLoop extends Entity {
         'user_position_id' => true,
         'lead_id'          => true,
         'lead_status'      => true,
-        'rf_status'        => true,
-        'rf_response_json' => true,
         'created'          => true,
         'modified'         => true,
         'user_position'    => true,

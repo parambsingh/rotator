@@ -52,17 +52,19 @@ class LeadsTable extends Table {
             'foreignKey' => 'image_id',
             'joinType'   => 'LEFT',
         ]);
+
+        $this->belongsTo('Users', [
+            'foreignKey' => 'user_id',
+            'joinType'   => 'LEFT',
+        ]);
+
         $this->hasMany('EmailCampaignRecipients', [
             'foreignKey' => 'lead_id',
         ]);
         $this->hasMany('RotatorLoops', [
             'foreignKey' => 'lead_id',
         ]);
-        $this->belongsToMany('Users', [
-            'foreignKey'       => 'lead_id',
-            'targetForeignKey' => 'user_id',
-            'joinTable'        => 'users_leads',
-        ]);
+
     }
 
     /**

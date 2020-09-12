@@ -75,11 +75,10 @@ class AdminListingHelper extends Helper {
                             <?php $field['type'] = empty($field['type']) ? 'text' : $field['type']; ?>
                             <?php if (isset($field['sortable']) && $field['sortable'] == false) { ?>
                                 <th scope="col"
-                                    class=" <?= in_array($field['type'], ["image",
-                                                                          'video']) ? "text-center" : "" ?>"><?= __(empty($field['label']) ? $field['name'] : $field['label']) ?></th>
+                                    class=" <?= in_array($field['type'], ["image", 'video']) ? "text-center" : "" ?>"><?= __(empty($field['label']) ? $field['name'] : $field['label']) ?></th>
                             <?php } else { ?>
                                 <th scope="col"
-                                    class="sortable"><?= $this->view->Paginator->sort($field['name'], empty($field['label']) ? null : $field['label']) ?></th>
+                                    class="sortable"><?= $this->view->Paginator->sort((empty($field['sort_by']) ? $field['name'] : $field['sort_by']), empty($field['label']) ? null : $field['label']) ?></th>
                             <?php } ?>
                         <?php } ?>
                         <?php if (!empty($actions)) { ?>
@@ -97,8 +96,8 @@ class AdminListingHelper extends Helper {
                     <?php } else { ?>
                         <?php foreach ($this->object as $srNo => $obj): ?>
                             <?php $this->obj = $obj; ?>
-                            <tr>
-                                <!-- td><?= ($srNo + (($this->paging['page'] - 1) * $this->paging['perPage']) + 1); ?></td -->
+                            <tr id="listRow_<?= $this->obj->id; ?>">
+                                <!-- td><?php /*($srNo + (($this->paging['page'] - 1) * $this->paging['perPage']) + 1); */ ?></td -->
                                 <?php
                                 foreach ($this->fields as $field) {
                                     $field['type'] = empty($field['type']) ? 'text' : $field['type'];

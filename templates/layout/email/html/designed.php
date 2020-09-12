@@ -652,7 +652,7 @@
 
 
                                                                 <img alt=""
-                                                                     src="http://mama.strategiclight.com/img/logo.png"
+                                                                     src="<?= SITE_URL; ?>img/logo.png"
 
                                                                      class="mcnImage" width="358" align="middle"
                                                                      style="max-width:358px;padding-bottom:0;display:inline !important;vertical-align:bottom;border-width:0;height:auto;outline-style:none;text-decoration:none;-ms-interpolation-mode:bicubic;">

@@ -32,17 +32,18 @@ class LeadLog extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'lead_id'       => true,
-        'first_name'    => true,
-        'last_name'     => true,
-        'email'         => true,
-        'ip'            => true,
-        'lead_from'     => true,
-        'request_json'  => true,
-        'response_json' => true,
-        'status'        => true,
-        'created'       => true,
-        'modified'      => true,
-        'lead'          => true,
+        'lead_id'        => true,
+        'distributor_id' => true,
+        'first_name'     => true,
+        'last_name'      => true,
+        'email'          => true,
+        'ip'             => true,
+        'lead_from'      => true,
+        'request_json'   => true,
+        'response_json'  => true,
+        'status'         => true,
+        'created'        => true,
+        'modified'       => true,
+        'lead'           => true,
     ];
 }

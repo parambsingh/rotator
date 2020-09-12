@@ -28,12 +28,20 @@
         'vendor/hs-megamenu/src/hs.megamenu',
         'vendor/hamburgers/hamburgers.min',
         'vendor/hs-admin-icons/hs-admin-icons',
+        'vendor/custombox/custombox.min',
         'unify-core',
         'unify-components',
         'unify-admin',
         'unify-globals',
         'custom',
     ]) ?>
+
+    <script type="text/javascript">
+        var SITE_URL = '<?= SITE_URL ?>';
+        var LOADING = '<i class="fa fa-spin fa-spinner"></i> Loading ...';
+        var PLEASE_WAIT = '<i class="fa fa-spin fa-spinner"></i> Please wait ...';
+        var PAGE_NAME = '<?= $this->request->getParam('controller') . $this->request->getParam('action'); ?>';
+    </script>
 
     <?= $this->Html->script([
         'vendor/jquery/jquery.min',
@@ -49,6 +57,9 @@
         'vendor/fancybox/jquery.fancybox.min',
         'vendor/typedjs/typed.min',
 
+        'vendor/custombox/custombox.legacy.min',
+        'vendor/custombox/custombox.min',
+
         'hs.core.js',
         'components/hs.carousel',
         'components/hs.header',
@@ -57,6 +68,8 @@
         'components/hs.popup',
         'components/text-animation/hs.text-slideshow',
         'components/hs.go-to',
+        'jquery.validate.min',
+        'jquery-input-mask-phone-number.min',
         'custom',
 
     ]) ?>

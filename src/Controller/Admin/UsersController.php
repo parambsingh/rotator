@@ -102,5 +102,100 @@ class UsersController extends AppController {
 
     public function managePositions() {
 
+        $limit = 200;
+
+        $this->loadModel('UsersPositions');
+
+//        $this->paginate['limit'] = $limit;
+//        $this->paginate['maxLimit'] = 500;
+
+        $this->paginate['sortWhitelist'] = [
+            'Users.name',
+            'Users.email',
+            'UsersPositions.position_no',
+            'UsersPositions.position_order',
+        ];
+
+        $query = $this->UsersPositions->find('all')->contain(['Users']);
+
+        $userPositions = $this->paginate($query);
+
+        $this->set(compact('userPositions', 'limit'));
+    }
+
+    public function getUserPosition($id = null) {
+        $this->viewBuilder()->setLayout('ajax');
+        $this->loadModel('UsersPositions');
+
+        $userPosition = $this->UsersPositions->find('all')->contain(['Users'])->where(['UsersPositions.id' => $id])->first();
+
+        $max = $this->UsersPositions->find('all')->count();
+
+        $this->set(compact('userPosition', 'max'));
+    }
+
+    public function changeUserPosition() {
+
+        $this->responseCode = CODE_BAD_REQUEST;
+
+        $id = $this->request->getData('user_position_id');
+        $newP = $this->request->getData('position_order');
+
+        $this->loadModel('UsersPositions');
+
+        $userPosition = $this->UsersPositions->find('all')->contain(['Users'])->where(['UsersPositions.id' => $id])->first();
+
+        $oldP = $userPosition->position_order;
+
+        if ($oldP > $newP) {
+
+
+            $this->UsersPositions->updateAll(['position_order = position_order + 1'], ['position_order >=' => $newP, 'position_order <' => $oldP]);
+
+            $userPosition->position_order = $newP;
+
+            $this->UsersPositions->save($userPosition);
+
+        }
+
+        if ($oldP < $newP) {
+
+
+            $this->UsersPositions->updateAll(['position_order = position_order - 1'], ['position_order <=' => $newP, 'position_order >' => $oldP]);
+
+            $userPosition->position_order = $newP;
+
+            $this->UsersPositions->save($userPosition);
+
+        }
+
+        $this->responseData['page'] = ceil($newP / PAGE_LIMIT);
+
+        echo $this->responseFormat();
+        exit;
+
+    }
+
+    public function enterPositions() {
+        $users = $this->Users->find('all')->all();
+        $this->loadModel('UsersPositions');
+
+        $order = 1;
+        foreach ($users as $user) {
+            $userPosition = $this->UsersPositions->newEmptyEntity();
+
+            $userPosition->user_id = $user->id;
+            $userPosition->subscription_id = 1;
+            $userPosition->position_no = 1;
+            $userPosition->position_order = $order;
+            $userPosition->subscription_status = "Active";
+
+            $order++;
+
+            $this->UsersPositions->save($userPosition);
+        }
+
+        exit;
+
     }
 }

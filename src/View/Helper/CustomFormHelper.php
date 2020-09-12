@@ -4,7 +4,6 @@ namespace App\View\Helper;
 
 use Cake\View\Helper;
 use Cake\Utility\Inflector;
-use Cake\Routing\Router;
 
 class CustomFormHelper extends Helper {
 
@@ -12,10 +11,11 @@ class CustomFormHelper extends Helper {
     public $params;
     public $formId;
     public $field;
+    public $fieldNo;
     public $fieldLabel;
     public $fieldValue;
     public $fieldId;
-    public $attributes = [];
+    public $attributes;
     public $obj;
     public $scripts = [];
     public $hasSelectBox = false;
@@ -33,6 +33,7 @@ class CustomFormHelper extends Helper {
         $this->validate = [];
         $this->validations = [];
         $this->view = $this->getView();
+
         $this->obj = (isset($params['object']) && $params['object'] == false) ? null : $this->view->get($this->view->getVars()[0]);
         $this->params = $params;
         if (!empty($this->params['form'])) {
@@ -57,28 +58,27 @@ class CustomFormHelper extends Helper {
                 $this->setValidations = empty($validate['validations']) ? true : $validate['validations'];
                 if ($this->setValidations) {
                     $this->validations['ignore'] = empty($validate['ignore']) ? ":hidden:not(.ignore)" : $validate['ignore'];
-
                 }
             }
             ?>
-            <div class="card g-brd-gray-light-v7 g-rounded-3 g-mb-30 <?= empty($this->params['form']['card']['class']) ? "" : $this->params['form']['card']['class']; ?>">
+            <div class="card g-brd-gray-light-v7 g-rounded-3 g-mb-30">
                 <header
-                        class="card-header g-brd-bottom-none g-px-15 g-px-30--sm g-pt-15 g-pt-20--sm g-pb-10 g-pb-15--sm"
-                        style="background-color: #007eef !important; color: #ffffff !important;">
+                        class="card-header g-brd-bottom-none g-px-15 g-px-30--sm g-pt-15 g-pt-20--sm g-pb-10 g-pb-15--sm">
                     <div class="media">
-                        <h3 class="w-100 align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-white font-weight-bold g-mr-10 mb-0">
+                        <h3 class="d-flex align-self-center text-uppercase g-font-size-12 g-font-size-default--md g-color-primary font-weight-bold g-mr-10 mb-0">
                             <?= $this->params['form']['heading']; ?>
                         </h3>
                     </div>
                 </header>
 
                 <div class="card-block g-pa-15 g-pa-30--sm">
-                    <div class="row ">
+                    <div class="row p-lg-4">
                         <?php
                         foreach ($this->params['fields'] as $index => $field) {
 
                             $this->validationRules = [];
                             $this->validationMessages = [];
+                            $this->fieldNo = $index;
                             $this->field = $field;
                             $this->getFieldLabel();
                             $this->getFieldId();
@@ -89,7 +89,7 @@ class CustomFormHelper extends Helper {
 
                             if ($field['name'] == "div") {
                                 ?>
-                                <div class="col-md-<?= $this->columns(); ?>">
+                                <div class="col-md-<?= $this->columns(); ?>" id="<?= $this->fieldId; ?>Outer">
                                     <div id="<?= $this->fieldId; ?>"
                                          class="<?= empty($field['class']) ? 'row' : $field['class']; ?>"></div>
                                 </div>
@@ -115,7 +115,7 @@ class CustomFormHelper extends Helper {
                                 } ?>
                             <?php } ?>
                         <?php } ?>
-                        <div class="col-md-12 text-right">
+                        <div class="col-md-12">
                             <?php
 
                             $submit = isset($this->params['form']['submit']) ? $this->params['form']['submit'] : true;
@@ -132,27 +132,40 @@ class CustomFormHelper extends Helper {
                     <?= $this->view->Form->end() ?>
                 </div>
             </div>
+            <!-- div id="pleaseWaitSavingModal"
+                 class="text-left g-color-gray-dark-v1 g-bg-white g-overflow-y-auto  g-pa-20"
+                 style="display: none; width: 300px; height: auto; padding: 10%; background-color: #007eef !important; color: #ffffff !important;">
+                <h4 class="h4 text-center">Please wait, saving ... <i class="fa fa-spin fa-spinner"></i></h4>
+                <div class="clear-both"></div>
+            </div -->
+            <script>
+                if (typeof <?= $this->formId; ?> == "undefined") {
+                    function <?= $this->formId; ?>(form) {
+
+                        <?php if(!empty($this->submitBtn['id'])){ ?>
+
+                        $('#<?= $this->submitBtn['id'] ?>').prop('disabled', true).addClass('disabled').html('Please wait.. <i class="fa fa-spinner fa-spin"></i>');
+                        <?php } ?>
+                        form.submit();
+                    }
+                }
+            </script>
             <?php
-
-
-            if (!empty($this->validate['submitHandler'])) {
-                $this->validations['submitHandler'] = 'function (form) { ' . $this->validate['submitHandler'] . ' }';
-            }
-
+            $this->validations['submitHandler'] = "function (form){  " . $this->formId . "(form); submitHandlerVar(form); }";
             ?>
             <?php
 
             if ($this->setValidations) {
                 $this->createValidations();
+
+                //  pr($this->validations); die;
             }
             $this->script();
         }
     }
 
-    public
-    function createField() {
+    public function createField() {
         $this->field['type'] = empty($this->field['type']) ? "text" : $this->field['type'];
-        $this->field['attributes'] = empty($this->field['attributes']) ? [] : $this->field['attributes'];
         $this->getOptions();
         switch ($this->field['type']) {
             case 'image' :
@@ -194,12 +207,12 @@ class CustomFormHelper extends Helper {
             case 'checkbox' :
             case 'check' :
                 {
-                    $this->checkbox();
+                    $this->check();
                     break;
                 }
             case 'radio' :
                 {
-                    $this->input();
+                    $this->radio();
                     break;
                 }
             case 'toggle' :
@@ -225,9 +238,7 @@ class CustomFormHelper extends Helper {
         }
     }
 
-
-    public
-    function getOptions() {
+    public function getOptions() {
         switch ($this->field['type']) {
             case 'image' :
                 {
@@ -260,11 +271,13 @@ class CustomFormHelper extends Helper {
                 }
             case 'select' :
                 {
+                    $title = "Select " . ucwords($this->fieldLabel);
                     $defaultOptions = [
                         'class'   => "form-control u-select--v3-select u-sibling w-100 u-select--v3 g-pos-rel g-brd-gray-light-v7",
                         'id'      => $this->fieldId,
-                        'style'   => "height:52px;",
-                        'title'   => $this->fieldLabel,
+                        'style'   => "height:52px !important;",
+                        'title'   => $title,
+                        'empty'   => $title,
                         'options' => []
                     ];
                     break;
@@ -281,14 +294,15 @@ class CustomFormHelper extends Helper {
             case 'check' :
                 {
                     $defaultOptions = [
-                        'class' => " not-ignore",
+                        'class' => "g-hidden-xs-up g-pos-abs g-top-0 g-left-0 not-ignore",
                     ];
                     break;
                 }
             case 'radio' :
                 {
                     $defaultOptions = [
-                        'class' => "g-hidden-xs-up g-pos-abs g-top-0 g-left-0 not-ignore"
+                        'class' => "g-hidden-xs-up g-pos-abs g-top-0 g-left-0 not-ignore",
+                        'label' => false
                     ];
                     break;
                 }
@@ -326,9 +340,12 @@ class CustomFormHelper extends Helper {
                         'class'        => "form-control form-control-md g-brd-gray-light-v7 g-brd-gray-light-v3--focus rounded-0 g-px-14 g-py-10  not-ignore",
                         'id'           => $this->fieldId,
                         'placeholder'  => $this->fieldLabel,
-                        'autocomplete' => 'off',
-                        'value'        => $this->fieldValue
+                        'autocomplete' => 'off'
                     ];
+
+                    if(!empty($this->fieldValue)) {
+                        $defaultOptions['value'] = $this->fieldValue;
+                    }
 
                     break;
                 }
@@ -341,10 +358,8 @@ class CustomFormHelper extends Helper {
         }
     }
 
-
-    public
-    function image() {
-        $anchorClasses = "u-badge-v2--lg u-badge--bottom-right g-width-32 g-height-32 g-bg-lightblue-v3 g-bg-primary--hover g-mb-20 g-mr-20 load-media";
+    public function image() {
+        $anchorClasses = "u-badge-v2--lg u-badge--bottom-right g-width-32 g-height-32 g-bg-lightblue-v3 g-bg-primary--hover g-mb-20 g-mr-20 load-media box-shadow rounded-circle";
         $iconClasses = "hs-admin-pencil g-absolute-centered g-font-size-16 g-color-white";
         $image = SITE_URL . (($this->obj->has('image')) ? $this->obj->image->small_thumb : 'files/images/default.png');
         $rounded = isset($this->field['rounded']) ? $this->field['rounded'] : true;
@@ -353,11 +368,14 @@ class CustomFormHelper extends Helper {
         <section class="text-center g-mb-10 g-mb-10--md text-left">
 
             <div class="d-inline-block g-pos-rel g-mb-20">
-                <a
-                        class="<?= $anchorClasses ?>"
-                        href="#mediaModal"
+                <!--
+                href="#mediaModal"
                         data-modal-target="#mediaModal"
                         data-modal-effect="blur"
+                -->
+                <a
+                        class="<?= $anchorClasses ?>"
+                        href="javascript:void(0);"
                         data-model="<?= $this->attributes['model']; ?>"
                         data-category="<?= $this->attributes['category']; ?>"
                         data-user_id="<?= $this->attributes['user_id']; ?>"
@@ -380,8 +398,7 @@ class CustomFormHelper extends Helper {
         <?php
     }
 
-    public
-    function input() {
+    public function input() {
         $iconClasses = "g-absolute-centered--y g-right-0 d-block g-width-50 g-height-22 g-brd-left g-brd-gray-light-v7";
         ?>
         <div class="form-group g-mb-30">
@@ -391,44 +408,38 @@ class CustomFormHelper extends Helper {
                 <?php if (!empty($this->field['icon'])) { ?>
                     <span
                             class="<?= $iconClasses; ?>">
-	                  	<i class="<?= $this->field['icon']; ?> g-absolute-centered g-font-size-16 g-color-gray-dark-v6"></i>
+	                  	<i class="<?= $this->field['icon']; ?> g-absolute-centered g-font-size-16 g-color-gray-light-v6"></i>
 	                	</span>
                 <?php } ?>
                 <?= $this->view->Form->control($this->field['name'], $this->attributes); ?>
+                <?= empty($this->field['text']) ? "" : $this->field['text']; ?>
             </div>
         </div>
         <?php
     }
 
-    public
-    function hidden() {
+    public function hidden() {
         echo $this->view->Form->control($this->field['name'], $this->attributes);
     }
 
-    public
-    function textArea() {
+    public function textArea() {
         ?>
         <div class="form-group g-mb-30">
-            <label class="g-mb-10" for="<?php $this->fieldId ?>"><?= $this->fieldLabel ?></label>
+            <label class="g-mb-10" for="<?php $this->fieldId ?>"><?php $this->fieldLabel ?></label>
             <?= $this->view->Form->control($this->field['name'], $this->attributes); ?>
-            <label for="<?= $this->fieldId; ?>" class="error" style="display: none;"></label>
         </div>
         <?php
     }
 
-    public
-    function select() {
+    public function select() {
         ?>
-        <div class="g-mb-30">
-            <label class="g-mb-10"><?= $this->fieldLabel; ?></label>
-            <?= $this->view->Form->control($this->field['name'], $this->attributes); ?>
-            <label for="<?= $this->fieldId; ?>" class="error"></label>
-        </div>
+        <label class="g-mb-10"><?= $this->fieldLabel; ?></label>
+        <?= $this->view->Form->control($this->field['name'], $this->attributes); ?>
+        <label for="<?= $this->fieldId; ?>" class="error"></label>
         <?php
     }
 
-    public
-    function advanceSelect() {
+    public function advanceSelect() {
         $classes = "js-select u-select--v3-select u-sibling w-100";
         $dropIconClasses = "d-flex align-items-center g-absolute-centered--y g-right-0 g-color-gray-light-v6 g-color-lightblue-v9--sibling-opened g-mr-15";
         ?>
@@ -438,7 +449,7 @@ class CustomFormHelper extends Helper {
             <div class="form-group u-select--v3 g-pos-rel g-brd-gray-light-v7 g-rounded-4 mb-0">
                 <select name="<?= $this->field['name']; ?>" class="<?= $classes; ?>" title="<?= $this->fieldLabel; ?>"
                         style="display: none;" data-live-search="true" id="<?= $this->fieldId; ?>">
-                    <?php foreach ($this->attributes['options'] as $value => $label) { ?>
+                    <?php foreach ($this->field['options'] as $value => $label) { ?>
                         <option value="<?= $value; ?>" <?= ($this->fieldValue == $value) ? 'selected' : "" ?>
                                 data-content='<span class="d-flex align-items-center w-100"><span><?= $label; ?></span></span>'><?= $label; ?></option>
                     <?php } ?>
@@ -453,71 +464,43 @@ class CustomFormHelper extends Helper {
         <?php
     }
 
-    public
-    function check() {
-
+    public function check() {
         $labelClasses = "u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0";
         ?>
-        <div class="row g-mb-30">
+        <div class="row g-mb-30 ">
             <label class="g-mb-10" style="width: 100%;"><?= $this->fieldLabel; ?></label><br/>
             <?php foreach ($this->field['options'] as $value => $label) { ?>
-                <div class=" g-mb-10 col-md-<?= $this->field['check_columns']; ?>">
-                    <label class="form-check-inline u-check g-pl-25">
+                <div class="form-group g-mb-10 col-md-<?= $this->field['check_columns']; ?>">
+                    <label class="u-check g-pl-25">
                         <?php
                         $this->attributes['value'] = $value;
                         $this->attributes['id'] = $this->fieldId . "_" . str_replace(" ", "", $value);
-                        $this->attributes['templates'] = ['inputContainer' => '{{content}}'];
                         ?>
-
                         <?= $this->view->Form->control($this->field['name'] . "[]", $this->attributes); ?>
-
                         <div class="<?= $labelClasses; ?>">
                             <i class="fa" data-check-icon=""></i>
                         </div>
                         <?= $label; ?>
                     </label>
                 </div>
+                <?= empty($this->field['horizontal']) ? "" : ""; ?>
             <?php } ?>
         </div>
         <?php
     }
 
-    public
-    function checkbox() {
-
-        $labelClasses = "u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0";
-        ?>
-        <div class="row g-mb-30">
-            <label class="g-mb-10" style="width: 100%;"><?= $this->fieldLabel; ?></label><br/>
-            <?php foreach ($this->field['options'] as $value => $label) { ?>
-                <div class=" g-mb-10 col-md-<?= $this->field['check_columns']; ?>">
-
-                        <?php
-                        $this->attributes['value'] = $value;
-                        $this->attributes['id'] = $this->fieldId . "_" . str_replace(" ", "", $value);
-                        $this->attributes['templates'] = ['inputContainer' => '{{content}}'];
-                        ?>
-
-                        <?= $this->view->Form->control($this->field['name'] . "[]", $this->attributes); ?>
-
-                    <label class="form-check-inline u-check g-pl-25" for="<?= $this->attributes['id']; ?>"><?= $label; ?></label>
-                </div>
-            <?php } ?>
-        </div>
-        <?php
-    }
-
-    public
-    function radio() {
+    public function radio() {
         $labelClasses = "u-check-icon-font g-absolute-centered--y g-left-0";
-
         ?>
-        <?php foreach ($this->field['options'] as $value => $label) { ?>
-            <div class="form-group g-mb-10">
+        <label><?= $this->field['label']; ?></label>
+        <div class="form-group g-mb-10">
+            <?php foreach ($this->field['options'] as $value => $label) { ?>
+
                 <label class="u-check g-pl-25">
                     <?php
                     $this->attributes['value'] = $value;
                     $this->attributes['id'] = $this->fieldId . "_" . str_replace(" ", "", $value);
+                    unset($this->attributes['options']);
                     ?>
                     <?= $this->view->Form->control($this->field['name'], $this->attributes); ?>
                     <div class="<?= $labelClasses; ?>">
@@ -525,15 +508,16 @@ class CustomFormHelper extends Helper {
                     </div>
                     <?= $label; ?>
                 </label>
-            </div>
-            <?= empty($this->field['horizontal']) ? "" : ""; ?>
-            <label for="<?= $this->fieldId; ?>" class="error"></label>
-        <?php } ?>
+
+                <?= empty($this->field['horizontal']) ? "" : ""; ?>
+
+            <?php } ?>
+        </div>
+        <label for="<?= $this->fieldId; ?>" class="error"></label>
         <?php
     }
 
-    public
-    function toggle() {
+    public function toggle() {
         $labelClasses = "form-check-inline u-check mt-0 mb-0";
         ?>
         <div class="g-mb-30">
@@ -552,8 +536,7 @@ class CustomFormHelper extends Helper {
         <?php
     }
 
-    public
-    function datePicker() {
+    public function datePicker() {
         $wrapperClasses = "u-datepicker-right u-datepicker--v3 g-pos-rel w-100 g-cursor-pointer g-brd-around g-brd-gray-light-v7 g-rounded-4";
         $iconWrapperClasses = "d-flex align-items-center g-absolute-centered--y g-right-0 g-color-gray-light-v6 g-color-lightblue-v9--sibling-opened g-mr-15";
         ?>
@@ -570,9 +553,7 @@ class CustomFormHelper extends Helper {
         <?php
     }
 
-    public
-    function suggestions() {
-
+    public function suggestions() {
         $iconClasses = "g-absolute-centered--y g-right-0 d-block g-width-50 g-height-22 g-brd-left g-brd-gray-light-v7";
         ?>
         <div class="form-group g-mb-30">
@@ -597,11 +578,10 @@ class CustomFormHelper extends Helper {
         <?php
     }
 
-    public
-    function submit() {
+    public function submit() {
         $this->submitBtn = empty($this->params['form']['submit']) ? [] : $this->params['form']['submit'];
         $this->submitBtn['label'] = empty($this->submitBtn['label']) ? "Save" : $this->submitBtn['label'];
-        $this->submitBtn['classes'] = empty($submit['classes']) ? "btn-lg btn btn-success rounded" : $this->submitBtn['classes'];
+        $this->submitBtn['classes'] = empty($submit['classes']) ? "btn-u-lg btn-u btn-u-blue rounded" : $this->submitBtn['classes'];
         $this->submitBtn['icon'] = empty($this->submitBtn['icon']) ? "fa fa-save" : $this->submitBtn['icon'];
         $this->submitBtn['id'] = empty($this->submitBtn['id']) ? $this->formId . "Btn" : $this->submitBtn['id'];
         ?>
@@ -611,11 +591,10 @@ class CustomFormHelper extends Helper {
         <?php
     }
 
-    public
-    function cancel() {
+    public function cancel() {
         $label = empty($this->params['cancel']['label']) ? "Cancel" : $this->params['submit']['label'];
-        $classes = empty($this->params['cancel']['classes']) ? "btn-lg btn btn-danger rounded  " : $this->params['submit']['classes'];
-        $url = empty($this->params['cancel']['url']) ? $this->view->getRequest()->referer() : Router::url($this->params['cancel']['url']);
+        $classes = empty($this->params['cancel']['classes']) ? "btn-u-lg btn-u btn-u-orange rounded  " : $this->params['submit']['classes'];
+        $url = empty($this->params['cancel']['url']) ? $this->view->getRequest()->referer() : empty($this->params['cancel']['url']);
         $icon = empty($this->params['cancel']['icon']) ? "fa fa-close" : $this->params['cancel']['icon'];
         ?>
         <a href="<?= $url; ?>" class="<?= $classes; ?>">
@@ -624,24 +603,19 @@ class CustomFormHelper extends Helper {
         <?php
     }
 
-
-    public
-    function getFieldValue() {
+    public function getFieldValue() {
         if (empty($this->field['value'])) {
-
             $this->fieldValue = isset($this->obj->{$this->field['name']}) ? $this->obj->{$this->field['name']} : false;
-
         } else {
-            $this->fieldValue = $this->field['value'];
-        }
-
-        if ($this->field['name'] == "phone") {
-            $this->fieldValue = $this->phoneFormat($this->fieldValue);
+            if ($this->field['name'] == "phone") {
+                $this->fieldValue = $this->phoneFormat($this->getValue($this->field['value']));
+            } else {
+                $this->fieldValue = $this->field['value'];
+            }
         }
     }
 
-    public
-    function getFieldLabel() {
+    public function getFieldLabel() {
         if (empty($this->field['label'])) {
             $name = (strpos($this->field['name'], '_id') !== false) ? str_replace('_id', '', $this->field['name']) : $this->field['name'];
             $this->fieldLabel = Inflector::humanize($name);
@@ -650,14 +624,11 @@ class CustomFormHelper extends Helper {
         }
     }
 
-    public
-    function getFieldId() {
+    public function getFieldId() {
         $this->fieldId = (empty($this->field['id'])) ? Inflector::camelize($this->field['name']) : $this->field['id'];
-        $this->fieldId = str_replace(["[","]"], "", $this->fieldId);
     }
 
-    public
-    function columns() {
+    public function columns() {
         if (!empty($this->field['columns'])) {
             $columns = $this->field['columns'];
         } else if (!empty($this->params['columns'])) {
@@ -668,8 +639,7 @@ class CustomFormHelper extends Helper {
         return $columns;
     }
 
-    public
-    function script() {
+    public function script() {
         ?>
         <script>
             $(function () {
@@ -679,8 +649,7 @@ class CustomFormHelper extends Helper {
         <?php
     }
 
-    public
-    function selectDependOn() {
+    public function selectDependOn() {
         $depend = $this->field['depend'];
         return "$('#" . $depend['id'] . "').change(function () {
             $.ajax({
@@ -689,22 +658,22 @@ class CustomFormHelper extends Helper {
                 data: {query: $(this).val(), find: '" . $depend['model'] . "', match: '" . $depend['match'] . "' },
                 dataType: \"json\",
                 success: function (response) {
+                    var options = [];
+                    options.push('<option value=\"\">" . $this->fieldLabel . "</option>');
                     if (response.suggestions.length > 0) {
-                        var options = [];
-                        options.push('<option value=\"\">" . $this->fieldLabel . "</option>');
                         $.each(response.suggestions, function (index, data) {
                             options.push('<option value=\"' + data.value + '\">' + data.label + '</option>');
                         });
-                         $('#" . $this->fieldId . "').html(options.join(''));
                     }
+                    
+                     $('#" . $this->fieldId . "').html(options.join(''));
                     
                 }
             });
         });";
     }
 
-    public
-    function advanceSelectDependOn() {
+    public function advanceSelectDependOn() {
         $depend = $this->field['depend'];
         return "$('#" . $depend['id'] . "').change(function () {
             $.ajax({
@@ -730,8 +699,7 @@ class CustomFormHelper extends Helper {
         });";
     }
 
-    public
-    function suggestionsScript() {
+    public function suggestionsScript() {
         if (empty($this->field['suggestions'])) {
             return "";
         } else {
@@ -763,17 +731,14 @@ class CustomFormHelper extends Helper {
         }
     }
 
-    public
-    function createValidations() {
+    public function createValidations() {
         $validations = preg_replace('/"([a-zA-Z]+[a-zA-Z0-9_]*)":/', '$1:', json_encode($this->validations));
         $validations = str_replace("\"function (form)", "function (form)", $validations);
         $validations = str_replace("}\"", "}", $validations);
-
         $this->scripts[] = '$("#' . $this->formId . '").validate(' . $validations . ');';
     }
 
-    public
-    function validateField() {
+    public function validateField() {
         $label = strtolower($this->fieldLabel);
         if (empty($this->field['validate'])) {
             $this->validationRules['required'] = true;
@@ -789,7 +754,10 @@ class CustomFormHelper extends Helper {
                 switch ($type) {
                     case 'required':
                         {
-                            $text = in_array($this->field['type'], ['select', 'check', 'radio', 'toggle']) ? "select" : "enter";
+                            $text = in_array($this->field['type'], ['select',
+                                                                    'check',
+                                                                    'radio',
+                                                                    'toggle']) ? "select" : "enter";
                             $this->validations['messages'][$this->field['name']][$type] = "Please $text $label.";
                             break;
                         }
@@ -859,12 +827,10 @@ class CustomFormHelper extends Helper {
         $this->scripts[] = 'setTimeout(function(){$("#' . $this->fieldId . '").attr("readonly", ' . $this->field['readonly'] . ')}, 1000);';
     }
 
-
     public function phoneFormat($phone) {
         if (preg_match('/(\d{3})(\d{3})(\d{4})$/', $phone, $matches)) {
             return $matches[1] . '-' . $matches[2] . '-' . $matches[3];
         }
         return $phone;
     }
-
 }

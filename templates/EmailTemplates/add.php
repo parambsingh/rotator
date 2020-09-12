@@ -1,32 +1,96 @@
+<?= $this->Html->script('ckeditor/ckeditor'); ?>
 <?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\EmailTemplate $emailTemplate
- */
+$params = [
+    'form'   => [
+        'options' => [
+            'type'       => 'post',
+            'novalidate' => true,
+            'id'         => 'EmailTemplateForm'
+        ],
+        'heading' => 'Add New Email Template'
+    ],
+    'fields' => [
+        [
+            'name'  => 'id',
+            'value' => 0,
+            'type'  => 'hidden',
+        ],
+        [
+            'name'    => 'label',
+            'columns' => 12
+        ],
+        ['name' => 'empty'],
+        [
+            'name'    => 'subject',
+            'columns' => 12
+        ],
+        ['name' => 'empty'],
+        [
+            'name'    => 'preview_line',
+            'columns' => 12
+        ],
+        ['name' => 'empty'],
+        [
+            'name'    => 'template',
+            'type'    => 'textarea',
+            'class'   => 'ckeditor',
+            'columns' => 12
+        ],
+        ['name' => 'empty'],
+        [
+            'name'  => 'placeholders',
+            'type'  => 'hidden',
+            'value' => 'EMAIL,PASSWORD,URL,NAME'
+        ],
+    ]
+];
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('List Email Templates'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column-responsive column-80">
-        <div class="emailTemplates form content">
-            <?= $this->Form->create($emailTemplate) ?>
-            <fieldset>
-                <legend><?= __('Add Email Template') ?></legend>
-                <?php
-                    echo $this->Form->control('user_id', ['options' => $users]);
-                    echo $this->Form->control('label');
-                    echo $this->Form->control('subject');
-                    echo $this->Form->control('template');
-                    echo $this->Form->control('note');
-                    echo $this->Form->control('status');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
+    <style>
+        [aria-labelledby] {
+            opacity: 1 !important;
+        }
+
+        #topBreadcrumb {
+            display: none;
+        }
+    </style>
+    <div class="row mt-4">
+        <div class="col-md-1">&nbsp;</div>
+        <div class="col-md-10"> <?php $this->AdminForm->create($params); ?> </div>
+        <div class="col-md-1">&nbsp;</div>
     </div>
-</div>
+
+
+    <script>
+        $(function () {
+
+            $('#topBreadcrumb').hide();
+
+            CKEDITOR.config.placeholder_select = {
+                placeholders: <?= json_encode(["REFERRAL_URL"]) ?>,
+                format: '[%placeholder%]'
+            };
+        });
+
+        setInterval(function () {
+
+            for (var i in CKEDITOR.instances) {
+                $('#Template').val(CKEDITOR.instances[i].getData());
+            }
+
+            $.ajax({
+                type: "POST",
+                url: SITE_URL + 'emailTemplates/save',
+                data: $('#EmailTemplateForm').serialize(),
+                dataType: "json",
+                success: function (resp) {
+                    $('#Id').val(resp.id);
+                    //Do something -here
+                }
+            });
+
+        }, 10000);
+
+
+    </script>
+<?= $this->element('image_media') ?>

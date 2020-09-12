@@ -23,16 +23,21 @@ class ListingHelper extends Helper {
     public $search;
     public $request;
     public $view;
-    public $hideDeleteButtonIf;
+    public $srNo = false;
+    public $heading = false;
+    public $deleteMessage = "Are you sure you want delete this?";
 
     public function create($params = null, $actions = ['view', 'edit', 'delete']) {
+        $this->srNo = isset($params['srNo']) ? $params['srNo'] : false;
+        $inputClasses = "g-hidden-xs-up g-pos-abs g-top-0 g-left-0 not-ignore";
+        $labelClasses = "u-check-icon-checkbox-v4 g-absolute-centered--y g-left-0";
         $this->view = $this->getView();
         $this->request = $this->view->getRequest();
         $this->controller = isset($params['controller']) ? $params['controller'] : $this->request->getParam('controller');
         $this->object = isset($params['object']) ? $params['object'] : $this->view->get($this->view->getVars()[0]);
 
         $this->fields = $params['fields'];
-        $this->hideDeleteButtonIf = empty($params['hideDeleteButtonIf']) ? [] : $params['hideDeleteButtonIf'];
+        $this->heading = empty($params['heading']) ? $this->controller : $params['heading'];
 
 
         if (!empty($this->getView()->getRequest()->getParam('paging'))) {
@@ -40,16 +45,22 @@ class ListingHelper extends Helper {
             $this->paging = array_values($this->getView()->getRequest()->getParam('paging'))[0];
             if ($this->paging['count'] > 0) {
                 $this->hasPagination = true;
-                $this->setBulk($params);
-                $this->setSearch($params);
+
             }
+
+            $this->setBulk($params);
         }
 
+        $this->setSearch($params);
 
         if (!empty($this->fields)) {
             $this->createSearchAndBulkActions();
             ?>
             <style>
+                .color-white a {
+                    color: #ffffff !important;
+                }
+
                 .sortable a {
                     color: #ffffff !important;
                 }
@@ -58,111 +69,90 @@ class ListingHelper extends Helper {
                 <table cellpadding="0" cellspacing="0"
                        class="table table-bordered table-hover u-table--v3 g-color-black table-striped">
                     <thead>
-                    <tr class=" g-color-white" style="background-color: #007eef !important; color: #ffffff !important;">
+                    <tr class="" style="background-color: #e68c23 !important; color: #ffffff !important;">
                         <!-- th style="width: 6%;">Sr. No.</th -->
                         <?php foreach ($this->fields as $field) { ?>
                             <?php $field['type'] = empty($field['type']) ? 'text' : $field['type']; ?>
-                            <?php $sortableField = empty($field['sortable_field_name']) ? $field['name'] : $field['sortable_field_name']; ?>
                             <?php if (isset($field['sortable']) && $field['sortable'] == false) { ?>
                                 <th scope="col"
-                                    class="<?= in_array($field['type'], ["image",
-                                                                         "video"]) ? "text-center" : "" ?>"><?= __(empty($field['label']) ? $field['name'] : $field['label']) ?></th>
+                                    class=" <?= in_array($field['type'], ["image", 'video']) ? "text-center" : "" ?>"><?= __(empty($field['label']) ? $field['name'] : $field['label']) ?></th>
                             <?php } else { ?>
                                 <th scope="col"
-                                    class="sortable"><?= $this->view->Paginator->sort($sortableField, empty($field['label']) ? null : $field['label']) ?></th>
+                                    class="sortable"><?= $this->view->Paginator->sort((empty($field['sort_by']) ? $field['name'] : $field['sort_by']), empty($field['label']) ? null : $field['label']) ?></th>
                             <?php } ?>
                         <?php } ?>
                         <?php if (!empty($actions)) { ?>
-                            <th scope="col" class="actions"
-                                style="width: <?= count($actions) * 7; ?>%;"><?= __('Actions') ?></th>
+                            <th scope="col" class="actions" style="width: 20%;"><?= __('Actions') ?></th>
                         <?php } ?>
                     </tr>
                     </thead>
                     <tbody>
                     <?php if (count($this->object) <= 0) { ?>
                         <tr>
-                            <td colspan="<?= count($this->fields) + (!$this->hasPagination ? 1 : 2); ?>">
+                            <td colspan="<?= count($this->fields) + (!$this->hasPagination ? 2 : 2); ?>">
                                 <h3>No Record found. </h3>
                             </td>
                         </tr>
                     <?php } else { ?>
                         <?php foreach ($this->object as $srNo => $obj): ?>
                             <?php $this->obj = $obj; ?>
-                            <tr>
-                                <!-- td><?= ($srNo + (($this->paging['page'] - 1) * $this->paging['perPage']) + 1); ?></td -->
+                            <tr id="listRow_<?= $this->obj->id; ?>">
+                                <!-- td><?php /*($srNo + (($this->paging['page'] - 1) * $this->paging['perPage']) + 1); */ ?></td -->
                                 <?php
                                 foreach ($this->fields as $field) {
                                     $field['type'] = empty($field['type']) ? 'text' : $field['type'];
                                     $this->field = $field;
                                     $this->fieldValue();
-
                                     ?>
-                                    <td class="<?= in_array($field['type'], ["image",
-                                                                             'video']) ? "text-center" : "" ?>">
+                                    <td class="<?= $field['type'] == "image" ? "text-center" : "" ?>">
                                         <?php
-                                        if (in_array($this->field['name'], ['created', 'modified'])) {
-                                            $this->createDateTime();
-                                        } else {
-                                            switch ($field['type']) {
-                                                case 'image':
-                                                    {
-                                                        $this->createImage();
-                                                        break;
-                                                    }
-                                                case 'video':
-                                                    {
-                                                        $this->createVideo();
-                                                        break;
-                                                    }
-                                                case 'link':
-                                                    {
-                                                        $this->createLink();
-                                                        break;
-                                                    }
-                                                case 'status':
-                                                    {
-                                                        $this->createStatus();
-                                                        $this->includeStatusScript = true;
-                                                        break;
-                                                    }
-                                                case 'datetime':
-                                                    {
-                                                        $this->createDateTime();
-                                                        break;
-                                                    }
-                                                case 'date':
-                                                    {
-                                                        $this->createDate();
-                                                        break;
-                                                    }
-                                                case 'currency':
-                                                    {
-                                                        $this->createCurrency();
-                                                        break;
-                                                    }
-                                                case 'join-currency':
-                                                    {
-                                                        $this->createJoinCurrency();
-                                                        break;
-                                                    }
-                                                case 'text':
-                                                    {
-                                                        $this->createText();
-                                                        break;
-                                                    }
-                                            }
+                                        switch ($field['type']) {
+                                            case 'image':
+                                                {
+                                                    $this->createImage();
+                                                    break;
+                                                }
+                                            case 'video':
+                                                {
+                                                    $this->createVideo();
+                                                    break;
+                                                }
+                                            case 'link':
+                                                {
+                                                    $this->createLink();
+                                                    break;
+                                                }
+                                            case 'status':
+                                                {
+                                                    $this->createStatus();
+                                                    $this->includeStatusScript = true;
+                                                    break;
+                                                }
+                                            case 'text':
+                                                {
+                                                    $this->createText();
+                                                    break;
+                                                }
+                                            case 'datetime':
+                                                {
+                                                    $this->createDateTime();
+                                                    break;
+                                                }
+                                            case 'date':
+                                                {
+                                                    $this->createDate();
+                                                    break;
+                                                }
                                         }
                                         ?>
                                     </td>
                                     <?php
-
                                 }
                                 ?>
                                 <?php
                                 if (!empty($actions)) {
                                     $this->createActions($actions);
                                 }
-
                                 ?>
                             </tr>
                         <?php endforeach; ?>
@@ -170,81 +160,82 @@ class ListingHelper extends Helper {
                     </tbody>
                 </table>
                 <?php $this->statusScript(); ?>
-                <?php if ($this->hasPagination) { ?>
-                    <script>
-                        $(document).ready(function () {
-                            var deleteBtn = null;
-                            $('#selectAll').click(function (e) {
-                                $('.select-row').prop('checked', $(this).is(':checked'));
-                            });
-
-                            $('.select-row').click(function (e) {
-                                var totalChecks = $('.select-row').length;
-                                var checkedChecks = $('.select-row:checked').length;
-
-                                $('#selectAll').prop('checked', ((totalChecks == checkedChecks) ? true : false));
-                            });
-
-                            $('.js-select').selectpicker();
-
-                            $('.delete-btn').click(function (e) {
-                                e.preventDefault();
-                                deleteBtn = $(this).attr('id');
-                            });
-
-                            $('#deleteIt').click(function (e) {
-                                e.preventDefault();
-                                deleteBtn = $('#' + deleteBtn.replace("btn", 'form')).submit();
-                            });
-                            $.HSCore.components.HSModalWindow.init('[data-modal-target]');
-
-                            $('#applyAction').click(function (e) {
-                                e.preventDefault();
-                                alert('This  feature is in progress..')
-                            });
+                <script>
+                    $(document).ready(function () {
+                        var deleteBtn = null;
+                        $('#selectAll').click(function (e) {
+                            $('.select-row').prop('checked', $(this).is(':checked'));
                         });
-                    </script>
-                    <div id="deleteConfirmModal"
-                         class="text-left g-color-white g-bg-gray-dark-v1 g-overflow-y-auto  g-pa-20"
-                         style="display: none; width: auto; min-width: 600px; height: auto; padding: 10%;">
-                        <button type="button" class="close" onclick="Custombox.modal.close();">
-                            <i class="hs-icon hs-icon-close"></i>
-                        </button>
-                        <h4 class="h4 g-mb-20">
-                            Delete <?= Inflector::humanize(Inflector::singularize(Inflector::underscore($this->controller))) ?></h4>
-                        <div calss="modal-body" id="imageMedia" style="position: relative;">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <h5 class="h5">Are you sure you want delete this?</h5>
-                                </div>
-                                <div class="col-md-7"></div>
-                                <div class="col-md-5">
-                                    <button type="button" class="btn btn-danger pull-left" id="deleteIt">
-                                        <i class="fa fa-trash"></i> Delete
-                                    </button>
-                                    &nbsp;
-                                    <button type="button" class="btn btn-primary pull-right"
-                                            onclick="Custombox.modal.close();">
-                                        <i class="fa fa-close"></i> Cancel
-                                    </button>
-                                </div>
+
+                        $('.select-row').click(function (e) {
+                            var totalChecks = $('.select-row').length;
+                            var checkedChecks = $('.select-row:checked').length;
+
+                            $('#selectAll').prop('checked', ((totalChecks == checkedChecks) ? true : false));
+                        });
+
+                        $('.js-select').selectpicker();
+
+                        $('.delete-btn').click(function (e) {
+                            e.preventDefault();
+                            deleteBtn = $(this).attr('id');
+                        });
+
+                        $('#deleteIt').click(function (e) {
+                            e.preventDefault();
+                            if (deleteBtn != null) {
+                                $('#' + deleteBtn.replace("btn", 'form')).submit();
+                            }
+                        });
+                        $.HSCore.components.HSModalWindow.init('[data-modal-target]');
+
+                        $('#applyAction').click(function (e) {
+                            e.preventDefault();
+                            alert('This  feature is in progress..')
+                        });
+                    });
+                </script>
+                <div id="deleteConfirmModal"
+                     class="text-left g-color-white g-bg-gray-dark-v1 g-overflow-y-auto  g-pa-20"
+                     style="display: none; width: 600px; height: auto; padding: 10%;">
+                    <button type="button" class="close" onclick="Custombox.modal.close();">
+                        <i class="hs-icon hs-icon-close"></i>
+                    </button>
+                    <h4 class="h4 g-mb-20">
+                        Delete</h4>
+                    <div calss="modal-body" style="position: relative;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="h5"><?= $this->deleteMessage; ?></h5>
+                            </div>
+                            <div class="col-md-7"></div>
+                            <div class="col-md-5">
+                                <button type="button" class="btn btn-danger pull-left" id="deleteIt">
+                                    <i class="fa fa-trash"></i> Delete
+                                </button>
+                                &nbsp;
+                                <button type="button" class="btn btn-primary pull-right"
+                                        onclick="Custombox.modal.close();">
+                                    <i class="fa fa-close"></i> Cancel
+                                </button>
                             </div>
                         </div>
-                        <div class="clear-both"></div>
                     </div>
-                <?php } ?>
+                    <div class="clear-both"></div>
+                </div>
                 <link href="https://vjs.zencdn.net/7.7.5/video-js.css" rel="stylesheet"/>
                 <script src="https://vjs.zencdn.net/ie8/1.1.2/videojs-ie8.min.js"></script>
                 <div id="videoPlayerListModal"
                      class="text-left g-color-white g-bg-black g-overflow-y-auto "
-                     style="display: none; width: auto; min-width: 640px; height: auto; min-height: 480px; padding: 1%;">
-                    <button type="button" class="close" onclick="Custombox.modal.close();">
+                     style="display: none; width: auto; min-width: 640px; height: auto; min-height: 480px; padding: 3%;">
+                    <button type="button" class="close" onclick="Custombox.modal.close();"
+                            style="margin: -50px -50px 0 0">
                         <i class="hs-icon hs-icon-close"></i>
                     </button>
 
                     <div calss="modal-body text-center" style="position: relative;">
                         <video
-                                id="tourVideoPlayerListJS"
+                                id="tourVideoListPlayerJS"
                                 class="video-js"
                                 controls
                                 preload="auto"
@@ -253,11 +244,10 @@ class ListingHelper extends Helper {
                                 data-setup="{}"
                         ></video>
                         <script src="https://vjs.zencdn.net/7.7.5/video.js"></script>
-
                     </div>
                     <div class="clear-both"></div>
                 </div>
-                <div id="showImgListModal"
+                <div id="showImgModal"
                      class="text-left g-color-white g-bg-gray-dark-v2 g-overflow-y-auto "
                      style="display: none; width: auto; min-width: 200px; height: auto; min-height: 200px; padding: 1%;">
                     <button type="button" class="close" onclick="Custombox.modal.close();">
@@ -265,33 +255,32 @@ class ListingHelper extends Helper {
                     </button>
                     <div calss="modal-body text-center" style="position: relative;">
                         <div style="text-align: center; margin-top: 8%">
-                            <img id="fpImageToShowList" src="<?= SITE_URL; ?>files/images/default.jpg"/>
+                            <img id="fpImageToShow" src="<?= SITE_URL; ?>files/images/default.jpg"/>
                         </div>
                         <div class="clear-both"></div>
                     </div>
                 </div>
                 <script>
-                    var vgsPlayerList, posterList, urlList, fileWindow = null;
-
+                    var vgsPlayer, poster, url;
                     $(function () {
 
                         $('.load-video-player-list').hide();
 
                         setTimeout(function () {
-                            vgsPlayerList = videojs('tourVideoPlayerListJS', {
+
+                            vgsPlayer = videojs('tourVideoListPlayerJS', {
                                 techOrder: ["html5"],
                                 autoplay: false,
                             });
 
-                            vgsPlayerList.poster("<?=  SITE_URL . 'files/images/default_video.png'; ?>");
+                            vgsPlayer.poster("<?=  SITE_URL . 'files/images/default_video.png'; ?>");
                             $('.load-video-player-list').fadeIn();
                         }, 1500);
-
                         $('.load-video-player-list').click(function (e) {
                             e.preventDefault();
 
-                            urlList = $(this).attr('data-url');
-                            posterList = "<?=  SITE_URL . 'files/images/default_video.png'; ?>";
+                            url = $(this).attr('data-url');
+                            poster = $(this).attr('data-poster');
 
 
                             var newModal = new Custombox.modal({
@@ -306,26 +295,26 @@ class ListingHelper extends Helper {
                                     speedOut: 300,
                                     fullscreen: false,
                                     onClose: function () {
-                                        vgsPlayerList.pause();
+                                        vgsPlayer.pause();
                                     },
                                     onOpen: function () {
 
                                         var v = "";
-                                        if (urlList.includes('mp4')) {
+                                        if (url.includes('mp4')) {
                                             v = {
                                                 type: "video/mp4",
-                                                src: urlList
+                                                src: url
                                             };
                                         } else {
                                             v = {
                                                 type: "video/webm",
-                                                src: urlList
+                                                src: url
                                             }
                                         }
 
-                                        vgsPlayerList.src([v]);
-                                        vgsPlayerList.poster(posterList);
-                                        vgsPlayerList.play();
+                                        vgsPlayer.src([v]);
+                                        vgsPlayer.poster(poster);
+                                        vgsPlayer.play();
                                     }
                                 }
                             });
@@ -333,7 +322,7 @@ class ListingHelper extends Helper {
 
                         });
 
-                        $('.show-img-list').click(function (e) {
+                        $('.container-fluid').on('click', 'img.show-img-list', function (e) {
                             e.preventDefault();
 
                             if ($(this).attr('data-file-type') == "FILE") {
@@ -342,23 +331,23 @@ class ListingHelper extends Helper {
 
                                 var img = $(this).attr('src');
 
-                                var imgListModal = new Custombox.modal({
+                                var newModal = new Custombox.modal({
                                     content: {
-                                        target: '#showImgListModal',
+                                        target: '#showImgModal',
                                         positionX: 'center',
                                         positionY: 'center',
                                         speedIn: 300,
                                         speedOut: 300,
                                         fullscreen: false,
                                         onClose: function () {
-                                            $('#fpImageToShowList').attr('src', "<?= SITE_URL; ?>files/images/loading-image.gif");
+                                            $('#fpImageToShow').attr('src', "<?= SITE_URL; ?>files/images/default.jpg");
                                         },
                                         onOpen: function () {
-                                            $('#fpImageToShowList').attr('src', img.replace('small', 'large'));
+                                            $('#fpImageToShow').attr('src', img.replace('small', 'large'));
                                         }
                                     }
                                 });
-                                imgListModal.open();
+                                newModal.open();
                             }
                         });
                     });
@@ -372,25 +361,39 @@ class ListingHelper extends Helper {
     public function fieldValue() {
         if (isset($this->field['join'])) {
             foreach ($this->field['join'] as $name) {
-                if ($this->field['type'] == 'join-currency') {
-                    $val = $this->getValue($name);
-                    $values[] = $this->view->Number->currency(empty($val) ? 0 : $val, 'USD');
-
-                } else {
-                    $values[] = $this->getValue($name);
-                }
+                $values[] = $this->getValue($name);
             }
+            $values = array_filter($values);
             $this->objectFieldValue = implode(empty($this->field['separator']) ? " " : $this->field['separator'], $values);
         } else {
-            $this->objectFieldValue = $this->getValue($this->field['name']);
+            switch ($this->field['name']) {
+                case "phone" :
+                    {
+                        $this->objectFieldValue = $this->phoneFormat($this->getValue($this->field['name']));
+                        break;
+                    }
+                case "created" :
+                case "modified" :
+                    {
+                        $this->objectFieldValue = date(SHORT_DATE, strtotime($this->phoneFormat($this->getValue($this->field['name']))));
+                        break;
+                    }
+                default :
+                    {
+                        $this->objectFieldValue = $this->getValue($this->field['name']);
+                        break;
+                    }
+            }
+
         }
 
-        if (isset($this->field['short'])) {
-            $dots = (strlen($this->objectFieldValue) > (int)$this->field['short']) ? ".." : "";
-            if (strlen($this->objectFieldValue) > (int)$this->field['short']) {
-                $this->objectFieldValue = substr($this->objectFieldValue, 0, strpos($this->objectFieldValue, ' ', $this->field['short'])) . $dots;
+        if (isset($this->field['short']) && !empty($this->objectFieldValue)) {
+            if (strlen($this->objectFieldValue) > $this->field['short']) {
+                $this->objectFieldValue = substr($this->objectFieldValue, 0, $this->field['short']) . "..";
             }
         }
+
+
     }
 
     public function getValue($name) {
@@ -399,16 +402,20 @@ class ListingHelper extends Helper {
             $relatedModel = str_replace('_id', '', $name);
 
             if ($this->obj->has($relatedModel)) {
-
                 if (!empty($this->field['related_model_fields'])) {
-
                     $values = [];
                     foreach ($this->field['related_model_fields'] as $f) {
-                        $values[] = $this->getChildValue($this->obj->{$relatedModel}, $f);
+                        $values[] = $this->obj->{$relatedModel}->{$f};
                     }
+
                     $objectFieldValue = implode(empty($this->field['separator']) ? " " : $this->field['separator'], $values);
+
                 } else {
                     $objectFieldValue = $this->obj->{$relatedModel}->name;
+                }
+            } else {
+                if (isset($this->field['id']) && $this->field['id'] == "show") {
+                    $objectFieldValue = $this->obj->{$name};
                 }
             }
         } else {
@@ -418,29 +425,18 @@ class ListingHelper extends Helper {
         return $objectFieldValue;
     }
 
-    public function getChildValue($obj, $name) {
-        $value = "";
-        if (strpos($name, '_id') !== false) {
-            $relatedModelInner = str_replace('_id', '', $name);
-            if ($obj->has($relatedModelInner)) {
-                $value = $obj->{$relatedModelInner}->name;
-            }
-        } else {
-            $value = $obj->{$name};
-        }
-
-        return $value;
-    }
-
     public function createImage() {
+        $rounded = isset($this->field['rounded']) ? $this->field['rounded'] : true;
+        $square = isset($this->field['square']) ? $this->field['square'] : true;
         $relatedModel = str_replace('_id', '', $this->field['name']);
         $image = SITE_URL . (($this->obj->has($relatedModel)) ? $this->obj->{$relatedModel}->small_thumb : 'files/images/default.jpg');
         $fileType = (($this->obj->has($relatedModel)) ? $this->obj->{$relatedModel}->file_type : 'IMAGE');
         $file = SITE_URL . (($fileType == "FILE") ? $this->obj->{$relatedModel}->image : $image);
-
         ?>
-        <img class="img-fluid detail-img-fluid rounded-circle show-img-list" data-file-type="<?= $fileType; ?>"
-             data-file="<?= $file; ?>" src="<?= $image; ?>" style="width:100px; height: 100px;"
+        <img class="img-fluid detail-img-fluid show-img-list <?= $rounded ? "rounded-circle" : ""; ?> "
+             data-file-type="<?= $fileType; ?>"
+             data-file="<?= $file; ?>" src="<?= $image; ?>"
+             style="<?php if ($square) { ?> width:60px; height: 60px; <?php } else { ?> width:80px; max-height: 80px; <?php } ?>"
              alt="Profile Image">
         <?php
     }
@@ -460,11 +456,11 @@ class ListingHelper extends Helper {
             $image = SITE_URL . 'files/images/default_video.png';
         }
         ?>
-        <div class="d-inline-block g-pos-rel">
+        <div class="d-inline-block g-pos-rel ">
             <?php if ($file) { ?>
                 <a
-                        class="u-badge-v4--lg g-width-100 g-height-100 load-video-player-list"
                         href="javascript:void(0);"
+                        class="u-badge-v4--lg g-width-100 g-height-100 load-video-player-list"
                         data-url="<?= $file; ?>"
                         data-poster="<?= $image; ?>"
 
@@ -483,33 +479,45 @@ class ListingHelper extends Helper {
     }
 
     public function createLink() {
-
+        $linkUrl = $this->field['url'];
+        $linkUrl[] = empty($this->field['id_field']) ? $this->obj->id : $this->obj->{$this->field['id_field']};
+        ?>
+        <a
+                href="<?= Router::url($linkUrl); ?>"
+                class="<?= empty($this->field['class']) ? "" : $this->field['class']; ?>"
+                data-id="<?= $this->obj->id; ?>">
+            <?= empty($this->field['link_label']) ? $this->objectFieldValue : $this->field['link_label']; ?>
+        </a>
+        <?php
     }
 
     public function createStatus() {
-        $anchorClasses = "btn btn-sm btn-success rounded-3x";
+        $anchorClasses = "btn-u btn-u-sm rounded-3x";
         $activeText = empty($this->field['active_text']) ? "Active" : $this->field['active_text'];
         $inactiveText = empty($this->field['inactive_text']) ? "Inactive" : $this->field['inactive_text'];
-        if ((int)$this->objectFieldValue < 0) {
-            $label = "Pending";
+
+        $this->objectFieldValue = (int)$this->objectFieldValue;
+        if ($this->objectFieldValue == -1) {
+            $anchorClasses = $anchorClasses . " btn-u-orange ";
+            $label = "New";
         } else {
             if ($this->objectFieldValue) {
                 $label = $activeText;
             } else {
-                $anchorClasses = $anchorClasses . " btn-danger ";
+                $anchorClasses = $anchorClasses . " btn-u-orange ";
                 $label = $inactiveText;
+
             }
         }
         $readOnly = '';
         if (isset($this->field['readonly'])) {
             $readOnly = 'disabled';
-            $anchorClasses = $anchorClasses . " disabled  btn btn-sm btn-default";
+            $anchorClasses = $anchorClasses . " disabled  btn-u btn-u-default";
         } else {
             $anchorClasses = $anchorClasses . ' active-deactive';
         }
-
         ?>
-        <button class="<?= $anchorClasses; ?>"
+        <button class="<?= $anchorClasses; ?> "
                 id="<?= Inflector::camelize($this->field['name']); ?>_<?= $this->obj->id ?>"
                 data-model="<?= $this->field['model']; ?>"
                 data-field="<?= $this->field['name'] ?>"
@@ -519,42 +527,35 @@ class ListingHelper extends Helper {
 
     <?php }
 
-
     public function createDate() {
-
         echo empty($this->objectFieldValue) ? "NA" : date(DATE_PICKER, strtotime($this->objectFieldValue));
     }
 
-    public function createCurrency() {
-
-        echo $this->view->Number->currency(empty($this->objectFieldValue) ? 0 : $this->objectFieldValue, 'USD');
-    }
-
-    public function createJoinCurrency() {
-
-        echo $this->objectFieldValue;
-    }
-
     public function createDateTime() {
-
         echo empty($this->objectFieldValue) ? "NA" : date(SHORT_DATE, strtotime($this->objectFieldValue));
     }
+
 
     public function createText() {
         echo $this->objectFieldValue;
     }
 
     public function createActions($actions) {
-
         ?>
         <td class="actions">
             <?php
-            foreach ($actions as $action) {
-                if (is_array($action)) {
-                    $this->customAction($action);
+            foreach ($actions as $action => $actionParams) {
+
+                if (in_array(strtolower($action), ['edit', 'view', 'delete'])) {
+                    $this->{$action}($actionParams);
                 } else {
-                    $this->{$action}();
+                    if (is_array($actionParams)) {
+                        $this->customAction($actionParams);
+                    } else {
+                        $this->{$actionParams}();
+                    }
                 }
+
             }
             ?>
         </td>
@@ -563,27 +564,22 @@ class ListingHelper extends Helper {
 
     public function customAction($action = []) {
 
-        $htmlId = empty($action['htmlId']) ? "customAction_" : $action['htmlId'];
 
-        if (isset($action['id']) && !empty($action['id'])) {
-            if (empty($action['id_field'])) {
-                $action['url'][] = $this->obj->id;
-                $htmlId = $htmlId . $this->obj->id;
-            } else {
-                $action['url'][] = $this->obj->{$action['id_field']};
-                $htmlId = $htmlId . $this->obj->{$action['id_field']};
-            }
+        if (!empty($action['id'])) {
+            $id = $action['id'] === true ? $this->obj->id : $this->obj->{$action['id']};
+        } else {
+
+            $id = $this->obj->id;
         }
 
-        if (!empty($action['field'])) {
-            $action['url'][] = $this->obj->{$action['field']};
-            $htmlId = $htmlId . $this->obj->{$action['field']};
-        }
 
+        $action['url'][] = $id;
         $url = Router::url($action['url']);
+        $classes = empty($action['class']) ? "btn-u btn-u-sea btn-u-sm rounded" : $action['class'];
+        $target = empty($action['target']) ? "_self" : $action['target'];
         ?>
-        <a href="<?= $url; ?>" class=" <?= empty($action['class']) ? "btn btn-dark btn-sm" : $action['class']; ?>"
-           style="float: left; margin-left: 10px;" id="<?= $htmlId; ?>">
+        <a href="<?= $url; ?>" class=" <?= $classes; ?>"
+           style="float: left; margin-left: 10px;" target="<?= $target; ?>" data-id="<?= $id; ?>">
             <i class='<?= empty($action['icon']) ? "fa fa-circle-o" : $action['icon']; ?>'></i> <?= $action['label']; ?>
         </a>
         <?php
@@ -592,7 +588,7 @@ class ListingHelper extends Helper {
     public function view() {
         $url = Router::url(['controller' => $this->controller, 'action' => 'view', $this->obj->id]);
         ?>
-        <a href="<?= $url; ?>" class="btn btn-success btn-sm" style="float: left; margin-left: 10px;">
+        <a href="<?= $url; ?>" class="btn-u btn-u-sea btn-u-sm rounded" style="float: left; margin-left: 10px;">
             <i class='hs-admin-eye'></i> Detail
         </a>
         <?php
@@ -601,33 +597,41 @@ class ListingHelper extends Helper {
     public function edit() {
         $url = Router::url(['controller' => $this->controller, 'action' => 'edit', $this->obj->id]);
         ?>
-        <a href="<?= $url; ?>" class="btn btn-primary btn-sm" style="float: left; margin-left: 10px;">
+        <a href="<?= $url; ?>" class="btn-u btn-u-blue btn-u-sm rounded" style="float: left; margin-left: 10px;">
             <i class='hs-admin-pencil'></i> Edit
         </a>
         <?php
     }
 
-    public function delete() {
-        $show = true;
-        if (!empty($this->hideDeleteButtonIf)) {
-            if ($this->obj->{$this->hideDeleteButtonIf['field']} == $this->hideDeleteButtonIf['match']) {
-                $show = false;
-            }
+    public function delete($actionParams = null) {
+
+        if (!empty($actionParams['id'])) {
+            $id = $actionParams['id'] === true ? $this->obj->id : $this->obj->{$actionParams['id']};
+        } else {
+            $id = $this->obj->id;
         }
-        if ($show) {
-            $url = ['controller' => $this->controller, 'action' => 'delete', $this->obj->id];
-            //$url = 'javascript:void(0);';
-            ?>
-            <?= $this->view->Form->create(null, ['url' => $url, 'id' => 'delete_' . $this->obj->id . '_form']); ?>
-            <button data-modal-target="#deleteConfirmModal"
-                    data-modal-effect="slide" class="btn btn-danger btn-sm delete-btn"
-                    style="float: left; margin-left: 10px;" id="delete_<?= $this->obj->id; ?>_btn"><i
-                        class="hs-admin-close"></i> Delete
-            </button>
-            <?= $this->view->Form->end(); ?>
-            <?php
+
+        if (empty($actionParams['url'])) {
+            $url = ['controller' => $this->controller, 'action' => 'delete', $id];
+        } else {
+            $url = $actionParams['url'];
+            $url[] = $id;
         }
+        if (!empty($actionParams['deleteMessage'])) {
+            $this->deleteMessage = $actionParams['deleteMessage'];
+        }
+        //$url = 'javascript:void(0);';
+        ?>
+        <?= $this->view->Form->create(null, ['url' => $url, 'id' => 'delete_' . $id . '_form']); ?>
+        <button data-modal-target="#deleteConfirmModal"
+                data-modal-effect="slide" class="btn-u btn-u-red btn-u-sm rounded delete-btn"
+                style="float: left; margin-left: 10px;" id="delete_<?= $id; ?>_btn"><i
+                    class="hs-admin-close"></i> Delete
+        </button>
+        <?= $this->view->Form->end(); ?>
+        <?php
     }
+
 
     public function pagination() {
         if ($this->view->Paginator->hasPage()) {
@@ -640,7 +644,7 @@ class ListingHelper extends Helper {
                     <?= $this->view->Paginator->next(__('next') . ' >') ?>
                     <?= $this->view->Paginator->last(__('last') . ' >>') ?>
                 </ul>
-                <p><?= $this->view->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+                <p><?= $this->view->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
             </div>
             <?php
         }
@@ -660,7 +664,7 @@ class ListingHelper extends Helper {
                         var id = _this.attr('id').split('_')[1];
 
                         $.ajax({
-                            url: SITE_URL + "admin/admins/changeStatus/",
+                            url: SITE_URL + "users/changeStatus/",
                             type: "POST",
                             data: {model: model, field: field, id: id},
                             dataType: "json",
@@ -668,9 +672,7 @@ class ListingHelper extends Helper {
                                 _this.html(_this.html() + ' <i class="fa fa-spinner fa-spin"></i>');
                             },
                             success: function (response) {
-
                                 if (response.code == 200) {
-
                                     _this.removeClass('btn-u-orange');
 
                                     if (response.data.new_status) {
@@ -679,13 +681,16 @@ class ListingHelper extends Helper {
                                         _this.addClass('btn-u-orange');
                                         _this.html(_this.attr('data-inactive-text'));
                                     }
+
+                                    if (typeof statusCallback != "undefined") {
+                                        statusCallback();
+                                    }
                                 } else {
                                     $().showFlashMessage("error", response.message);
                                 }
                             }
                         });
                     });
-
                 });
             </script>
             <?php
@@ -709,8 +714,10 @@ class ListingHelper extends Helper {
     }
 
     public function setSearch($params) {
+
+
         $search = empty($params['search']) ? [] : $params['search'];
-        $model = empty($search['model']) ? array_keys($this->getView()->getRequest()->getParam('paging'))[0] : $search['model'];
+        $model = empty($search['model']) ? $this->controller : $search['model'];
 
         $match = [];
         if (empty($search['match'])) {
@@ -728,32 +735,40 @@ class ListingHelper extends Helper {
             }
         }
 
+
         $finalSearch = [
             'controller'  => empty($search['controller']) ? $this->request->getParam('controller') : $search['controller'],
             'action'      => empty($search['action']) ? $this->request->getParam('action') : $search['action'],
             'model'       => $model,
             'match'       => $match,
             'placeholder' => empty($search['placeholder']) ? 'Search...' : $search['placeholder'],
+            'url'         => empty($search['url']) ? [] : $search['url'],
         ];
+
         $this->search = $finalSearch;
     }
 
 
     public function createSearchAndBulkActions() {
-        if ($this->hasPagination) {
+        if ($this->hasPagination || true) {
+
             if (empty($this->search['url'])) {
                 $url = Router::url(['controller' => empty($this->search['controller']) ? $this->controller : $this->search['controller'],
                                     'action'     => empty($this->search['action']) ? 'index' : $this->search['action']]);
             } else {
                 $url = Router::url($this->search['url']);
             }
+
             ?>
             <div class="row g-mt-10">
-                <div class="col-md-6">&nbsp;</div>
+                <div class="col-md-6">
+                    <h3 class="h3 g-color-primary"><?= $this->heading; ?></h3>
+                </div>
                 <div class="col-md-6">
                     <?= $this->view->Form->create(null, ['id' => 'searchFrom', 'url' => $url]) ?>
+
                     <div class="row">
-                        <div class="col-md-2" id="searchEmptySection">&nbsp;</div>
+                        <div class="col-md-2">&nbsp;</div>
                         <div class="col-md-8 text-right pr-0">
                             <div class="form-group">
                                 <div class="g-pos-rel">
@@ -768,9 +783,6 @@ class ListingHelper extends Helper {
                                     >
                                 </div>
                             </div>
-                            <input type="hidden" name="search_in_listings" value="true"/>
-                            <input type="hidden" name="match" value="<?= implode(",", $this->search['match']); ?>"
-                                   id="searchMatches"/>
                         </div>
 
                         <div class="col-md-2 text-right pl-0">

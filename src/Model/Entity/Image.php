@@ -32,6 +32,7 @@ class Image extends Entity {
      * @var array
      */
     protected $_accessible = [
+        'user_id'      => true,
         'category'     => true,
         'image'        => true,
         'small_thumb'  => true,
@@ -41,6 +42,6 @@ class Image extends Entity {
         'modified'     => true,
         'admins'       => true,
         'leads'        => true,
-        'users'        => true,
+        'user'        => true,
     ];
 }

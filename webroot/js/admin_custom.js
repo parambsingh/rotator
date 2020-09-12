@@ -1,3 +1,4 @@
+ function cl(a){ console.log(a); }
 $(function () {
     $('[name="phone"], [name="User[phone]"]').usPhoneFormat();
     $.validator.addMethod("pwcheck", function (value) {

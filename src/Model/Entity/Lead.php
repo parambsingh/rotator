@@ -50,6 +50,7 @@ class Lead extends Entity {
      * @var array
      */
     protected $_accessible = [
+        'user_id'                   => true,
         'first_name'                => true,
         'last_name'                 => true,
         'email'                     => true,
@@ -77,7 +78,7 @@ class Lead extends Entity {
         'image'                     => true,
         'email_campaign_recipients' => true,
         'rotator_loops'             => true,
-        'users'                     => true,
+        'user'                      => true,
     ];
 
     /**

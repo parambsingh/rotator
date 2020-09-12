@@ -70,12 +70,13 @@ class AppController extends Controller {
             ]
         );
 
-        $loggedInUser = $this->request->getCookie('loggedInUser');
+        $loggedInUser = $this->request->getCookie('remember_me');
         $this->set('Auth', $this->Auth);
-        //pr($this->Auth->user()); die;
+
         if ($this->Auth->user()) {
+            $this->authUserId = $this->Auth->user('id');
             $this->set('authUser', $this->Auth->user());
-            $this->viewBuilder()->setLayout('outer');
+            $this->viewBuilder()->setLayout('inner');
             $this->searchConditions();
         } else {
             $this->viewBuilder()->setLayout('outer');

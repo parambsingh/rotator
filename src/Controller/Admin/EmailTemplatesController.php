@@ -57,7 +57,7 @@ class EmailTemplatesController extends AppController {
     public function preview($id) {
         $this->viewBuilder()->setLayout(false);
         $emailTemplate = $this->EmailTemplates->get($id, [
-            'contain' => ['Platforms'=>['Images']]
+            'contain' => ['Images']
         ]);
 
         $this->set(compact('emailTemplate'));

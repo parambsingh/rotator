@@ -13,7 +13,7 @@ class UsersController extends AppController {
 
     public function initialize(): void {
         parent::initialize();
-        $this->Auth->allow(['login',  'register', 'forgotPassword', 'resetPassword', 'add', 'changeStatus']);
+        $this->Auth->allow(['login', 'register', 'forgotPassword', 'forgotPasswordApi', 'resetPasswordApi', 'resetPassword', 'add', 'changeStatus', 'isUniqueEmail']);
     }
 
     public function login() {
@@ -22,32 +22,32 @@ class UsersController extends AppController {
             return $this->redirect($this->Auth->redirectUrl());
         }
         if ($this->request->is('post')) {
-            $admin = $this->Auth->identify();
-            if ($admin) {
+            $user = $this->Auth->identify();
+            if ($user) {
 
-                $admin = $this->Admins->get($admin['id'], ['contain' => ['Images']]);
+                $user = $this->Users->get($user['id'], ['contain' => ['Images']]);
 
-                $this->Auth->setUser($admin);
-                if (isset($this->request->getData()['xx'])) {
-                    $this->Cookie->write('remember_token', $this->encryptpass($this->request->getData('email')) . "^" . base64_encode($this->request->getData('password')), true);
+                $this->Auth->setUser($user);
+                if (isset($this->request->getData()['remember_me'])) {
+                    $this->Cookie->write('remember_me', $this->encryptpass($this->request->getData('email')) . "^" . base64_encode($this->request->getData('password')), true);
                 }
                 return $this->redirect($this->Auth->redirectUrl());
             } else {
                 $this->Flash->error(__('Email or password is incorrect'));
-                $this->redirect('/admin');
+                $this->redirect('/dashboard');
             }
         } elseif (empty($this->data)) {
-            $rememberToken = $this->request->getCookie('remember_token');
+            $rememberToken = $this->request->getCookie('remember_me');
             if (!is_null($rememberToken)) {
                 $rememberToken = explode("^", $rememberToken);
-                $data = $this->Admins->find('all', ['conditions' => ['remember_token' => $rememberToken[0]]], ['fields' => ['email',
-                                                                                                                            'password']])->first();
+                $data = $this->Users->find('all', ['conditions' => ['remember_me' => $rememberToken[0]]], ['fields' => ['email',
+                                                                                                                        'password']])->first();
 
                 $this->request->getData()['email'] = $data->email;
                 $this->request->getData()['password'] = base64_decode($rememberToken[1]);
-                $admin = $this->Auth->identify();
-                if ($admin) {
-                    $this->Auth->setUser($admin);
+                $user = $this->Auth->identify();
+                if ($user) {
+                    $this->Auth->setUser($user);
                     $this->redirect($this->Auth->redirectUrl());
                 } else {
                     $this->redirect('/admin');
@@ -56,20 +56,236 @@ class UsersController extends AppController {
         }
     }
 
+    public function logout() {
+        $this->Auth->logout();
+        $this->request->getSession()->destroy();
+        $this->request->getCookie('remember_me');
+        $this->Flash->success(__('You are now logged out'));
+        return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+    }
+
     public function dashboard() {
-        $this->loadModel('Users');
         $this->loadModel('Leads');
-        $this->loadModel('RotatorLoops');
+        $this->loadModel('EmailCampaigns');
 
-        $totalUsers = $this->Users->find('all')->count();
-        $totalLeads = $this->Leads->find('all')->count();
-        $totalRotatorLoops = $this->RotatorLoops->find('all')->count();
+        $totalLeads = $this->Leads->find('all')->where(['Leads.user_id' => $this->authUserId])->count();
 
-        $this->set(compact('totalUsers', 'totalLeads', 'totalRotatorLoops'));
+        $emailCampaign = $this->EmailCampaigns->find('all')->select([
+            'EmailCampaigns__scheduled_total' => 'SUM(scheduled_count)',
+            'EmailCampaigns__sent_total'      => 'SUM(sent_count)',
+            'EmailCampaigns__failed_total'    => 'SUM(failed_count)',
+            'EmailCampaigns__opened_total'    => 'SUM(opened_count)',
+        ])
+            ->where([
+                'EmailCampaigns.from_email' => $this->Auth->user('email')
+            ])
+            ->first();
+
+        //pr($emailCampaign); die;
+
+        $this->set(compact('totalLeads', 'emailCampaign'));
     }
 
     public function register() {
+        $user = $this->Users->newEmptyEntity();
+        if ($this->request->is('post')) {
+            $user = $this->Users->patchEntity($user, $this->request->getData());
+            $user->status = true;
+            $user->rf_email = $this->request->getData('email');
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('Thank You for joining with us.'));
 
+                return $this->redirect(['action' => 'login']);
+            } else {
+                pr($user->getErrors()); die;
+            }
+            $this->Flash->error(__('Could not register. Please, try again.'));
+        }
+        $this->set(compact('user'));
+    }
+
+    public function resetPasswordApi() {
+        $this->autoRender = false;
+        $this->responseCode = CODE_BAD_REQUEST;
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $captcha = "";
+
+
+            if (isset($_POST['g-recaptcha-response']))
+                $captcha = $_POST['g-recaptcha-response'];
+
+            if (empty($captcha)) {
+                $this->responseMessage = "Please check the the captcha form.";
+            }
+
+            $response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET . "&response=" . $captcha . "&remoteip=" . $_SERVER['REMOTE_ADDR']), true);
+
+            if ($response['success'] == false) {
+                $this->responseMessage = 'Incorrect Re-captcha';
+            } else {
+                $user = $this->Users->findByForgotPasswordToken($this->request->getData('forgot_password_token'))->first();
+                if ($user) {
+                    /*
+                     * Restrict user to edit only while listed fields
+                     */
+                    $editableFields = ['password', 'verify_password', 'forgot_password_token'];
+                    foreach ($this->request->getData() as $field => $val) {
+                        if (!in_array($field, $editableFields)) {
+                            unset($this->request->getData()[$field]);
+                        }
+                    }
+                    $user['forgot_password_token'] = "";
+                    $user = $this->Users->patchEntity($user, $this->request->getData());
+                    if ($this->Users->save($user)) {
+                        $this->responseMessage = __('Your password has been updated.');
+                        $this->responseCode = SUCCESS_CODE;
+                    } else {
+                        $this->responseMessage = __('Something went wrong. Please, try again.');
+                    }
+                } else {
+                    $this->responseMessage = __('Forgot password token has been expired. Please, try again.');
+                }
+            }
+        }
+        echo $this->responseFormat();
+    }
+
+    public function forgotPassword() {
+        if ($this->Auth->user()) {
+            return $this->redirect($this->Auth->redirectUrl());
+        }
+        $content['HEADER']['heading'] = "Forgot password";
+        $content['HEADER']['text'] = "Don't worry we are gald to help you.";
+
+        $this->set('content', $content);
+        $this->set('bgImage', 'login-bg.jpg');
+    }
+
+    public function forgotPasswordApi() {
+        $this->autoRender = false;
+        $this->responseCode = CODE_BAD_REQUEST;
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $captcha = "";
+
+
+            if (isset($_POST['g-recaptcha-response']))
+                $captcha = $_POST['g-recaptcha-response'];
+
+            if (empty($captcha)) {
+                $this->responseMessage = "Please check the the captcha form.";
+            }
+
+            $response = json_decode(file_get_contents("https://www.google.com/recaptcha/api/siteverify?secret=" . RECAPTCHA_SECRET . "&response=" . $captcha . "&remoteip=" . $_SERVER['REMOTE_ADDR']), true);
+
+            if ($response['success'] == false) {
+                $this->responseMessage = 'Incorrect Re-captcha';
+            } else {
+                $user = $this->Users->findByEmail($this->request->getData('email'))->first();
+
+                if (!empty($user)) {
+
+                    if ($user->status) {
+                        $user->forgot_password_token = md5(uniqid());
+                        $resetUrl = SITE_URL . 'users/reset-password/' . $user->forgot_password_token;
+                        if ($this->Users->save($user)) {
+                            $options = [
+                                'layout'      => 'designed_without_unsubscribe',
+                                'emailFormat' => 'both',
+                                'template'    => 'forgot_password',
+                                'to'          => EMAIL_TEST_MODE ? ADMIN_EMAIL : $this->request->getData('email'),
+                                'subject'     => _('Reset Password'),
+                                'viewVars'    => [
+                                    'name'     => $user->first_name,
+                                    'resetUrl' => $resetUrl,
+                                ]
+                            ];
+
+                            $this->loadComponent('EmailManager');
+                            try {
+                                $this->EmailManager->sendEmail($options);
+                                $this->responseCode = SUCCESS_CODE;
+                                $this->responseMessage = __('A link to reset the password with the instruction has been sent to your inbox');
+                            } catch (\Error $e) {
+                                $this->responseMessage = __('Something Went Wrong, could not send email.');
+                            }
+                        }
+                    } else {
+                        $this->responseCode = EMAIL_DOESNOT_REGISTERED;
+                        $this->responseMessage = __('Your account has been disabled by administrator, please send a message from "Contact Us" page.');
+                    }
+
+                } else {
+                    $this->responseCode = EMAIL_DOESNOT_REGISTERED;
+                    $this->responseMessage = __('Email does not exists');
+                }
+
+            }
+        }
+
+        echo $this->responseFormat();
+    }
+
+    public function resetPassword($forgotPasswordToken) {
+        if ($this->Auth->user()) {
+            return $this->redirect($this->Auth->redirectUrl());
+        }
+
+
+        $user = $this->Users->findByForgotPasswordToken($forgotPasswordToken)->first();
+        if (!empty($user)) {
+            $this->set('forgotPasswordToken', $forgotPasswordToken);
+        } else {
+            $this->Flash->error(__('Forgot password token has been expired. Please, try again.'));
+            return $this->redirect(['controller' => 'Users', 'action' => 'login']);
+        }
+    }
+
+
+    public function profile() {
+
+        $user  = $this->Users->get($this->authUserId, ['contain' => ['Images']]);
+
+        if ($this->request->is(['patch', 'post', 'put'])) {
+
+            $user = $this->Users->patchEntity($user, $this->request->getData());
+
+
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('The admin has been saved.'));
+                $user = $this->Users->get($user->id, ['contain' => ['Images']]);
+                $this->Auth->setUser($user);
+
+                return $this->redirect(['action' => 'profile']);
+            } else {
+                //pr($user->errors()); die;
+            }
+            $this->Flash->error(__('The profile could not be updated. Please, try again.'));
+        }
+        unset($user->password);
+
+        $this->set(compact('user'));
+    }
+
+    public function changePassword() {
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $user = $this->Users->find()->where(['id' => $this->Auth->user('id')])->first();
+            if ((new DefaultPasswordHasher)->check($this->request->getData('current_password'), $user->password)) {
+                if ($this->request->getData('new_password') == $this->request->getData('confirm_password')) {
+                    $user->password = $this->request->getData('new_password');
+                    if ($this->Users->save($user)) {
+                        $this->Flash->success(__('Password has been reset.'));
+                        return $this->redirect(['controller' => 'Users', 'action' => 'profile']);
+                    } else {
+                        $this->Flash->error(__('Password has not been set.'));
+                    }
+                } else {
+                    $this->Flash->error(__('Confirm Password does not match with New Password'));
+                }
+            } else {
+                $this->Flash->error(__('Invalid Current Password'));
+            }
+        }
+        return $this->redirect(['controller' => 'Users', 'action' => 'profile']);
     }
 
     /**
@@ -117,10 +333,7 @@ class UsersController extends AppController {
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
-        $distibuters = $this->Users->Distibuters->find('list', ['limit' => 200]);
-        $images = $this->Users->Images->find('list', ['limit' => 200]);
-        $leads = $this->Users->Leads->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'distibuters', 'images', 'leads'));
+        $this->set(compact('user'));
     }
 
     /**
@@ -143,10 +356,8 @@ class UsersController extends AppController {
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
-        $distibuters = $this->Users->Distibuters->find('list', ['limit' => 200]);
-        $images = $this->Users->Images->find('list', ['limit' => 200]);
-        $leads = $this->Users->Leads->find('list', ['limit' => 200]);
-        $this->set(compact('user', 'distibuters', 'images', 'leads'));
+
+        $this->set(compact('user'));
     }
 
     /**
@@ -166,6 +377,115 @@ class UsersController extends AppController {
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function isUniqueEmail($id = null) {
+        $this->autoRender = false;
+        $email = $this->request->getQuery('email');
+        $conditions = ['Users.email' => $email];
+
+        if ($id !== null) {
+            $conditions['Users.id !='] = $id;
+        }
+        $count = $this->Users->find()->where($conditions)->count();
+        echo ($count) ? "false" : "true";
+        exit;
+    }
+
+
+    public function changeStatus() {
+
+        $this->autoRender = false;
+        $this->responseCode = CODE_BAD_REQUEST;
+        if ($this->request->is('post')) {
+            $model = $this->request->getData('model');
+            $field = $this->request->getData('field');
+            $id = $this->request->getData('id');
+
+            $this->loadModel($model);
+
+            $entity = $this->{$model}->find('all')->where(['id' => $id])->first();
+
+            $entity->{$field} = ($entity->{$field} <= 0) ? 1 : 0;
+
+            if ($this->{$model}->save($entity)) {
+                if ($model == "Apartments") {
+                    $this->loadModel('Users');
+                    $user = $this->Users->find('all')->where(['id' => $entity->user_id])->first();
+                    if ($user->no_of_apartments <= 1) {
+                        $user->active = ($entity->{$field}) ? 1 : 0;
+                        $this->Users->save($user);
+                    }
+                }
+                $this->responseCode = SUCCESS_CODE;
+                $this->responseData['new_status'] = $entity->{$field};
+            }
+        }
+
+        echo $this->responseFormat();
+    }
+
+    public function getOptions() {
+        $this->autoRender = false;
+        $query = $this->request->getData('query');
+        if (!empty($query)) {
+
+            $value = empty($this->request->getData('value')) ? "id" : $this->request->getData('value');
+            $label = empty($this->request->getData('label')) ? "name" : $this->request->getData('label');
+            $match = $this->request->getData('match');
+            $model = $this->request->getData('find');
+
+            $this->loadModel($model);
+
+            $options = $this->{$model}
+                ->find('all')
+                ->select(['value' => $model . "." . $value, 'label' => $model . "." . $label])
+                ->where([$model . "." . $match => $query])
+                ->where([$model . '.status' => true])
+                ->order([$model . "." . $label => 'ASC'])
+                ->all()
+                ->toArray();
+            echo json_encode(['suggestions' => $options]);
+        } else {
+            echo json_encode(['suggestions' => []]);
+        }
+
+        exit;
+    }
+
+    public function getSuggestions() {
+        $this->autoRender = false;
+        $query = $this->request->getQuery('query');
+        if (!empty($query)) {
+            $model = $this->request->getQuery('find');
+            $this->loadModel($model);
+            $match = empty($this->request->getQuery('match')) ? "name" : $this->request->getQuery('match');
+
+            $matches = explode(",", $match);
+            foreach ($matches as $m) {
+                $conditions['OR'][$model . '.' . $m . ' LIKE'] = '%' . $query . '%';
+            }
+
+            $select = empty($this->request->getQuery('select')) ? $model . ".name" : $this->request->getQuery('select');
+
+            if (!empty($this->request->getQuery('conditions'))) {
+                foreach ($this->request->getQuery('conditions') as $field => $value) {
+                    $conditions[$field] = $value;
+                }
+            }
+
+            $cities = $this->$model
+                ->find('all')
+                ->select([$model . '.id', 'value' => $select])
+                ->where($conditions)
+                ->contain([])
+                ->toArray();
+            echo json_encode(['suggestions' => $cities]);
+        } else {
+            echo json_encode(['suggestions' => []]);
+        }
+
+        exit;
     }
 
 }

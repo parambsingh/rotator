@@ -77,16 +77,7 @@ class RotatorLoopsTable extends Table {
             ->requirePresence('lead_status', 'create')
             ->notEmptyString('lead_status');
 
-        $validator
-            ->scalar('rf_status')
-            ->maxLength('rf_status', 255)
-            ->requirePresence('rf_status', 'create')
-            ->notEmptyString('rf_status');
 
-        $validator
-            ->scalar('rf_response_json')
-            ->requirePresence('rf_response_json', 'create')
-            ->notEmptyString('rf_response_json');
 
         return $validator;
     }
@@ -99,8 +90,6 @@ class RotatorLoopsTable extends Table {
      * @return \Cake\ORM\RulesChecker
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
-        $rules->add($rules->existsIn(['user_position_id'], 'UserPositions'), ['errorField' => 'user_position_id']);
-        $rules->add($rules->existsIn(['lead_id'], 'Leads'), ['errorField' => 'lead_id']);
 
         return $rules;
     }

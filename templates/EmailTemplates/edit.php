@@ -1,37 +1,104 @@
+<?= $this->Html->script('ckeditor/ckeditor'); ?>
 <?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\EmailTemplate $emailTemplate
- */
+$params = [
+    'form'   => [
+        'options' => [
+            'type'       => 'post',
+            'novalidate' => true,
+            'id'         => 'EmailTemplateForm'
+        ],
+        'heading' => 'Edit Email Template'
+    ],
+    'fields' => [
+        [
+            'name'    => 'id',
+            'value' => $emailTemplate->id,
+            'type' => 'hidden',
+        ],
+        [
+            'name'    => 'label',
+            'columns' => 12
+        ],
+        ['name' => 'empty'],
+        [
+            'name'    => 'subject',
+            'columns' => 12
+        ],
+        ['name' => 'empty'],
+        [
+            'name'    => 'preview_line',
+            'columns' => 12
+        ],
+        ['name' => 'empty'],
+        [
+            'name'    => 'template',
+            'type'    => 'textarea',
+            'class'   => 'ckeditor',
+            'columns' => 12
+        ],
+        ['name' => 'empty'],
+    ]
+];
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $emailTemplate->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $emailTemplate->id), 'class' => 'side-nav-item']
-            ) ?>
-            <?= $this->Html->link(__('List Email Templates'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-        </div>
-    </aside>
-    <div class="column-responsive column-80">
-        <div class="emailTemplates form content">
-            <?= $this->Form->create($emailTemplate) ?>
-            <fieldset>
-                <legend><?= __('Edit Email Template') ?></legend>
-                <?php
-                    echo $this->Form->control('user_id', ['options' => $users]);
-                    echo $this->Form->control('label');
-                    echo $this->Form->control('subject');
-                    echo $this->Form->control('template');
-                    echo $this->Form->control('note');
-                    echo $this->Form->control('status');
-                ?>
-            </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
-            <?= $this->Form->end() ?>
-        </div>
+<?php
+if ($emailTemplate->category == "Client List Default") {
+    $params['fields'][] = [
+        'name'    => 'go_to',
+        'type' => 'hidden',
+        'value' => 'realtorTemplates',
+    ];
+}
+?>
+    <style>
+        [aria-labelledby] {
+            opacity: 1 !important;
+        }
+
+        #topBreadcrumb {
+            display: none;
+        }
+    </style>
+    <div class="row mt-4">
+        <div class="col-md-1">&nbsp;</div>
+        <div class="col-md-10"> <?php $this->AdminForm->create($params); ?> </div>
+        <div class="col-md-1">&nbsp;</div>
     </div>
-</div>
+
+
+    <script>
+        $(function () {
+            // for (var i in CKEDITOR.instances) {
+            //     CKEDITOR.instances[i].on('blur', function (e) {
+            //         $('#' + this.name + "Preview").html(this.getData());
+            //     });
+            // }
+
+            $('#topBreadcrumb').hide();
+
+            CKEDITOR.config.placeholder_select = {
+                placeholders: <?= json_encode(["REFERRAL_URL"]) ?>,
+                format: '[%placeholder%]'
+            };
+
+
+            setInterval(function () {
+
+                for (var i in CKEDITOR.instances) {
+                    $('#Template').val(CKEDITOR.instances[i].getData());
+                }
+
+                $.ajax({
+                    type:"POST",
+                    url:SITE_URL+'emailTemplates/save',
+                    data:$('#EmailTemplateForm').serialize(),
+                    dataType:"json",
+                    success:function (resp) {
+                        $('#Id').val(resp.id);
+                        //Do something -here
+                    }
+                });
+
+            }, 10000);
+        });
+    </script>
+<?= $this->element('image_media') ?>

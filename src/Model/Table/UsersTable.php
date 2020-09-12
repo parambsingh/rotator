@@ -68,11 +68,11 @@ class UsersTable extends Table {
         $this->hasMany('UsersPositions', [
             'foreignKey' => 'user_id',
         ]);
-        $this->belongsToMany('Leads', [
-            'foreignKey'       => 'user_id',
-            'targetForeignKey' => 'lead_id',
-            'joinTable'        => 'users_leads',
+
+        $this->hasMany('Leads', [
+            'foreignKey' => 'user_id',
         ]);
+
     }
 
     /**
@@ -87,27 +87,17 @@ class UsersTable extends Table {
             ->allowEmptyString('id', null, 'create');
 
         $validator
-            ->scalar('first_name')
-            ->maxLength('first_name', 255)
-            ->requirePresence('first_name', 'create')
-            ->notEmptyString('first_name');
-
-        $validator
-            ->scalar('last_name')
-            ->maxLength('last_name', 255)
-            ->requirePresence('last_name', 'create')
-            ->notEmptyString('last_name');
+            ->scalar('name')
+            ->maxLength('name', 255)
+            ->requirePresence('name', 'create')
+            ->notEmptyString('name');
 
         $validator
             ->email('email')
             ->requirePresence('email', 'create')
             ->notEmptyString('email');
 
-        $validator
-            ->scalar('lead_email')
-            ->maxLength('lead_email', 255)
-            ->requirePresence('lead_email', 'create')
-            ->notEmptyString('lead_email');
+
 
         $validator
             ->scalar('password')
@@ -127,7 +117,6 @@ class UsersTable extends Table {
      * @return \Cake\ORM\RulesChecker
      */
     public function buildRules(RulesChecker $rules): RulesChecker {
-        $rules->add($rules->isUnique(['email']), ['errorField' => 'email']);
 
         return $rules;
     }

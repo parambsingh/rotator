@@ -9,7 +9,7 @@ $params = [
             'name'  => 'status',
             'label' => 'Status',
             'type'  => 'status',
-            'model' => 'Users',
+            'model' => 'Leads',
         ],
     ],
     'search' => [

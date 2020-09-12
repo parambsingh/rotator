@@ -5,3 +5,6 @@ sudo chmod 777 -R .
 
 //17-7-20
 ALTER TABLE `contractions` ADD `intensity` VARCHAR(255) NOT NULL DEFAULT 'Mild' AFTER `user_id`;
+
+//10-9-20
+ALTER TABLE `users_positions` ADD `slot_status` VARCHAR(255) NULL DEFAULT 'waiting' AFTER `subscription_status`;
