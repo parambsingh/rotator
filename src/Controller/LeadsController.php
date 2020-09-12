@@ -221,8 +221,10 @@ class LeadsController extends AppController {
         $apiResponse = json_decode($apiResponseData, true);
 
         //Update User Position as filled
-        if ($status == "Saved" && $apiResponse['response']['status'] == 200) {
-            $this->setSlotAsOccupied($slot, $lead);
+        if(!empty($apiResponse['response'])) {
+            if ($status == "Saved" && $apiResponse['response']['status'] == 200) {
+                $this->setSlotAsOccupied($slot, $lead);
+            }
         }
 
         echo $this->responseFormat();
