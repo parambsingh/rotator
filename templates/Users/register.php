@@ -1,6 +1,9 @@
 <?= $this->Html->script(['jquery-ui']); ?>
 <?php $this->assign('title', __('Sign Up')) ?>
+<?php $inputClasses = 'form-control g-color-black g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15';
+$classes = "form-control u-select--v3-select u-sibling w-100 u-select--v3 g-pos-rel g-brd-gray-light-v4 g-rounded-4 mb-2";
 
+?>
 <!-- Login -->
 <section class="g-bg-gray-light-v5">
     <div class="container g-py-100">
@@ -13,43 +16,54 @@
                         <?= $this->Flash->render() ?>
                     </header>
 
-                    <?= $this->Form->create($user, ['class' => 'g-py-15', 'id'=>'registerForm']) ?>
+                    <?= $this->Form->create($user, ['class' => 'g-py-15', 'id' => 'registerForm']) ?>
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <label class="g-color-gray-dark-v2 g-font-weight-600 g-font-size-13">Name:</label>
-                            <?= $this->Form->control('name', ['class' => 'form-control g-color-black g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15', 'placeholder' => 'Name', 'label' => false]) ?>
+                            <?= $this->Form->control('name', ['class' => $inputClasses, 'placeholder' => 'Name', 'label' => false]) ?>
                         </div>
                         <div class="col-md-6 mb-4">
                             <label class="g-color-gray-dark-v2 g-font-weight-600 g-font-size-13">Email:</label>
-                            <?= $this->Form->control('email', ['class' => 'form-control g-color-black g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15', 'placeholder' => 'Email','id' => 'Email', 'label' => false]) ?>
+                            <?= $this->Form->control('email', ['class' => $inputClasses, 'placeholder' => 'Email', 'id' => 'Email', 'label' => false]) ?>
                         </div>
 
                         <div class="col-md-6  mb-4">
                             <label class="g-color-gray-dark-v2 g-font-weight-600 g-font-size-13">Password:</label>
-                            <?= $this->Form->control('password', ['type' => 'password', 'class' => 'form-control g-color-black g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15 mb-3', 'id'=>'password', 'placeholder' => 'Password', 'label' => false]) ?>
+                            <?= $this->Form->control('password', ['type' => 'password', 'class' => $inputClasses, 'id' => 'password', 'placeholder' => 'Password', 'label' => false]) ?>
                         </div>
                         <div class="col-md-6  mb-4">
                             <label class="g-color-gray-dark-v2 g-font-weight-600 g-font-size-13">Confirm
                                 Password:</label>
-                            <?= $this->Form->control('confirm_password', ['type' => 'password', 'class' => 'form-control g-color-black g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15 mb-3', 'placeholder' => 'Confirm Password', 'label' => false]) ?>
+                            <?= $this->Form->control('confirm_password', ['type' => 'password', 'class' => $inputClasses, 'placeholder' => 'Confirm Password', 'label' => false]) ?>
                         </div>
 
                         <div class="col-md-6 mb-4">
                             <label class="g-color-gray-dark-v2 g-font-weight-600 g-font-size-13">Address:</label>
-                            <?= $this->Form->control('address', ['class' => 'form-control g-color-black g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15', 'placeholder' => 'Address', 'label' => false]) ?>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <label class="g-color-gray-dark-v2 g-font-weight-600 g-font-size-13">City:</label>
-                            <?= $this->Form->control('city', ['class' => 'form-control g-color-black g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15', 'placeholder' => 'City', 'label' => false]) ?>
+                            <?= $this->Form->control('address', ['class' => $inputClasses, 'placeholder' => 'Address', 'label' => false]) ?>
                         </div>
 
-                        <div class="col-md-6  g-mb-35">
+                        <div class="col-xs-12 col-sm-6 ">
                             <label class="g-color-gray-dark-v2 g-font-weight-600 g-font-size-13">State:</label>
-                            <?= $this->Form->control('state', ['class' => 'form-control g-color-black g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15 mb-3', 'placeholder' => 'State', 'label' => false]) ?>
+                            <select name="state_id" class="<?= $classes; ?>" title="State" id="stateId"
+                                    style="height: 53px !important;">
+                                <option value="">Select State</option>
+                                <?php foreach ($states as $value => $label) { ?>
+                                    <option value="<?= $value; ?>"><?= $label; ?></option>
+                                <?php } ?>
+                            </select>
+                            <label for="stateId" class="error"></label>
+                        </div>
+
+                        <div class="col-xs-12 col-sm-6">
+                            <label class="g-color-gray-dark-v2 g-font-weight-600 g-font-size-13">City:</label>
+                            <div id="loadingCities" style="display:none;">Loading cities...</div>
+                            <select name="city_id" class="<?= $classes; ?>" title="City" id="cityId"
+                                    style="height: 53px !important;"></select>
+                            <label for="cityId" class="error"></label>
                         </div>
                         <div class="col-md-6  g-mb-35">
                             <label class="g-color-gray-dark-v2 g-font-weight-600 g-font-size-13">Zip:</label>
-                            <?= $this->Form->control('zip', ['class' => 'form-control g-color-black g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15 mb-3', 'placeholder' => 'Zip', 'label' => false]) ?>
+                            <?= $this->Form->control('zip', ['class' => $inputClasses, 'placeholder' => 'Zip', 'label' => false]) ?>
                         </div>
 
 
@@ -466,6 +480,37 @@
                     required: "Please accept terms and conditions."
                 }
             }
+        });
+
+        $('#stateId').change(function () {
+            $.ajax({
+                url: SITE_URL + 'users/getOptions',
+                type: "POST",
+                data: {query: $(this).val(), find: 'Cities', match: 'state_id'},
+                dataType: "json",
+                beforeSend: function () {
+                    $('#citiesSelectBox').hide();
+                    $('#loadingCities').show();
+                },
+                success: function (response) {
+                    $('#loadingCities').show();
+                    if (response.suggestions.length > 0) {
+                        var options = [];
+                        options.push('<option class="bs-title-option" value="">Select City</option>');
+                        $.each(response.suggestions, function (index, data) {
+                            options.push('<option value="' + data.value + '">' + data.label + '</option>');
+                        });
+
+                        $('#loadingCities').hide();
+                        $('#citiesSelectBox').fadeIn();
+
+                        $('#cityId').html(options.join(''));
+
+                        //$('#apartmentCityId').selectpicker('refresh');
+                    }
+
+                }
+            });
         });
 
 

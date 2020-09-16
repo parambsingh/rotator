@@ -102,7 +102,11 @@ $params = [
             ]
         ],
         [
-            'name'    => 'state',
+            'name'     => 'state_id',
+            'type'     => 'select',
+            'options'  => $states,
+            'id'       => 'StateId',
+            'style'       => 'height:42px;',
             'validate' => [
                 'rules' => [
                     'required' => false
@@ -110,7 +114,15 @@ $params = [
             ]
         ],
         [
-            'name'    => 'city',
+            'name'     => 'city_id',
+            'type'     => 'select',
+            'options'  => $cities,
+            'style'       => 'height:42px;',
+            'depend'   => [
+                'id'    => 'StateId',
+                'model' => 'Cities',
+                'match' => 'state_id'
+            ],
             'validate' => [
                 'rules' => [
                     'required' => false

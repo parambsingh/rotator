@@ -15,7 +15,22 @@ class UsersController extends AppController {
 
     public function initialize(): void {
         parent::initialize();
-        $this->Auth->allow(['login', 'register', 'forgotPassword', 'forgotPasswordApi', 'resetPasswordApi', 'resetPassword', 'add', 'changeStatus', 'isUniqueEmail', 'webinar', 'goToWebinar', 'goToWebinarAttendees']);
+        $this->Auth->allow([
+            'login',
+            'register',
+            'forgotPassword',
+            'forgotPasswordApi',
+            'resetPasswordApi',
+            'resetPassword',
+            'add',
+            'changeStatus',
+            'isUniqueEmail',
+            'getOptions',
+            'getSuggestions',
+            'webinar',
+            'goToWebinar',
+            'goToWebinarAttendees'
+        ]);
     }
 
     public function login() {
@@ -103,7 +118,9 @@ class UsersController extends AppController {
             }
             $this->Flash->error(__('Could not register. Please, try again.'));
         }
-        $this->set(compact('user'));
+
+        $states = $this->Users->States->find('list')->where(['States.status' => true])->order(['States.name' => 'ASC'])->toArray();
+        $this->set(compact('user', 'states'));
     }
 
     public function resetPasswordApi() {
@@ -265,7 +282,15 @@ class UsersController extends AppController {
         }
         unset($user->password);
 
-        $this->set(compact('user'));
+        $states = $this->Users->States->find('list')->where(['States.status' => true])->order(['States.name' => 'ASC'])->toArray();
+        if(empty($user->state_id)){
+            $cities = [];
+        } else {
+            $cities = $this->Users->Cities->find('list')->where(['Cities.state_id' => $user->state_id,
+                                                                 'Cities.status'   => true])->order(['Cities.name' => 'ASC'])->toArray();
+        }
+
+        $this->set(compact('user', 'states', 'cities'));
     }
 
     public function changePassword() {
