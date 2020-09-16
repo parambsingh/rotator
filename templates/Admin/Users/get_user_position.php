@@ -2,10 +2,10 @@
 <form action="javascript:void(0);" id="changePositionOrderForm">
     <div class="row">
         <div class="col-md-6">
-            <label style="margin-top: 10px;">Position Order:</label>
+            <label style="margin-top: 10px;">Position Sequence:</label>
         </div>
         <div class="col-md-6">
-            <input type="number" name="position_order" placeholder="Position Order"
+            <input type="number" name="position_order" placeholder="Position Sequence"
                    value="<?= $userPosition['position_order']; ?>"
                    class="form-control form-control-md g-brd-gray-light-v7 g-brd-gray-light-v3--focus rounded-0 g-px-14 g-py-10  not-ignore    "
                    id="newPosition"/>
@@ -16,7 +16,7 @@
                         class="fa fa-times"></i> Cancel
             </button>
             <button type="submit" class="btn-u btn-u-blue btn-u-md rounded pull-right mr-3"><i
-                        class="fa fa-exchange rotate90"></i> Change Position
+                        class="fa fa-exchange rotate90"></i> Update Position Sequence
             </button>
         </div>
     </div>
@@ -33,7 +33,7 @@
             },
             messages: {
                 position_order: {
-                    required: "Please enter position order.",
+                    required: "Please enter position sequence.",
                     min: "Position order must be greater than or equal to 1.",
                     max: "Position order must be less than or equal to <?= $max; ?>.",
                 }

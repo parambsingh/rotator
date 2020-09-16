@@ -100,7 +100,7 @@ $this->AdminListing->create($params, [
     <button type="button" class="close" onclick="Custombox.modal.close();">
         <i class="hs-icon hs-icon-close"></i>
     </button>
-    <h4 class="g-mb-20">Change Position</h4>
+    <h4 class="g-mb-20">Change Position Sequence</h4>
     <div calss="modal-body" id="changePosition" style="position: relative;">
     </div>
     <div class="clear-both"></div>
@@ -148,7 +148,7 @@ $this->AdminListing->create($params, [
     <button type="button" class="close" onclick="Custombox.modal.close();">
         <i class="hs-icon hs-icon-close"></i>
     </button>
-    <h4 class="g-mb-20">Update Max Lead Limit</h4>
+    <h4 class="g-mb-20">Update Lead Count</h4>
     <div calss="modal-body" id="changeLimit" style="position: relative;">
     </div>
     <div class="clear-both"></div>

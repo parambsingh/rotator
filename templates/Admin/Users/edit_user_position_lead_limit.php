@@ -2,10 +2,10 @@
 <form action="javascript:void(0);" id="changeLimitOrderForm">
     <div class="row">
         <div class="col-md-6">
-            <label style="margin-top: 10px;">Max Lead Limit:</label>
+            <label style="margin-top: 10px;">Lead Count:</label>
         </div>
         <div class="col-md-6">
-            <input type="number" name="lead_limit" placeholder="Position Order"
+            <input type="number" name="lead_limit" placeholder="Lead Count"
                    value="<?= $userPosition['lead_limit']; ?>"
                    class="form-control form-control-md g-brd-gray-light-v7 g-brd-gray-light-v3--focus rounded-0 g-px-14 g-py-10  not-ignore    "
                    id="newPosition"/>
@@ -16,7 +16,7 @@
                         class="fa fa-times"></i> Cancel
             </button>
             <button type="submit" class="btn-u btn-u-blue btn-u-md rounded pull-right mr-3"><i
-                        class="fa fa-pencil"></i> Update Lead Limit
+                        class="fa fa-pencil"></i> Update Lead Count
             </button>
         </div>
     </div>
