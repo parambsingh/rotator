@@ -3,7 +3,7 @@
 </style>
 <?php
 $params = [
-    'heading' => 'Distributors',
+    'heading' => 'Manage Distributor Position Order',
     'fields'  => [
         [
             'label'                => 'Name',
