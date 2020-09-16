@@ -34,22 +34,22 @@ $params = [
             'label'    => 'Phone',
             'required' => false,
         ],
-        [
-            'name'     => 'UsersPositions.position_no',
-            'as'     => 'Users__position_no',
-            'label'    => 'Position No.',
-            'required' => false,
-        ],
+//        [
+//            'name'     => 'UsersPositions.position_no',
+//            'as'     => 'Users__position_no',
+//            'label'    => 'Position No.',
+//            'required' => false,
+//        ],
         [
             'name'     => 'UsersPositions.position_order',
-            'as'     => 'Users__position_order',
-            'label'    => 'Position Order',
+            'as'     => 'Users__position_sequence',
+            'label'    => 'Position Sequence',
             'required' => false,
         ],
         [
             'name'     => 'UsersPositions.lead_limit',
-            'as'     => 'Users__lead_limit',
-            'label'    => 'No. of leads allotted',
+            'as'     => 'Users__lead_count',
+            'label'    => 'Lead Count',
             'required' => false,
         ],
         [

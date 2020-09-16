@@ -28,19 +28,19 @@ $params = [
             'label'    => 'Phone',
             'required' => false,
         ],
-        [
-            'name'     => 'position_no',
-            'label'    => 'Position No.',
-            'required' => false,
-        ],
+//        [
+//            'name'     => 'position_no',
+//            'label'    => 'Position No.',
+//            'required' => false,
+//        ],
         [
             'name'     => 'user_position',
-            'label'    => 'Position Order',
+            'label'    => 'Position Sequence',
             'required' => false,
         ],
         [
             'name'     => 'lead_limit',
-            'label'    => 'No. of leads allotted',
+            'label'    => 'Lead Count',
             'required' => false,
         ],
         [

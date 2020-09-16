@@ -32,24 +32,24 @@ class RapidFunnelComponent extends Component {
 
     function getRf($url = null, $header = false) {
 
-        $ch = curl_init();
+            $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, $header);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HEADER, $header);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
-        $headers = [
-            "Authorization:" . $this->generateJWT​(RF_API_KEY, RF_SECRET_KEY, RF_API_URL),
-            "Accept:application/json",
-        ];
+            $headers = [
+                "Authorization:" . $this->generateJWT​(RF_API_KEY, RF_SECRET_KEY, RF_API_URL),
+                "Accept:application/json",
+            ];
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $serverOutput = curl_exec($ch);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $serverOutput = curl_exec($ch);
 
-        curl_close($ch);
+            curl_close($ch);
 
-        return $serverOutput;
+            return $serverOutput;
     }
 
     function postRf($url = null, $params = [], $header = false) {

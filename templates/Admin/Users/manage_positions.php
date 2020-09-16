@@ -3,7 +3,7 @@
 </style>
 <?php
 $params = [
-    'heading' => 'Manage Distributor Position Order',
+    'heading' => 'Manage Distributor Position Sequence',
     'fields'  => [
         [
             'label'                => 'Name',
@@ -17,20 +17,20 @@ $params = [
             'name'                 => 'user_id',
             'related_model_fields' => ['email']
         ],
-        [
-            'name'    => 'position_no',
-            'label'   => 'Position Number',
-            'sort_by' => 'UsersPositions.position_no',
-        ],
+//        [
+//            'name'    => 'position_no',
+//            'label'   => 'Position Number',
+//            'sort_by' => 'UsersPositions.position_no',
+//        ],
         [
             'name'    => 'position_order',
             'sort_by' => 'UsersPositions.position_order',
-            'label'   => 'Position Order',
+            'label'   => 'Position Sequence',
         ],
         [
             'name'    => 'lead_limit',
             'sort_by' => 'UsersPositions.lead_limit',
-            'label'   => 'Max Lead Limit',
+            'label'   => 'Lead Count',
         ],
         //['name' => 'subscription_status'],
     ],
@@ -44,14 +44,14 @@ $params = [
 $this->AdminListing->create($params, [
 
     [
-        'label' => 'Change Position Order',
+        'label' => 'Change Position Sequence',
         'url'   => ['controller' => 'Users', 'action' => 'getUserPosition'],
         'id'    => true,
         'class' => 'btn-u btn-u-sea btn-u-sm rounded change-position',
-        'icon'  => 'fa fa-eye'
+        'icon'  => 'fa fa-pencil'
     ],
     [
-        'label' => 'Update Max Lead Limit',
+        'label' => 'Update Lead Count',
         'url'   => ['controller' => 'Users', 'action' => 'editUserPosition'],
         'id'    => true,
         'class' => 'btn-u btn-u-dark btn-u-sm rounded change-limit',

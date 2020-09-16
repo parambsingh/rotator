@@ -29,7 +29,8 @@ class UsersController extends AppController {
             'getSuggestions',
             'webinar',
             'goToWebinar',
-            'goToWebinarAttendees'
+            'goToWebinarAttendees',
+            'testWebinar',
         ]);
     }
 
@@ -114,7 +115,8 @@ class UsersController extends AppController {
 
                 return $this->redirect(['action' => 'login']);
             } else {
-                pr($user->getErrors()); die;
+                pr($user->getErrors());
+                die;
             }
             $this->Flash->error(__('Could not register. Please, try again.'));
         }
@@ -262,7 +264,7 @@ class UsersController extends AppController {
 
     public function profile() {
 
-        $user  = $this->Users->get($this->authUserId, ['contain' => ['Images']]);
+        $user = $this->Users->get($this->authUserId, ['contain' => ['Images']]);
 
         if ($this->request->is(['patch', 'post', 'put'])) {
 
@@ -283,7 +285,7 @@ class UsersController extends AppController {
         unset($user->password);
 
         $states = $this->Users->States->find('list')->where(['States.status' => true])->order(['States.name' => 'ASC'])->toArray();
-        if(empty($user->state_id)){
+        if (empty($user->state_id)) {
             $cities = [];
         } else {
             $cities = $this->Users->Cities->find('list')->where(['Cities.state_id' => $user->state_id,
@@ -354,6 +356,7 @@ class UsersController extends AppController {
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
+                $this->assignNewPosition($user->id);
                 $this->Flash->success(__('The user has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
@@ -516,22 +519,110 @@ class UsersController extends AppController {
     }
 
 
-     //Client ID: 9f2772bb-95db-4d15-898a-b24578d843bf
-     //Client secret: IoANxTGpO/j2MArypJAb3A==
-    public function webinar(){
-        pr(base64_encode('9f2772bb-95db-4d15-898a-b24578d843bf:IoANxTGpO/j2MArypJAb3A=='));die;
-        file_put_contents(WWW_ROOT.'webinar/test-'.time().'.txt', print_r($_REQUEST, true));
+    public function testWebinar() {
+
+        /*
+         *
+           curl -X POST "https://api.getgo.com/oauth/v2/token" \
+          -H "Authorization: Basic YTIwfAKeNGYtODY4YS00MzM5LTkzNGYtNGRhMmQ3ODhkMGFhOjNuYU8xMElBMmFnY3ZHKzlJOVRHRVE9PQ==" \
+          -H "Accept:application/json" \
+          -H "Content-Type: application/x-www-form-urlencoded" \
+          -d "redirect_uri=https://example.com&grant_type=authorization_code&code=iS0vynEEvRFA9i6kZ8gvNDnnOGE..."
+         */
+
+        $url = "https://api.getgo.com/oauth/v2/token";
+        $headers = [
+            "Authorization: Basic " . base64_encode(WEBINAR_CLIENT_ID . ':' . WEBINAR_CLIENT_SECRET),
+            "Accept:application/json",
+            "Content-Type: application/x-www-form-urlencoded",
+        ];
+
+        pr($headers);
+        $params = [
+            'redirect_uri' => 'http://localhost/rotator/users/webinar',
+            'grant_type'   => 'authorization_code',
+            'code'         => 'eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsInVyaSI6Imh0dHA6Ly9sb2NhbGhvc3Qvcm90YXRvci91c2Vycy93ZWJpbmFyIiwic2MiOiJjb2xsYWI6IGlkZW50aXR5OiBpZGVudGl0eTpzY2ltLm1lIHN1cHBvcnQ6IiwiYXVkIjoiOWYyNzcyYmItOTVkYi00ZDE1LTg5OGEtYjI0NTc4ZDg0M2JmIiwic3ViIjoiMjY4NTU5ODExMjM4NjM1OTUiLCJqdGkiOiJlZWNlNGRmNy0xZTRhLTRiYmItYWQ3YS00NDdjNmJlNjc5MjYiLCJleHAiOjE2MDAyMzk2NjAsImlhdCI6MTYwMDIzOTA2MCwidHlwIjoiYyJ9.j9fv66G7H6ZTTQcTxMUuxqfGQIT4KtbpSlUTCVwju9GxfyDCWrNKoU3skHuROhztMb-fE3KWvcaqU1Ny9iqzTwXpv-DXH5owfrNbuq32iT8inX8CLSZZX-5vVifY2jAID0_vcleruAK27Ss_jQhLYwha5jccSt_Owegn_v6l50EasJkkPdvkfIFjpQETLDzAtXaTztiLItByKcoYzQ1ROw_reIXlBG3mZT-zK5lTBQSdUUaF8FYk4Ew2o4o9TeAQYxSREhs55dlycR3lvkRvqbWnoJwCca-HqxQurLaTPYGrQrAQtLLRSpJ5vgqt3S82VHKE0N1D4N6y1WRxeoRtlQ'
+        ];
+
+        $params = 'redirect_uri=http://localhost/rotator/users/webinar&grant_type=authorization_code&code=eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsInVyaSI6Imh0dHA6Ly9sb2NhbGhvc3Qvcm90YXRvci91c2Vycy93ZWJpbmFyIiwic2MiOiJjb2xsYWI6IGlkZW50aXR5OiBpZGVudGl0eTpzY2ltLm1lIHN1cHBvcnQ6IiwiYXVkIjoiOWYyNzcyYmItOTVkYi00ZDE1LTg5OGEtYjI0NTc4ZDg0M2JmIiwic3ViIjoiMjY4NTU5ODExMjM4NjM1OTUiLCJqdGkiOiI4YzUwMTBiMy03ZTU3LTQ0ZWYtOGY2Ni01ZTljNmY5NDc5MWYiLCJleHAiOjE2MDAyNDI4MTIsImlhdCI6MTYwMDI0MjIxMiwidHlwIjoiYyJ9.HhZF2B1j4CTLCYos30yugMxNGzRL6PCT97HARy8Pg-wuI8NISHLuv7XYqTnnCFmsXR7HFR1jV8B2h4bjxBT7alcoTTnlR7faBZbyDaV4bVLSrJOlSXgU4uo2jI4iz-WBfzektg8Vmm5RSe10XWR6Z-FQ7hCiMy3QW2aRwTwM2vEYodDpJIGJ-LzJ8OxBRMdJ44a5hMSYXEWKW5HISQrOz9esOTf9ydlVJ30YFLY8FSMe93_ULWml9dhFflCkqiz4vhzCSwM1NqGggL4AsLj54_gaTCEwLYIRTl0PL0XteXXZEF6z1IOLq3x1owEhqX6RyzXf_xpIRRHonaBF5b2ZwQ';
+
+        pr($params);
+
+        $response = $this->curlPost($url, $params, $headers);
+
+        pr($response);
+        die;
+    }
+
+    public function curlGet($url) {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $serverOutput = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $serverOutput;
+    }
+
+    public function curlPost($url, $params, $headers) {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_ENCODING, "");
+        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+
+
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $serverOutput = curl_exec($ch);
+
+        if ($serverOutput === false) {
+            echo('Error performing rmv lookup: ' . curl_errno($ch) . ' - ' . curl_error($ch) . ' (Message ID: ' . basename(__FILE__) . '-' . __LINE__ . ')');
+        }
+
+        curl_close($ch);
+
+        return $serverOutput;
+    }
+
+
+
+
+    //Client ID: 9f2772bb-95db-4d15-898a-b24578d843bf
+    //Client secret: IoANxTGpO/j2MArypJAb3A==
+
+    //OWYyNzcyYmItOTVkYi00ZDE1LTg5OGEtYjI0NTc4ZDg0M2JmOklvQU54VEdwTy9qMk1BcnlwSkFiM0E9PQ==
+    public function webinar() {
+        file_put_contents(WWW_ROOT . 'webinar/test-' . time() . '.txt', print_r($_REQUEST, true));
+        pr($_REQUEST);
         exit;
     }
 
-    public function goToWebinar(){
-        $response = '{"access_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6ImlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiMDZhMTczZDYtZjc2Zi00NTk4LWIyOGQtZWFkNDIwYzQyMWE5IiwiZXhwIjoxNjAwMDg5MzY0LCJpYXQiOjE2MDAwODU3NjQsInR5cCI6ImEifQ.lCBDwtIdu-26rEaTzLWzTQjw3DdIr0DFYCCHPwjeTGGW_GmK2Y43ZMQfkHarY1GSnhuO3OdKL0QRHekprwngEbgzhoZ5jQqJpM0TkUAykIHoLHzOLNY9S22gGwK49RcJCK15e6qo16XFlR0Nt35AbabDg2XaRNiO1K4a8z5Ot86AQmGdnnzF-eld3DH1rf5h0QbWQ_G1Go4AK4Vwi3LwBv4kTuclAMQRUSrokHtFV0gVXGLZYBz6EL_6W4dyNFVS3BQ1ydB0s9y-Q-NhYM-JWfed5mh18VqV4MqeyEwMkKyPCKmUPK-4Ot4iiNOnJMfD1TqcHulaRKsFnds76Z6P6w","token_type":"Bearer","refresh_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6ImlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiYTlhMmMwNmMtMTkzNC00ZTAxLTk4MjMtYjM1MzUxYzJiNWIyIiwiZXhwIjoxNjAyNjc3NzY0LCJpYXQiOjE2MDAwODU3NjQsInR5cCI6InIifQ.bamIRyQ6vE1Sol-wnNUgt7ohjufBAVylN5IVJQ2Dh7TZj9UdoBby4hhqgzZUFg_kjKjapb0MrcXCypi5e5pV6vGjiL0u9UqkRTXQW-Hm5_G2swV6nVbOZDgoG5ckauiPFfcQvffzPJPEC3Hns3G9-R0_0LiOJ4lQfWNOKgsH9HWUuNydueUjokrFxsvCFheZWulse2izeMH092K9qXan1kk-4eh1BgVq3zpEjm0jL1x-ZdRXbEh-QKp4fdCdIWzvj12A-iIlQwOsbC00qJPO67ogjDoQGIEU5D7FE_MiHO6B0Sue-J1VX_Nyq4ZiMTzlmre409EQftXgQ07ny1ORGg","expires_in":3600,"account_key":"2255678200811849004","email":"satinder@strategiclight.com","firstName":"Satinder","lastName":"Singh","organizer_key":"26855981123863595","version":"3","account_type":""}';
+
+    public function goToWebinar() {
+        $response = '{"access_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6InN1cHBvcnQ6IGlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiNjI4MGNlMDgtM2Y5OC00NTgwLWJmMWItNGNiZjFjMjk3NTliIiwiZXhwIjoxNjAwMjQ1ODU5LCJpYXQiOjE2MDAyNDIyNTksInR5cCI6ImEifQ.W8bitgp-fTAVerwwuYL_O1xnG9-s42RjIWg-HOaNpgzilB7irVnvYcKqc0U8_dwwHC2mT7Jjsaajfct4O5dU5Z3wPvwaOmhWO369JiOS9dYvC6j15GplzthDpAWZC66BFeEASeOQ7xnZRIctKBdqB3E0w00IUaV3538yzmWLclvP98irAqxnae1vsbtJrgk-7lMJWyT2BDYEOJAx_s3ajKTgHvDAQ8NfBh5EZ7n7mryEUWd8qro0GW1BuFaZFeZzsjS0cCE4ar9LSNqmgDdOnLdK3uZhqO1rk06TBF2NZwZXXsRV4F40g37wTNzA6JUXJnuvSoEe7vGtOew-5qqbjQ","token_type":"Bearer","refresh_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6InN1cHBvcnQ6IGlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiOTJiMjg0ZjUtNGE3Ny00NTgyLWE0NDMtMDc5NjhmZDhmMTYyIiwiZXhwIjoxNjAyODM0MjU5LCJpYXQiOjE2MDAyNDIyNTksInR5cCI6InIifQ.S4Fed8Gk5Sgaz-mIwGC0r_kxN0ZlymkmVAHQZg6iPgn3h-kvY_QO6xGjvQ0Nr2rjHKq5alqUZWpgAuhSaKZfiSn2Fg076kZ8D7zInYIM-EIQBa70shjTIYTjVuCh2Nktd6d5kjq-q-fuifd93yH496JM5bBGzqFN15MiA7qbzYUrpzTMaNKotSlcQTJaD5YvCxxke-KR_4CF0SWGgfPVp1N-v5Kvx_KZl471vI6ncgV0-Ybp1MK00ltuhn7Cd0lJGHG1ENq3Qfb1FA-TtA-A7hYRUei5gktZDMI-f9pbULrt6fWJP8_UNpdZWehWkarvDDz4JmZd8HrV4_2aGzrF1Q","expires_in":3600,"account_key":"2255678200811849004","email":"satinder@strategiclight.com","firstName":"Satinder","lastName":"Singh","organizer_key":"26855981123863595","version":"3","account_type":""}';
 
         $resp = json_decode($response, true);
 
         $client = new Client($resp['access_token'], $resp);
 
-        $get = $client->createRequest('GET', "accounts/".$resp['account_key']."/webinars?fromTime=2020-09-13T10:00:00Z&toTime=2020-09-15T22:00:00Z")->execute();
+        $get = $client->createRequest('GET', "accounts/" . $resp['account_key'] . "/webinars?fromTime=2020-09-13T10:00:00Z&toTime=2020-09-15T22:00:00Z")->execute();
         //pr($get);
 
         $data = $get->getDecodedBody();
@@ -540,8 +631,8 @@ class UsersController extends AppController {
     }
 
 
-    public function goToWebinarAttendees(){
-        $response = '{"access_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6ImlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiMDZhMTczZDYtZjc2Zi00NTk4LWIyOGQtZWFkNDIwYzQyMWE5IiwiZXhwIjoxNjAwMDg5MzY0LCJpYXQiOjE2MDAwODU3NjQsInR5cCI6ImEifQ.lCBDwtIdu-26rEaTzLWzTQjw3DdIr0DFYCCHPwjeTGGW_GmK2Y43ZMQfkHarY1GSnhuO3OdKL0QRHekprwngEbgzhoZ5jQqJpM0TkUAykIHoLHzOLNY9S22gGwK49RcJCK15e6qo16XFlR0Nt35AbabDg2XaRNiO1K4a8z5Ot86AQmGdnnzF-eld3DH1rf5h0QbWQ_G1Go4AK4Vwi3LwBv4kTuclAMQRUSrokHtFV0gVXGLZYBz6EL_6W4dyNFVS3BQ1ydB0s9y-Q-NhYM-JWfed5mh18VqV4MqeyEwMkKyPCKmUPK-4Ot4iiNOnJMfD1TqcHulaRKsFnds76Z6P6w","token_type":"Bearer","refresh_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6ImlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiYTlhMmMwNmMtMTkzNC00ZTAxLTk4MjMtYjM1MzUxYzJiNWIyIiwiZXhwIjoxNjAyNjc3NzY0LCJpYXQiOjE2MDAwODU3NjQsInR5cCI6InIifQ.bamIRyQ6vE1Sol-wnNUgt7ohjufBAVylN5IVJQ2Dh7TZj9UdoBby4hhqgzZUFg_kjKjapb0MrcXCypi5e5pV6vGjiL0u9UqkRTXQW-Hm5_G2swV6nVbOZDgoG5ckauiPFfcQvffzPJPEC3Hns3G9-R0_0LiOJ4lQfWNOKgsH9HWUuNydueUjokrFxsvCFheZWulse2izeMH092K9qXan1kk-4eh1BgVq3zpEjm0jL1x-ZdRXbEh-QKp4fdCdIWzvj12A-iIlQwOsbC00qJPO67ogjDoQGIEU5D7FE_MiHO6B0Sue-J1VX_Nyq4ZiMTzlmre409EQftXgQ07ny1ORGg","expires_in":3600,"account_key":"2255678200811849004","email":"satinder@strategiclight.com","firstName":"Satinder","lastName":"Singh","organizer_key":"26855981123863595","version":"3","account_type":""}';
+    public function goToWebinarAttendees() {
+        $response = '{"access_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6InN1cHBvcnQ6IGlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiZjMzYjY4MDgtYTZjNy00ZDk0LWEyYjQtNWFlYzQwMzIxNmE5IiwiZXhwIjoxNjAwMjQyOTU5LCJpYXQiOjE2MDAyMzkzNTksInR5cCI6ImEifQ.dbRIc4hGZWpE2HGbo3IWc1sPWjR2QtXBriPcmWL9j7pCzcWfikv4qsGE-NzHd0w1IjY1DJpQT_RET8MOYCczn3k1WZzFm-hoYJ8brVLVFUeajmcj_jDloqyK-O2jPGaGh9-niKtWUEFQDHVq1laDh-N2EnCsW7o66inpjMDkfH3KyUq2JqmrTqUrPuRVUOvzZ3giDIgPToUUInIwfRZpVGQmpoDzNVMpHhdaBmh8B0RHq9aTCzJ0DO-bxxuXTel9ffX2DmGRyygrKqbwDt0C1vxlZsclIskvopi1kddmHQO2nsEC51JwAAZWvWDTXo1vRK23NGrBRoI3ao61CTWALA","token_type":"Bearer","refresh_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6InN1cHBvcnQ6IGlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiNDU5ZDE1ODQtMjY1ZC00NDE5LWFiYjktMGMxY2IwZmFkNTE2IiwiZXhwIjoxNjAyODMxMzU5LCJpYXQiOjE2MDAyMzkzNTksInR5cCI6InIifQ.WaDTor_BaDfWOXYwrEQvDdL6IJOGxjoydU0aaN-E8eZ_20TqGTXJCGqi_D6aQ55kLxxG7KZzXSjm0QqtY_-cFTRQlsOpshF9nCpsLwbwGwNbyCqmCWACMQi4eiWuX1B0MMaqkML5zRh4grjrTqKJsBhODjJaO2DSE_oXxwYEy0tKcvCLH-OI2koQkH6WM_e34b1JRGNklbNwwkdNgdSwF52d-DJg2xqALb7M6gHLPhuxBlS4QIdqVSZWPrys8mHTfXmwyzzl0UEB0lmtP7W3iq5hTAXVYC_1RbW_wqvY_WJa-bOrleA_F6XJhwmEST_1FfkfdoPiO0crfqWWb2IiDA","expires_in":3600,"account_key":"2255678200811849004","email":"satinder@strategiclight.com","firstName":"Satinder","lastName":"Singh","organizer_key":"26855981123863595","version":"3","account_type":""}';
 
         $resp = json_decode($response, true);
 
@@ -551,9 +642,9 @@ class UsersController extends AppController {
         ///organizers/{organizerKey}/webinars/{webinarKey}/attendees
         /// attendees
         //$get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/webinars/5071468105923917326/performance")->execute();
-        $get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/webinars/5071468105923917326/sessions")->execute();
+        $get = $client->createRequest('GET', "organizers/" . $resp['organizer_key'] . "/webinars/5071468105923917326/sessions")->execute();
 
-       // $get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/sessions?fromTime=2020-09-13T10:00:00Z&toTime=2020-09-15T10:00:00Z")->execute();
+        // $get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/sessions?fromTime=2020-09-13T10:00:00Z&toTime=2020-09-15T10:00:00Z")->execute();
 
         //$get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/webinars/5071468105923917326/attendees")->execute();
         //pr($get);

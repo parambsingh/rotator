@@ -35,7 +35,7 @@ $params = [
         ],
         [
             'name'     => 'rf_email',
-            'label' => 'RF Email',
+            'label' => 'RF Email (Secondary Email)',
             'validate' => [
                 'rules' => [
                     'required' => false,

@@ -586,7 +586,8 @@ class AdminsController extends AppController {
 
                     if (($handle = fopen($fileUrl, "r")) !== FALSE) {
                         $row = 0;
-                        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                        $delimiter = $this->detectDelimiter($fileUrl);
+                        while (($data = fgetcsv($handle, 1000, $delimiter)) !== FALSE) {
 
                             if ($row <= 0) {
                                 $this->responseData['fields'] = $data;
@@ -614,6 +615,19 @@ class AdminsController extends AppController {
         exit;
     }
 
+    public function detectDelimiter($csvFile) {
+        $delimiters = [";" => 0, "," => 0, "\t" => 0, "|" => 0];
+
+        $handle = fopen($csvFile, "r");
+        $firstLine = fgets($handle);
+        fclose($handle);
+        foreach ($delimiters as $delimiter => &$count) {
+            $count = count(str_getcsv($firstLine, $delimiter));
+        }
+
+        return array_search(max($delimiters), $delimiters);
+    }
+
 
     public function export() {
         $this->autoRender = false;
@@ -633,7 +647,6 @@ class AdminsController extends AppController {
         $totalExport = 0;
 
         $this->loadModel($model);
-
 
         $query = $this->{$model}->find('all');
 
@@ -668,7 +681,11 @@ class AdminsController extends AppController {
             $query2->leftJoinWith($relatedModel);
         }
 
-        $entries = $query2->select($fieldMap)->all();
+        if ($model == "Users") {
+            $entries = $query2->select($fieldMap)->order(['UsersPositions.position_order' => 'ASC'])->all();
+        } else {
+            $entries = $query2->select($fieldMap)->all();
+        }
 
         foreach ($entries as $index => $entry) {
             $data = $entry->toArray();

@@ -142,4 +142,24 @@ class AppController extends Controller {
             $this->set('search_key', $keyString);
         }
     }
+
+    public function assignNewPosition($userId) {
+        $this->loadModel('UsersPositions');
+
+        //Get Max Position Order
+        $maxUserPosition = $this->UsersPositions->find('all')->select(['UsersPositions__max_position_order' => 'MAX(position_order)'])->first();
+        $maxPositionOrder = empty($maxUserPosition) ? 0 : $maxUserPosition['max_position_order'];
+
+        $userPosition = $this->UsersPositions->newEmptyEntity();
+
+        $userPosition->user_id = $userId;
+        $userPosition->position_no = 1;
+        $userPosition->position_order = $maxPositionOrder + 1;
+        $userPosition->lead_limit = 0;
+
+        $userPosition->subscription_status = "Active";
+        $userPosition->subscription_id = 1;
+
+        $this->UsersPositions->save($userPosition);
+    }
 }
