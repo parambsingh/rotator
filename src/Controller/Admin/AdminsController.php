@@ -671,7 +671,7 @@ class AdminsController extends AppController {
             }
         }
 
-        fputcsv($f, $filedNames, ";");
+        fputcsv($f, $filedNames, ",");
 
         //pr($filedNames); die;
 
@@ -691,7 +691,7 @@ class AdminsController extends AppController {
             $data = $entry->toArray();
             unset($data['id']);
             unset($data['_matchingData']);
-            fputcsv($f, $data, ";");
+            fputcsv($f, $data, ",");
         }
 
 
