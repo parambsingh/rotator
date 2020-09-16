@@ -79,8 +79,12 @@ class UsersController extends AppController {
         }
 
         $states = $this->Users->States->find('list')->where(['States.status' => true])->order(['States.name' => 'ASC'])->toArray();
-        $cities = $this->Users->Cities->find('list')->where(['Cities.state_id' => $user->state_id,
-                                                             'Cities.status'   => true])->order(['Cities.name' => 'ASC'])->toArray();
+        if(empty($user->state_id)){
+            $cities = [];
+        } else {
+            $cities = $this->Users->Cities->find('list')->where(['Cities.state_id' => $user->state_id,
+                                                                 'Cities.status'   => true])->order(['Cities.name' => 'ASC'])->toArray();
+        }
 
         $this->set(compact('user', 'states', 'cities'));
     }

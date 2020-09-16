@@ -80,8 +80,12 @@ class LeadsController extends AppController {
         }
 
         $states = $this->Leads->States->find('list')->where(['States.status' => true])->order(['States.name' => 'ASC'])->toArray();
-        $cities = $this->Leads->Cities->find('list')->where(['Cities.state_id' => $lead->state_id,
-                                                                  'Cities.status'   => true])->order(['Cities.name' => 'ASC'])->toArray();
+        if(empty($lead->state_id)){
+            $cities = [];
+        } else {
+            $cities = $this->Leads->Cities->find('list')->where(['Cities.state_id' => $lead->state_id,
+                                                                 'Cities.status'   => true])->order(['Cities.name' => 'ASC'])->toArray();
+        }
 
         $this->set(compact('lead', 'states', 'cities'));
     }
