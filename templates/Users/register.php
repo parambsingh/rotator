@@ -143,7 +143,7 @@ $classes = "form-control u-select--v3-select u-sibling w-100 u-select--v3 g-pos-
                         is an agreement between Apartment Network LLC (&quot;Apartment Network LLC&quot;, &quot;us&quot;,
                         &quot;we&quot; or &quot;our&quot;) and you (&quot;User&quot;, &quot;you&quot; or &quot;your&quot;).
                         This Policy sets forth the general guidelines and acceptable and prohibited uses of the <a
-                                target="_blank" rel="nofollow" href="http://www.ApartmentNetwork.com">ApartmentNetwork.com</a>
+                                target="_blank" rel="nofollow" href="<?= SITE_URL; ?>"><?= SITE_TITLE; ?></a>
                         website and any of its products or services (collectively, &quot;Website&quot; or &quot;Services&quot;).
                     </p>
                     <h2>Prohibited activities and uses</h2>
@@ -310,9 +310,9 @@ $classes = "form-control u-select--v3-select u-sibling w-100 u-select--v3 g-pos-
                     <h2>Contacting us</h2>
                     <p>If you would like to contact us to understand more about this Policy or wish to contact us
                         concerning any matter relating to it, you may do so via the <a target="_blank" rel="nofollow"
-                                                                                       href="http://www.apartmentnetwork.com/contact">contact
-                            form</a> or write a letter to PO BOX 1328 Naples, FL 34106</p>
-                    <p>This document was last updated on December 5, 2019</p>
+                                                                                       href="<?= SITE_URL; ?>contact">contact
+                            form</a> or write a letter to address..</p>
+                    <p>This document was last updated on September 5, 2020</p>
                 </div>
             </div>
         </div>
@@ -328,7 +328,7 @@ $classes = "form-control u-select--v3-select u-sibling w-100 u-select--v3 g-pos-
 
 <script>
     $(function () {
-        var role = "apartment";
+
         $('#iAccept, #aptTerms').click(function (e) {
             e.preventDefault();
             var newModal = new Custombox.modal({
@@ -351,8 +351,6 @@ $classes = "form-control u-select--v3-select u-sibling w-100 u-select--v3 g-pos-
                 }
             });
             newModal.open();
-
-            role = $(this).attr('data-role');
 
             return false;
         });
