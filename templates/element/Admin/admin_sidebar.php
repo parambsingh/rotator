@@ -54,6 +54,25 @@ $menuItems = [
         ]
     ],
     [
+        'controller' => 'Webinars',
+        'icon_class' => 'fa fa-tv',
+        'default_sub_menu' => false,
+        'custom_sub_menu' => [
+            [
+                'label'      => 'List Webinars',
+                'controller' => 'Webinars',
+                'action'     => 'index',
+                'icon_class' => 'fa fa-list',
+            ],
+            [
+                'label'      => 'Settings',
+                'controller' => 'Webinars',
+                'action'     => 'settings',
+                'icon_class' => 'fa fa-gear',
+            ],
+        ]
+    ],
+    [
         'controller' => 'Leads',
         'icon_class' => 'fa fa-users',
         'custom_sub_menu' => [

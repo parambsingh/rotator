@@ -518,100 +518,17 @@ class UsersController extends AppController {
         exit;
     }
 
-
-    public function testWebinar() {
-
-        /*
-         *
-           curl -X POST "https://api.getgo.com/oauth/v2/token" \
-          -H "Authorization: Basic YTIwfAKeNGYtODY4YS00MzM5LTkzNGYtNGRhMmQ3ODhkMGFhOjNuYU8xMElBMmFnY3ZHKzlJOVRHRVE9PQ==" \
-          -H "Accept:application/json" \
-          -H "Content-Type: application/x-www-form-urlencoded" \
-          -d "redirect_uri=https://example.com&grant_type=authorization_code&code=iS0vynEEvRFA9i6kZ8gvNDnnOGE..."
-         */
-
-        $url = "https://api.getgo.com/oauth/v2/token";
-        $headers = [
-            "Authorization: Basic " . base64_encode(WEBINAR_CLIENT_ID . ':' . WEBINAR_CLIENT_SECRET),
-            "Accept:application/json",
-            "Content-Type: application/x-www-form-urlencoded",
-        ];
-
-        pr($headers);
-        $params = [
-            'redirect_uri' => 'http://localhost/rotator/users/webinar',
-            'grant_type'   => 'authorization_code',
-            'code'         => 'eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsInVyaSI6Imh0dHA6Ly9sb2NhbGhvc3Qvcm90YXRvci91c2Vycy93ZWJpbmFyIiwic2MiOiJjb2xsYWI6IGlkZW50aXR5OiBpZGVudGl0eTpzY2ltLm1lIHN1cHBvcnQ6IiwiYXVkIjoiOWYyNzcyYmItOTVkYi00ZDE1LTg5OGEtYjI0NTc4ZDg0M2JmIiwic3ViIjoiMjY4NTU5ODExMjM4NjM1OTUiLCJqdGkiOiJlZWNlNGRmNy0xZTRhLTRiYmItYWQ3YS00NDdjNmJlNjc5MjYiLCJleHAiOjE2MDAyMzk2NjAsImlhdCI6MTYwMDIzOTA2MCwidHlwIjoiYyJ9.j9fv66G7H6ZTTQcTxMUuxqfGQIT4KtbpSlUTCVwju9GxfyDCWrNKoU3skHuROhztMb-fE3KWvcaqU1Ny9iqzTwXpv-DXH5owfrNbuq32iT8inX8CLSZZX-5vVifY2jAID0_vcleruAK27Ss_jQhLYwha5jccSt_Owegn_v6l50EasJkkPdvkfIFjpQETLDzAtXaTztiLItByKcoYzQ1ROw_reIXlBG3mZT-zK5lTBQSdUUaF8FYk4Ew2o4o9TeAQYxSREhs55dlycR3lvkRvqbWnoJwCca-HqxQurLaTPYGrQrAQtLLRSpJ5vgqt3S82VHKE0N1D4N6y1WRxeoRtlQ'
-        ];
-
-        $params = 'redirect_uri=http://localhost/rotator/users/webinar&grant_type=authorization_code&code=eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsInVyaSI6Imh0dHA6Ly9sb2NhbGhvc3Qvcm90YXRvci91c2Vycy93ZWJpbmFyIiwic2MiOiJjb2xsYWI6IGlkZW50aXR5OiBpZGVudGl0eTpzY2ltLm1lIHN1cHBvcnQ6IiwiYXVkIjoiOWYyNzcyYmItOTVkYi00ZDE1LTg5OGEtYjI0NTc4ZDg0M2JmIiwic3ViIjoiMjY4NTU5ODExMjM4NjM1OTUiLCJqdGkiOiI4YzUwMTBiMy03ZTU3LTQ0ZWYtOGY2Ni01ZTljNmY5NDc5MWYiLCJleHAiOjE2MDAyNDI4MTIsImlhdCI6MTYwMDI0MjIxMiwidHlwIjoiYyJ9.HhZF2B1j4CTLCYos30yugMxNGzRL6PCT97HARy8Pg-wuI8NISHLuv7XYqTnnCFmsXR7HFR1jV8B2h4bjxBT7alcoTTnlR7faBZbyDaV4bVLSrJOlSXgU4uo2jI4iz-WBfzektg8Vmm5RSe10XWR6Z-FQ7hCiMy3QW2aRwTwM2vEYodDpJIGJ-LzJ8OxBRMdJ44a5hMSYXEWKW5HISQrOz9esOTf9ydlVJ30YFLY8FSMe93_ULWml9dhFflCkqiz4vhzCSwM1NqGggL4AsLj54_gaTCEwLYIRTl0PL0XteXXZEF6z1IOLq3x1owEhqX6RyzXf_xpIRRHonaBF5b2ZwQ';
-
-        pr($params);
-
-        $response = $this->curlPost($url, $params, $headers);
-
-        pr($response);
-        die;
-    }
-
-    public function curlGet($url) {
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-
-        //curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $serverOutput = curl_exec($ch);
-
-        curl_close($ch);
-
-        return $serverOutput;
-    }
-
-    public function curlPost($url, $params, $headers) {
-        $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_ENCODING, "");
-        curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-
-
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $serverOutput = curl_exec($ch);
-
-        if ($serverOutput === false) {
-            echo('Error performing rmv lookup: ' . curl_errno($ch) . ' - ' . curl_error($ch) . ' (Message ID: ' . basename(__FILE__) . '-' . __LINE__ . ')');
-        }
-
-        curl_close($ch);
-
-        return $serverOutput;
-    }
-
-
-
-
     //Client ID: 9f2772bb-95db-4d15-898a-b24578d843bf
     //Client secret: IoANxTGpO/j2MArypJAb3A==
 
     //OWYyNzcyYmItOTVkYi00ZDE1LTg5OGEtYjI0NTc4ZDg0M2JmOklvQU54VEdwTy9qMk1BcnlwSkFiM0E9PQ==
     public function webinar() {
-        file_put_contents(WWW_ROOT . 'webinar/test-' . time() . '.txt', print_r($_REQUEST, true));
-        pr($_REQUEST);
-        exit;
+        $this->viewBuilder()->setLayout('ajax');
+        $this->loadModel('WebinarAccounts');
+        $webinarAccount = $this->WebinarAccounts->find('all')->first();
+        $webinarAccount->code = empty($_REQUEST['code']) ? "" : $_REQUEST['code'];
+        $this->WebinarAccounts->save($webinarAccount);
+
     }
 
 
@@ -637,17 +554,9 @@ class UsersController extends AppController {
         $resp = json_decode($response, true);
 
         $client = new Client($resp['access_token'], $resp);
+        $get = $client->createRequest('GET', "organizers/" . $resp['organizer_key'] . "/webinars")->execute();
 
-        //GET
-        ///organizers/{organizerKey}/webinars/{webinarKey}/attendees
-        /// attendees
-        //$get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/webinars/5071468105923917326/performance")->execute();
-        $get = $client->createRequest('GET', "organizers/" . $resp['organizer_key'] . "/webinars/5071468105923917326/sessions")->execute();
 
-        // $get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/sessions?fromTime=2020-09-13T10:00:00Z&toTime=2020-09-15T10:00:00Z")->execute();
-
-        //$get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/webinars/5071468105923917326/attendees")->execute();
-        //pr($get);
 
         $data = $get->getDecodedBody();
         pr($data);

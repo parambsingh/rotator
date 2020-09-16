@@ -53,7 +53,7 @@ $model = empty($model) ? "Users" : $model;
 
             <?php foreach ($mappingFields as $field) { ?>
                 <?php
-                $title = "Map " . ucwords($field['label']);
+                $title = "Select";
                 $attributes = [
                     'class'         => "mapped-field form-control u-select--v3-select u-sibling w-100 u-select--v3 g-pos-rel g-brd-gray-light-v7 " . (($field['required']) ? "map-required" : ""),
                     'id'            => "field_" . $field['name'],

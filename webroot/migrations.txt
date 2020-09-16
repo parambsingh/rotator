@@ -42,3 +42,6 @@ sudo bin/cake bake migration CreateSubscriptions plan_id:biginteger user_id:bigi
 
 Coupons
 sudo bin/cake bake migration CreateCoupons name:string description:text type:string discount:decimal no_of_usage:biginteger status:boolean created modified
+
+WebinarAccounts
+sudo bin/cake bake migration CreateWebinarAccounts webinar_client:string client_secret:string code:text account_json:text status:boolean created modified
