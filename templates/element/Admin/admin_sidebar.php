@@ -45,6 +45,12 @@ $menuItems = [
                 'action'     => 'import',
                 'icon_class' => 'fa fa-upload',
             ],
+            [
+                'label'      => 'Export Distributors',
+                'controller' => 'Distributors',
+                'action'     => 'export',
+                'icon_class' => 'fa fa-download',
+            ],
         ]
     ],
     [
@@ -115,6 +121,15 @@ $menuItems = [
     [
         'controller' => 'Coupons',
         'icon_class' => 'fa fa-map',
+    ],
+
+    [
+        'controller' => 'States',
+        'icon_class' => 'fa fa-flag-checkered',
+    ],
+    [
+        'controller' => 'Cities',
+        'icon_class' => 'fa fa-flag-o',
     ],
 
 

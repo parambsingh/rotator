@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use LogMeIn\GoToWebinar\Client;
+
 /**
  * Users Controller
  *
@@ -13,7 +15,7 @@ class UsersController extends AppController {
 
     public function initialize(): void {
         parent::initialize();
-        $this->Auth->allow(['login', 'register', 'forgotPassword', 'forgotPasswordApi', 'resetPasswordApi', 'resetPassword', 'add', 'changeStatus', 'isUniqueEmail']);
+        $this->Auth->allow(['login', 'register', 'forgotPassword', 'forgotPasswordApi', 'resetPasswordApi', 'resetPassword', 'add', 'changeStatus', 'isUniqueEmail', 'webinar', 'goToWebinar', 'goToWebinarAttendees']);
     }
 
     public function login() {
@@ -486,6 +488,54 @@ class UsersController extends AppController {
         }
 
         exit;
+    }
+
+
+     //Client ID: 9f2772bb-95db-4d15-898a-b24578d843bf
+     //Client secret: IoANxTGpO/j2MArypJAb3A==
+    public function webinar(){
+        pr(base64_encode('9f2772bb-95db-4d15-898a-b24578d843bf:IoANxTGpO/j2MArypJAb3A=='));die;
+        file_put_contents(WWW_ROOT.'webinar/test-'.time().'.txt', print_r($_REQUEST, true));
+        exit;
+    }
+
+    public function goToWebinar(){
+        $response = '{"access_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6ImlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiMDZhMTczZDYtZjc2Zi00NTk4LWIyOGQtZWFkNDIwYzQyMWE5IiwiZXhwIjoxNjAwMDg5MzY0LCJpYXQiOjE2MDAwODU3NjQsInR5cCI6ImEifQ.lCBDwtIdu-26rEaTzLWzTQjw3DdIr0DFYCCHPwjeTGGW_GmK2Y43ZMQfkHarY1GSnhuO3OdKL0QRHekprwngEbgzhoZ5jQqJpM0TkUAykIHoLHzOLNY9S22gGwK49RcJCK15e6qo16XFlR0Nt35AbabDg2XaRNiO1K4a8z5Ot86AQmGdnnzF-eld3DH1rf5h0QbWQ_G1Go4AK4Vwi3LwBv4kTuclAMQRUSrokHtFV0gVXGLZYBz6EL_6W4dyNFVS3BQ1ydB0s9y-Q-NhYM-JWfed5mh18VqV4MqeyEwMkKyPCKmUPK-4Ot4iiNOnJMfD1TqcHulaRKsFnds76Z6P6w","token_type":"Bearer","refresh_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6ImlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiYTlhMmMwNmMtMTkzNC00ZTAxLTk4MjMtYjM1MzUxYzJiNWIyIiwiZXhwIjoxNjAyNjc3NzY0LCJpYXQiOjE2MDAwODU3NjQsInR5cCI6InIifQ.bamIRyQ6vE1Sol-wnNUgt7ohjufBAVylN5IVJQ2Dh7TZj9UdoBby4hhqgzZUFg_kjKjapb0MrcXCypi5e5pV6vGjiL0u9UqkRTXQW-Hm5_G2swV6nVbOZDgoG5ckauiPFfcQvffzPJPEC3Hns3G9-R0_0LiOJ4lQfWNOKgsH9HWUuNydueUjokrFxsvCFheZWulse2izeMH092K9qXan1kk-4eh1BgVq3zpEjm0jL1x-ZdRXbEh-QKp4fdCdIWzvj12A-iIlQwOsbC00qJPO67ogjDoQGIEU5D7FE_MiHO6B0Sue-J1VX_Nyq4ZiMTzlmre409EQftXgQ07ny1ORGg","expires_in":3600,"account_key":"2255678200811849004","email":"satinder@strategiclight.com","firstName":"Satinder","lastName":"Singh","organizer_key":"26855981123863595","version":"3","account_type":""}';
+
+        $resp = json_decode($response, true);
+
+        $client = new Client($resp['access_token'], $resp);
+
+        $get = $client->createRequest('GET', "accounts/".$resp['account_key']."/webinars?fromTime=2020-09-13T10:00:00Z&toTime=2020-09-15T22:00:00Z")->execute();
+        //pr($get);
+
+        $data = $get->getDecodedBody();
+        pr($data);
+        die;
+    }
+
+
+    public function goToWebinarAttendees(){
+        $response = '{"access_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6ImlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiMDZhMTczZDYtZjc2Zi00NTk4LWIyOGQtZWFkNDIwYzQyMWE5IiwiZXhwIjoxNjAwMDg5MzY0LCJpYXQiOjE2MDAwODU3NjQsInR5cCI6ImEifQ.lCBDwtIdu-26rEaTzLWzTQjw3DdIr0DFYCCHPwjeTGGW_GmK2Y43ZMQfkHarY1GSnhuO3OdKL0QRHekprwngEbgzhoZ5jQqJpM0TkUAykIHoLHzOLNY9S22gGwK49RcJCK15e6qo16XFlR0Nt35AbabDg2XaRNiO1K4a8z5Ot86AQmGdnnzF-eld3DH1rf5h0QbWQ_G1Go4AK4Vwi3LwBv4kTuclAMQRUSrokHtFV0gVXGLZYBz6EL_6W4dyNFVS3BQ1ydB0s9y-Q-NhYM-JWfed5mh18VqV4MqeyEwMkKyPCKmUPK-4Ot4iiNOnJMfD1TqcHulaRKsFnds76Z6P6w","token_type":"Bearer","refresh_token":"eyJraWQiOiJvYXV0aHYyLmxtaS5jb20uMDIxOSIsImFsZyI6IlJTNTEyIn0.eyJzYyI6ImlkZW50aXR5OiBjb2xsYWI6IGlkZW50aXR5OnNjaW0ubWUiLCJscyI6IjYyOTAxYmRmLWIyNjctNDU4YS1hOWYyLWEwMmE5ZmIxZTYwZiIsIm9nbiI6InB3ZCIsImF1ZCI6IjlmMjc3MmJiLTk1ZGItNGQxNS04OThhLWIyNDU3OGQ4NDNiZiIsInN1YiI6IjI2ODU1OTgxMTIzODYzNTk1IiwianRpIjoiYTlhMmMwNmMtMTkzNC00ZTAxLTk4MjMtYjM1MzUxYzJiNWIyIiwiZXhwIjoxNjAyNjc3NzY0LCJpYXQiOjE2MDAwODU3NjQsInR5cCI6InIifQ.bamIRyQ6vE1Sol-wnNUgt7ohjufBAVylN5IVJQ2Dh7TZj9UdoBby4hhqgzZUFg_kjKjapb0MrcXCypi5e5pV6vGjiL0u9UqkRTXQW-Hm5_G2swV6nVbOZDgoG5ckauiPFfcQvffzPJPEC3Hns3G9-R0_0LiOJ4lQfWNOKgsH9HWUuNydueUjokrFxsvCFheZWulse2izeMH092K9qXan1kk-4eh1BgVq3zpEjm0jL1x-ZdRXbEh-QKp4fdCdIWzvj12A-iIlQwOsbC00qJPO67ogjDoQGIEU5D7FE_MiHO6B0Sue-J1VX_Nyq4ZiMTzlmre409EQftXgQ07ny1ORGg","expires_in":3600,"account_key":"2255678200811849004","email":"satinder@strategiclight.com","firstName":"Satinder","lastName":"Singh","organizer_key":"26855981123863595","version":"3","account_type":""}';
+
+        $resp = json_decode($response, true);
+
+        $client = new Client($resp['access_token'], $resp);
+
+        //GET
+        ///organizers/{organizerKey}/webinars/{webinarKey}/attendees
+        /// attendees
+        //$get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/webinars/5071468105923917326/performance")->execute();
+        $get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/webinars/5071468105923917326/sessions")->execute();
+
+       // $get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/sessions?fromTime=2020-09-13T10:00:00Z&toTime=2020-09-15T10:00:00Z")->execute();
+
+        //$get = $client->createRequest('GET', "organizers/".$resp['organizer_key']."/webinars/5071468105923917326/attendees")->execute();
+        //pr($get);
+
+        $data = $get->getDecodedBody();
+        pr($data);
+        die;
     }
 
 }

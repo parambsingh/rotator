@@ -51,7 +51,10 @@ class UsersController extends AppController {
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
-        $this->set(compact('user'));
+        $states = $this->Users->States->find('list')->where(['States.status' => true])->order(['States.name' => 'ASC'])->toArray();
+        $cities = [];
+
+        $this->set(compact('user', 'states', 'cities'));
     }
 
     /**
@@ -74,7 +77,12 @@ class UsersController extends AppController {
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
-        $this->set(compact('user'));
+
+        $states = $this->Users->States->find('list')->where(['States.status' => true])->order(['States.name' => 'ASC'])->toArray();
+        $cities = $this->Users->Cities->find('list')->where(['Cities.state_id' => $user->state_id,
+                                                             'Cities.status'   => true])->order(['Cities.name' => 'ASC'])->toArray();
+
+        $this->set(compact('user', 'states', 'cities'));
     }
 
     /**
@@ -97,6 +105,10 @@ class UsersController extends AppController {
     }
 
     public function import() {
+
+    }
+
+    public function export() {
 
     }
 
@@ -134,6 +146,18 @@ class UsersController extends AppController {
         $this->set(compact('userPosition', 'max'));
     }
 
+    public function editUserPositionLeadLimit($id = null) {
+        $this->viewBuilder()->setLayout('ajax');
+        $this->loadModel('UsersPositions');
+
+        $userPosition = $this->UsersPositions->find('all')->contain(['Users'])->where(['UsersPositions.id' => $id])->first();
+
+        $max = $this->UsersPositions->find('all')->count();
+
+        $this->set(compact('userPosition', 'max'));
+    }
+
+
     public function changeUserPosition() {
 
         $this->responseCode = CODE_BAD_REQUEST;
@@ -170,6 +194,30 @@ class UsersController extends AppController {
         }
 
         $this->responseData['page'] = ceil($newP / PAGE_LIMIT);
+
+        echo $this->responseFormat();
+        exit;
+
+    }
+
+    public function changeUserPositionLeadLimit() {
+
+        $this->responseCode = CODE_BAD_REQUEST;
+
+        $id = $this->request->getData('user_position_id');
+        $leadLimit = $this->request->getData('lead_limit');
+
+        $this->loadModel('UsersPositions');
+
+        $userPosition = $this->UsersPositions->find('all')->contain(['Users'])->where(['UsersPositions.id' => $id])->first();
+
+        $userPosition->lead_limit = $leadLimit;
+
+
+        if ($this->UsersPositions->save($userPosition)) {
+            $this->responseCode = SUCCESS_CODE;
+        }
+
 
         echo $this->responseFormat();
         exit;

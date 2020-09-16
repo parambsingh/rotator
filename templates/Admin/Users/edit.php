@@ -10,7 +10,9 @@ $params = [
     ],
     'fields' => [
         [
-            'name'  => 'distributor_id'
+            'name' => 'distributor_id',
+            'type'  => 'number',
+            'label'  => 'Rapid Funnel Distributor ID',
         ],
         [
             'name' => 'name'
@@ -28,7 +30,7 @@ $params = [
         ],
         [
             'name'     => 'rf_email',
-            'label' => 'RF Email',
+            'label'    => 'RF Email',
             'validate' => [
                 'rules' => [
                     'required' => false,
@@ -38,7 +40,7 @@ $params = [
             ]
         ],
         [
-            'name' => 'phone',
+            'name'     => 'phone',
             'validate' => [
                 'rules' => [
                     'required'  => false,
@@ -55,7 +57,10 @@ $params = [
             ]
         ],
         [
-            'name' => 'state',
+            'name'     => 'state_id',
+            'type'     => 'select',
+            'options'  => $states,
+            'id'       => 'StateId',
             'validate' => [
                 'rules' => [
                     'required' => false
@@ -63,13 +68,21 @@ $params = [
             ]
         ],
         [
-            'name' => 'city',
+            'name'     => 'city_id',
+            'type'     => 'select',
+            'options'  => $cities,
+            'depend'   => [
+                'id'    => 'StateId',
+                'model' => 'Cities',
+                'match' => 'state_id'
+            ],
             'validate' => [
                 'rules' => [
                     'required' => false
                 ]
             ]
         ],
+
         [
             'name'     => 'zip',
             'validate' => [

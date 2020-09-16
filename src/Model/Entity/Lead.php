@@ -63,8 +63,8 @@ class Lead extends Entity {
         'work_phone'                => true,
         'other_phone'               => true,
         'address'                   => true,
-        'city'                      => true,
-        'state'                     => true,
+        'city_id'                   => true,
+        'state_id'                  => true,
         'zip'                       => true,
         'role'                      => true,
         'company'                   => true,
@@ -79,6 +79,8 @@ class Lead extends Entity {
         'email_campaign_recipients' => true,
         'rotator_loops'             => true,
         'user'                      => true,
+        'city'                      => true,
+        'state'                     => true,
     ];
 
     /**

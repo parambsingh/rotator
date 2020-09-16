@@ -13,6 +13,7 @@ use Cake\Auth\DefaultPasswordHasher;
  */
 class AdminsController extends AppController {
 
+
     public function initialize(): void {
         parent::initialize();
         $this->Auth->allow(['login', 'forgotPassword', 'resetPassword', 'add', 'changeStatus']);
@@ -348,69 +349,143 @@ class AdminsController extends AppController {
         $requiredFields = $this->request->getData('required_fields');
         $fieldMap = $this->request->getData('field_map');
         $defaultFields = $this->request->getData('default_value');
+        $updateIfAlreadyExists = $this->request->getData('update_if_already_exists');
         $logs = [];
         $totalToImport = 0;
         $successfullyImported = 0;
         $notImported = 0;
 
         $this->loadModel($model);
+        $this->loadModel('Cities');
+        $this->loadModel('States');
+
 
         if (($handle = fopen($filePath, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
 
                 if ($totalToImport > 0) {
 
-
                     foreach ($requiredFields as $requiredField => $dataIndex) {
-                        $conditions[$requiredField] = $data[$dataIndex];
+                        if ($requiredField == "email") {
+                            $conditions[$requiredField] = $data[$dataIndex];
+                            $fullName = '<b>' . $data[$dataIndex] . '</b>';
+                        }
                     }
 
                     $entity = $this->{$model}->find()->where($conditions)->first();
 
-                    $fullName = '<b>' . $data[0] . '</b>';
+
+                    $alreadyExists = false;
 
                     if (empty($entity)) {
-
                         $entity = $this->{$model}->newEmptyEntity();
+                    } else {
+                        $alreadyExists = true;
+                    }
 
+                    $otherModelFields = [
+                        'city'          => "",
+                        'state'         => "",
+                        'user_position' => "",
+                        'lead_limit'    => "",
+                    ];
 
+                    //pr($fieldMap); die;
 
-//                        $fieldMap = array_filter($fieldMap);
-//
-//                        pr($fieldMap);
+                    foreach ($fieldMap as $field => $dIndex) {
 
-                        foreach ($fieldMap as $field => $dIndex) {
-                            //var_dump($dIndex);
-                            $dIndex = ($dIndex === 0) ? (int)$dIndex : $dIndex;
+                        $dIndex = ($dIndex === 0) ? (int)$dIndex : $dIndex;
+                        if (!empty($data[$dIndex])) {
+                            switch ($field) {
+                                case "city":
+                                case "state":
+                                case "user_position":
+                                case "lead_limit":
+                                case "position_no":
+                                    {
+                                        $otherModelFields[$field] = trim($data[$dIndex]);
+                                        break;
+                                    }
 
-                            if (!empty($data[$dIndex]) || $dIndex === 0) {
-                                $entity->{$field} = trim($data[$dIndex]);
+                                case "created":
+                                    {
+                                        $otherModelFields[$field] = date(SQL_DATETIME, strtotime(trim($data[$dIndex])));
+                                        break;
+                                    }
+
+                                default :
+                                    {
+
+                                        $entity->{$field} = trim($data[$dIndex]);
+
+                                    }
                             }
                         }
+                        //var_dump($dIndex);
 
-//                        pr($entity);
-//
-//                        die;
+                    }
 
 
-                        foreach ($defaultFields as $field => $value) {
-                            if (!empty($value)) {
-                                $entity->{$field} = $value;
-                            }
+                    foreach ($defaultFields as $field => $value) {
+                        if (!empty($value)) {
+                            $entity->{$field} = $value;
                         }
+                    }
 
+                    //Match State
+                    $state = [];
+                    if (!empty($otherModelFields['state'])) {
+                        $state = $this->States->find('all')
+                            ->where([
+                                'OR' => [
+                                    'name LIKE'       => '%' . $otherModelFields['state'] . '%',
+                                    'short_name LIKE' => '%' . $otherModelFields['state'] . '%',
+                                ]
 
-                        if ($this->{$model}->save($entity)) {
-                            $successfullyImported++;
-                            $logs[] = $fullName . " Saved Successfully";
+                            ])->first();
+                        if (!empty($state)) {
+                            $entity->state_id = $state->id;
+                        }
+                    }
+
+                    //Match City
+                    $city = [];
+                    if (!empty($otherModelFields['city'])) {
+                        $cityConditions = ['name LIKE' => '%' . $otherModelFields['city'] . '%'];
+                        if (!empty($state)) {
+                            $cityConditions[] = ['state_id' => $state->id];
+                        }
+                        $city = $this->Cities->find('all')->where($cityConditions)->first();
+                        if (!empty($city)) {
+                            $entity->city_id = $city->id;
+                        }
+                    }
+
+                    if ($alreadyExists) {
+                        if ($updateIfAlreadyExists == "Yes") {
+
+                            if ($this->{$model}->save($entity)) {
+                                if ($model == "Users") {
+                                    $this->updatePosition($entity, $otherModelFields);
+                                }
+                                $logs[] = $fullName . " updated successfully.";
+                            }
                         } else {
-                            $logs[] = $fullName . " Could not save.";
-                            $notImported++;
+                            $logs[] = $fullName . " already exists.";
                         }
 
                     } else {
-                        $logs[] = $fullName . " already exists.";
+                        if ($this->{$model}->save($entity)) {
+                            $successfullyImported++;
+                            $logs[] = $fullName . " saved successfully";
+                            $this->updatePosition($entity, $otherModelFields);
+                        } else {
+                            $logs[] = $fullName . " could not save.";
+                            $notImported++;
+                        }
+
                     }
+
 
                 }
 
@@ -427,6 +502,49 @@ class AdminsController extends AppController {
 
         echo $this->responseFormat();
         exit;
+    }
+
+    public function updatePosition($entity, $otherModelFields) {
+
+        //Default values
+        $leadLimit = empty($otherModelFields['lead_limit']) ? 0 : (int)$otherModelFields['lead_limit'];
+        $positionNo = empty($otherModelFields['position_no']) ? 1 : (int)$otherModelFields['position_no'];
+
+        $this->loadModel('UsersPositions');
+
+        //Get Max Position Order
+        $maxUserPosition = $this->UsersPositions->find('all')->select(['UsersPositions__max_position_order' => 'MAX(position_order)'])->first();
+        $maxPositionOrder = empty($maxUserPosition) ? 0 : $maxUserPosition['max_position_order'];
+
+        //Check If Position Already exists
+        $userPosition = $this->UsersPositions->find('all')->where(['user_id' => $entity->id, 'position_no' => $positionNo])->first();
+
+        $userPositionEmpty = false;
+        if (empty($userPosition)) {
+            $userPositionEmpty = true;
+            $userPosition = $this->UsersPositions->newEmptyEntity();
+            $positionOrder = $maxPositionOrder + 1;
+        } else {
+            $positionOrder = empty($otherModelFields['user_position']) ? $userPosition->position_order : (int)$otherModelFields['user_position'];
+        }
+
+        $position = $this->UsersPositions->find('all')->where(['position_order' => $positionOrder])->first();
+
+        if (!empty($position) && !empty($otherModelFields['user_position']) && $userPosition->position_order != $otherModelFields['user_position']) {
+            $this->UsersPositions->updateAll(['position_order = position_order + 1'], ['position_order >=' => $positionOrder]);
+        }
+
+        $userPosition->user_id = $entity->id;
+        $userPosition->position_no = $positionNo;
+        $userPosition->position_order = $positionOrder;
+        $userPosition->lead_limit = $leadLimit;
+        if ($userPositionEmpty) {
+            $userPosition->subscription_status = "Active";
+            $userPosition->subscription_id = 1;
+        }
+
+        $this->UsersPositions->save($userPosition);
+
     }
 
     public function uploadImportCsv() {
@@ -491,6 +609,80 @@ class AdminsController extends AppController {
             $this->responseMessage = __("Video file is too large, file must be less than 50 MB in size.");
         }
 
+
+        echo $this->responseFormat();
+        exit;
+    }
+
+
+    public function export() {
+        $this->autoRender = false;
+        $this->responseCode = CODE_BAD_REQUEST;
+
+        //pr($this->request->getData()); die;
+
+        $model = $this->request->getData('model');
+        $relatedModels = $this->request->getData('related_model');
+        $fieldMap = $this->request->getData('field_map');
+        $fileName = 'files/csvs/' . strtolower($model) . '-' . time() . '.csv';
+        $filePath = WWW_ROOT . $fileName;
+        $exportUrl = SITE_URL . $fileName;
+
+        $relatedModelsArray = explode(",", $relatedModels);
+
+        $totalExport = 0;
+
+        $this->loadModel($model);
+
+
+        $query = $this->{$model}->find('all');
+
+        foreach ($relatedModelsArray as $relatedModel) {
+            $query->leftJoinWith($relatedModel);
+        }
+
+        $first = $query->select($fieldMap)->first()->toArray();
+
+        $fields = array_keys($first);
+
+        $filedNames = [];
+        $skipIndexes = [];
+        $f = fopen($filePath, "w");
+
+
+        foreach ($fields as $index => $field) {
+            if (!in_array($field, ['id', '_matchingData'])) {
+                $filedNames[] = ucwords(str_replace("_", " ", $field));
+            } else {
+                $skipIndexes[] = $index;
+            }
+        }
+
+        fputcsv($f, $filedNames, ";");
+
+        //pr($filedNames); die;
+
+        $query2 = $this->{$model}->find('all');
+
+        foreach ($relatedModelsArray as $relatedModel) {
+            $query2->leftJoinWith($relatedModel);
+        }
+
+        $entries = $query2->select($fieldMap)->all();
+
+        foreach ($entries as $index => $entry) {
+            $data = $entry->toArray();
+            unset($data['id']);
+            unset($data['_matchingData']);
+            fputcsv($f, $data, ";");
+        }
+
+
+        $this->responseCode = SUCCESS_CODE;
+        $this->responseData['totalExport'] = $totalExport;
+        $this->responseData['url'] = $exportUrl;
+
+        $this->Flash->success(__('CSV exported successfully.'));
 
         echo $this->responseFormat();
         exit;

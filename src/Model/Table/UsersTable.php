@@ -56,6 +56,17 @@ class UsersTable extends Table {
             'foreignKey' => 'image_id',
             'joinType'   => 'LEFT',
         ]);
+
+        $this->belongsTo('States', [
+            'foreignKey' => 'state_id',
+            'joinType'   => 'LEFT',
+        ]);
+
+        $this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
+            'joinType'   => 'LEFT',
+        ]);
+
         $this->hasMany('EmailCampaignRecipients', [
             'foreignKey' => 'user_id',
         ]);

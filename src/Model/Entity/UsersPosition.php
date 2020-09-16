@@ -35,6 +35,8 @@ class UsersPosition extends Entity {
         'subscription_id'     => true,
         'position_no'         => true,
         'position_order'      => true,
+        'lead_limit'          => true,
+        'occupied_leads'      => true,
         'subscription_status' => true,
         'slot_status'         => true,
         'created'             => true,

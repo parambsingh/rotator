@@ -56,8 +56,8 @@ class User extends Entity {
         'image_id'                  => true,
         'phone'                     => true,
         'address'                   => true,
-        'city'                      => true,
-        'state'                     => true,
+        'city_id'                      => true,
+        'state_id'                     => true,
         'zip'                       => true,
         'role'                      => true,
         'status'                    => true,
@@ -69,6 +69,8 @@ class User extends Entity {
         'subscriptions'             => true,
         'users_positions'           => true,
         'leads'                     => true,
+        'city'                     => true,
+        'state'                     => true,
     ];
 
     /**

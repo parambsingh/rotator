@@ -47,7 +47,7 @@ $model = empty($model) ? "Users" : $model;
     </div>
     <div class="col-md-10 import-sec" id="mapFieldsBox" style="display: none">
         <h3 class="mt-2 mb-4 h3">Map Fields</h3>
-        <hr />
+        <hr/>
         <!-- Tab panes -->
         <div class="row">
 
@@ -85,6 +85,19 @@ $model = empty($model) ? "Users" : $model;
                 <?php } ?>
                 <input type="hidden" id="filePath" name="file_path" value="">
                 <input type="hidden" id="importInModel" name="model" value="<?= $model; ?>">
+                <div style="width:60%; float: left;" class="mt-3">
+                    <div class="col align-self-center">
+                        <label class="form-check-inline u-check g-color-gray-dark g-font-size-12 g-pl-25 mb-0">
+                            <input type="checkbox" name="update_if_already_exists" value="1"
+                                   class="js-select g-hidden-xs-up g-pos-abs g-top-0 g-left-0"
+                                   id="updateIfAlreadyExists">
+                            <div class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
+                                <i class="fa" data-check-icon=""></i>
+                            </div>
+                            Update if already exists
+                        </label>
+                    </div>
+                </div>
                 <button class="btn btn-dark-blue pull-right" id="importMappedFields"><i class="fa fa-upload"></i> Import
                 </button>
             </div>
@@ -180,6 +193,7 @@ $model = empty($model) ? "Users" : $model;
                 });
 
                 var model = $('#importInModel').val();
+                var updateIfAlreadyExists = $('#updateIfAlreadyExists').is(':checked') ? "Yes" : "No";
 
                 $.ajax({
                     url: SITE_URL + "admin/admins/import",
@@ -190,6 +204,7 @@ $model = empty($model) ? "Users" : $model;
                         field_map: fieldMap,
                         model: model,
                         required_fields: requiredFields,
+                        update_if_already_exists: updateIfAlreadyExists,
                     },
                     dataType: "json",
                     beforeSend: function () {

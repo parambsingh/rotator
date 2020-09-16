@@ -29,6 +29,21 @@ $params = [
             'required' => false,
         ],
         [
+            'name'     => 'position_no',
+            'label'    => 'Position No.',
+            'required' => false,
+        ],
+        [
+            'name'     => 'user_position',
+            'label'    => 'Position Order',
+            'required' => false,
+        ],
+        [
+            'name'     => 'lead_limit',
+            'label'    => 'No. of leads allotted',
+            'required' => false,
+        ],
+        [
             'name'     => 'address',
             'label'    => 'Address',
             'required' => false,
@@ -72,4 +87,6 @@ $params = [
 ];
 ?>
 
-<?= $this->element('Admin/import', $params) ?>
+<?= $this->element('Admin/importer', $params) ?>
+
+

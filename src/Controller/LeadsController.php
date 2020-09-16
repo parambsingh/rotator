@@ -278,6 +278,4 @@ class LeadsController extends AppController {
 
     }
 
-
 }
-
