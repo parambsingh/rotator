@@ -45,7 +45,7 @@
                     data: $('#changePositionOrderForm').serialize(),
                     dataType: "JSON",
                     success: function (response) {
-                        window.location.href = SITE_URL + 'admin/distributors/manage-positions?page=' + response.data.page + '&sort=UsersPositions.position_order&direction=asc#listRow_' + $('#newPosition').val();
+                        window.location.href = SITE_URL + 'admin/distributors/manage-positions?page=' + response.data.page + '&sort=UsersPositions.position_order&direction=asc';
                     }
                 });
             }
