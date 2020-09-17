@@ -530,7 +530,13 @@ class UsersController extends AppController {
 
 
     public function clickFunnel() {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Headers: *');
+        header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+        header('Content-Type: application/json');
+        header('X-Clickfunnels-Webhook-Delivery-Id: '.md5('9867589'));
         file_put_contents(WWW_ROOT . 'click-funnel-data.txt', print_r($_REQUEST, true));
+        echo json_encode(['time'=>date(SQL_DATETIME)]);
         exit;
     }
 
