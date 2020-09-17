@@ -26,7 +26,7 @@
         <div class="card-block g-pa-15 g-pa-30--sm" id="loaderBox">
             <h5>Loading...<i class="fa fa-asterisk fa-spin"></i>
             </h5>
-        </div>
+            </div>
         <div class="card-block g-pa-15 g-pa-30--sm" id="errorBox" style="display: none">
             <h3>Something went wrong, please refresh token.</h3>
         </div>

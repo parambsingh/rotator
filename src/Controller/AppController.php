@@ -109,7 +109,7 @@ class AppController extends Controller {
          * This is used to redirect the user if admin is login and want to access the user site
          */
 
-        if(!in_array($this->request->getParam('action'), ['webinar'])) {
+        if(!in_array($this->request->getParam('action'), ['webinar', 'clickFunnel'])) {
             $user = $this->Auth->user();
             if (isset($user['role']) && $user['role'] == 'Admin') {
                 return $this->redirect('/admin');
