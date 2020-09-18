@@ -542,13 +542,14 @@ class UsersController extends AppController {
 
             $user = $this->Users->find('all')->where(['email' => $data['email']])->first();
 
-            if(empty($user)) {
+            if (empty($user)) {
 
                 $user = $this->Users->newEmptyEntity();
 
                 $user->name = $data['name'];
                 $user->email = $data['email'];
                 $user->password = "Test123";
+                $user->status = true;
 
                 $otherFields = ['phone', 'address', 'zip'];
                 foreach ($otherFields as $field) {
@@ -567,6 +568,7 @@ class UsersController extends AppController {
                                 'name LIKE'       => '%' . $data['state'] . '%',
                                 'short_name LIKE' => '%' . $data['state'] . '%',
                             ]
+
                         ])->first();
                     if (!empty($state)) {
                         $user->state_id = $state->id;
