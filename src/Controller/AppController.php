@@ -228,7 +228,7 @@ class AppController extends Controller {
         $userPosition->user_id = $userId;
         $userPosition->position_no = 1;
         $userPosition->position_order = $maxPositionOrder + 1;
-        $userPosition->lead_limit = 0;
+        $userPosition->lead_limit = 1;
 
         $userPosition->subscription_status = "Active";
         $userPosition->subscription_id = 1;
