@@ -51,6 +51,7 @@ class Lead extends Entity {
      */
     protected $_accessible = [
         'user_id'                   => true,
+        'rf_contact'                => true,
         'first_name'                => true,
         'last_name'                 => true,
         'email'                     => true,

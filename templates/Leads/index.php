@@ -1,6 +1,10 @@
 <?php
 $params = [
     'fields' => [
+        [
+            'name'  => 'rf_contact',
+            'label' => 'RF Contact ID'
+        ],
         ['name' => 'first_name'],
         ['name' => 'last_name'],
         ['name' => 'email'],

@@ -259,7 +259,6 @@ class UsersController extends AppController {
         }
     }
 
-
     public function profile() {
 
         $user = $this->Users->get($this->authUserId, ['contain' => ['Images']]);
@@ -267,7 +266,6 @@ class UsersController extends AppController {
         if ($this->request->is(['patch', 'post', 'put'])) {
 
             $user = $this->Users->patchEntity($user, $this->request->getData());
-
 
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('The admin has been saved.'));
@@ -338,7 +336,7 @@ class UsersController extends AppController {
      */
     public function view($id = null) {
         $user = $this->Users->get($id, [
-            'contain' => ['Distibuters', 'Images', 'Leads', 'EmailCampaignRecipients', 'EmailTemplates', 'Subscriptions', 'UsersPositions'],
+            'contain' => ['Images', 'Leads', 'UsersPositions'],
         ]);
 
         $this->set(compact('user'));
@@ -530,13 +528,71 @@ class UsersController extends AppController {
 
 
     public function clickFunnel() {
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Headers: *');
-        header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
         header('Content-Type: application/json');
-        header('X-Clickfunnels-Webhook-Delivery-Id: '.md5('9867589'));
-        file_put_contents(WWW_ROOT . 'click-funnel-data.txt', print_r($_REQUEST, true));
-        echo json_encode(['time'=>date(SQL_DATETIME)]);
+        if ($json = json_decode(file_get_contents("php://input"), true)) {
+            $data = $json;
+        } else {
+            $data = $_REQUEST;
+        }
+
+
+        file_put_contents(WWW_ROOT . 'click-funnel-data.txt', print_r($data, true));
+
+        if (!empty($data['name']) && !empty($data['email'])) {
+
+            $user = $this->Users->find('all')->where(['email' => $data['email']])->first();
+
+            if(empty($user)) {
+
+                $user = $this->Users->newEmptyEntity();
+
+                $user->name = $data['name'];
+                $user->email = $data['email'];
+                $user->password = "Test123";
+
+                $otherFields = ['phone', 'address', 'zip'];
+                foreach ($otherFields as $field) {
+                    $user->phone = empty($data[$field]) ? "" : $data[$field];
+                }
+
+                $this->loadModel('Cities');
+                $this->loadModel('States');
+
+                //Match State
+                $state = [];
+                if (!empty($data['state'])) {
+                    $state = $this->States->find('all')
+                        ->where([
+                            'OR' => [
+                                'name LIKE'       => '%' . $data['state'] . '%',
+                                'short_name LIKE' => '%' . $data['state'] . '%',
+                            ]
+                        ])->first();
+                    if (!empty($state)) {
+                        $user->state_id = $state->id;
+                    }
+                }
+
+                //Match City
+                $city = [];
+                if (!empty($data['city'])) {
+                    $cityConditions = ['name LIKE' => '%' . $data['city'] . '%'];
+                    if (!empty($state)) {
+                        $cityConditions[] = ['state_id' => $state->id];
+                    }
+                    $city = $this->Cities->find('all')->where($cityConditions)->first();
+                    if (!empty($city)) {
+                        $user->city_id = $city->id;
+                    }
+                }
+
+                if ($this->Users->save($user)) {
+                    $this->assignNewPosition($user->id);
+                }
+            }
+        }
+        echo json_encode(['time' => date(SQL_DATETIME)]);
+        //echo json_encode(array('OK'));
         exit;
     }
 

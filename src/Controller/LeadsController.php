@@ -94,7 +94,7 @@ class LeadsController extends AppController {
             }
 
             $states = $this->Leads->States->find('list')->where(['States.status' => true])->order(['States.name' => 'ASC'])->toArray();
-            if(empty($lead->state_id)){
+            if (empty($lead->state_id)) {
                 $cities = [];
             } else {
                 $cities = $this->Leads->Cities->find('list')->where(['Cities.state_id' => $lead->state_id,
@@ -180,8 +180,8 @@ class LeadsController extends AppController {
                     $params = [
                         'userId'    => ROTATOR_TEST_MODE ? 181406 : $distributorId,
                         'firstName' => empty($requestData['first_name']) ? 'NA' : $requestData['first_name'],
-                        'lastName'  => empty($requestData['last_name']) ? 'na@na.com' : $requestData['last_name'],
-                        'email'     => empty($requestData['email']) ? 'NA' : $requestData['email'],
+                        'lastName'  => empty($requestData['last_name']) ? 'NA' : $requestData['last_name'],
+                        'email'     => empty($requestData['email']) ? 'na@na.com' : $requestData['email'],
                         'phone[]'   => empty($requestData['phone']) ? 'NA' : $requestData['phone'],
                         'company'   => empty($requestData['company']) ? 'NA' : $requestData['company'],
                         'note'      => empty($requestData['note']) ? 'NA' : $requestData['note'],
@@ -223,16 +223,26 @@ class LeadsController extends AppController {
         $leadLog->ip = $requestData['ip'];
         $leadLog->lead_from = $requestData['lead_from'];
         $leadLog->request_json = json_encode($requestData);
-        $leadLog->response_json = $apiResponseData;
+        $leadLog->response_json = is_array($apiResponseData) ? json_encode($apiResponseData) : $apiResponseData;
         $leadLog->status = $status;
 
-        $this->LeadLogs->save($leadLog);
+        if ($this->LeadLogs->save($leadLog)) {
+            //Saved
+        } else {
+            pr($leadLog->getErrors());
+        }
 
         $apiResponse = json_decode($apiResponseData, true);
 
         //Update User Position as filled
-        if(!empty($apiResponse['response'])) {
+        if (!empty($apiResponse['response'])) {
             if ($status == "Saved" && $apiResponse['response']['status'] == 200) {
+                $lead = $this->Leads->find('all')->where(['id'=>$lead->id])->first();
+
+                $lead->rf_contact = $apiResponse['response']['contactId'];
+
+                $this->Leads->save($lead);
+
                 $this->setSlotAsOccupied($slot, $lead);
             }
         }
@@ -244,18 +254,59 @@ class LeadsController extends AppController {
     public function getAvailableSlot() {
         $this->loadModel('UsersPositions');
 
+        //To Restart the complete round
+        $activePositions = $this->UsersPositions->find('all')
+            ->where([
+                'UsersPositions.subscription_status' => 'Active',
+            ])
+            ->count();
 
-        $waitingPositions = $this->UsersPositions->find('all')->where(['UsersPositions.subscription_status' => 'Active', 'UsersPositions.slot_status' => 'waiting'])->count();
+        $occupiedPositions = $this->UsersPositions->find('all')
+            ->where([
+                'UsersPositions.subscription_status' => 'Active',
+                'UsersPositions.slot_status'         => 'occupied',
+                'UsersPositions.occupied_leads >= lead_limit',
+            ])
+            ->count();
+
+        //if all positions occupied
+        if ($activePositions == $occupiedPositions) {
+            //Update all for waiting
+            $this->UsersPositions->updateAll([
+                'slot_status'    => 'waiting',
+                'occupied_leads' => 0,
+            ], [
+                'subscription_status' => 'Active',
+            ]);
+        }
+
+
+        //To check if round completed
+        $waitingPositions = $this->UsersPositions->find('all')
+            ->where([
+                'UsersPositions.subscription_status' => 'Active',
+                'UsersPositions.slot_status'         => 'waiting'
+            ])
+            ->count();
 
         //if all positions occupied
         if ($waitingPositions <= 0) {
             //Update all for waiting
-            $this->UsersPositions->updateAll(['slot_status' => 'waiting'], ['subscription_status' => 'Active']);
+            $this->UsersPositions->updateAll([
+                'slot_status' => 'waiting'
+            ], [
+                'subscription_status' => 'Active',
+                'occupied_leads < lead_limit',
+            ]);
         }
 
         $slot = $this->UsersPositions->find('all')
             ->contain(['Users'])
-            ->where(['UsersPositions.subscription_status' => 'Active', 'UsersPositions.slot_status' => 'waiting'])
+            ->where([
+                'UsersPositions.subscription_status' => 'Active',
+                'UsersPositions.slot_status'         => 'waiting',
+                'UsersPositions.occupied_leads < UsersPositions.lead_limit',
+            ])
             ->order(['UsersPositions.position_order' => 'ASC'])
             ->first();
 
@@ -267,7 +318,18 @@ class LeadsController extends AppController {
         $this->loadModel('RotatorLoops');
         $waitingPositions = $this->UsersPositions->find('all')->where(['UsersPositions.subscription_status' => 'Active', 'UsersPositions.slot_status' => 'waiting'])->count();
 
-        $this->UsersPositions->updateAll(['slot_status' => 'occupied'], ['id' => $slot->id]);
+
+        $this->UsersPositions->updateAll([
+            'occupied_leads = occupied_leads + 1',
+        ], ['id' => $slot->id]);
+
+
+//        $currentPositions = $this->UsersPositions->find('all')->where(['UsersPositions.id' => $slot->id])->first();
+//        if ($currentPositions->occupied_leads == $currentPositions->lead_limit) {
+        $this->UsersPositions->updateAll([
+            'slot_status' => 'occupied',
+        ], ['id' => $slot->id]);
+        //}
 
         $rotatorLoopMax = $this->RotatorLoops->find('all')->select(['RotatorLoops__max_round_no' => 'MAX(round_no)'])->first();
 

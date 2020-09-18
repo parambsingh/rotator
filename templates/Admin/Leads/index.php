@@ -1,10 +1,17 @@
 <?php
 $params = [
     'fields' => [
+        [
+            'name'  => 'rf_contact',
+            'label' => 'RF Contact ID'
+        ],
         ['name' => 'first_name'],
         ['name' => 'last_name'],
         ['name' => 'email'],
-        ['name' => 'phone'],
+        [
+            'name'  => 'user_id',
+            'label' => 'Distributor',
+        ],
         [
             'name'  => 'status',
             'label' => 'Status',
@@ -14,7 +21,8 @@ $params = [
     ],
     'search' => [
         'match' => [
-            'Leads' => ['first_name', 'last_name', 'email', 'phone']
+            'Leads' => ['first_name', 'last_name', 'email', 'phone'],
+            'Users' => ['name', 'email'],
         ]
     ]
 ];

@@ -11,8 +11,7 @@ use Cake\Auth\DefaultPasswordHasher;
  *
  * @property int $id
  * @property int $distibuter_id
- * @property string $first_name
- * @property string $last_name
+ * @property string $name
  * @property string $email
  * @property string $lead_email
  * @property string $password
@@ -56,8 +55,8 @@ class User extends Entity {
         'image_id'                  => true,
         'phone'                     => true,
         'address'                   => true,
-        'city_id'                      => true,
-        'state_id'                     => true,
+        'city_id'                   => true,
+        'state_id'                  => true,
         'zip'                       => true,
         'role'                      => true,
         'status'                    => true,
@@ -69,7 +68,7 @@ class User extends Entity {
         'subscriptions'             => true,
         'users_positions'           => true,
         'leads'                     => true,
-        'city'                     => true,
+        'city'                      => true,
         'state'                     => true,
     ];
 
@@ -82,7 +81,7 @@ class User extends Entity {
         'password',
     ];
 
-     protected function _setPassword($password) {
+    protected function _setPassword($password) {
         return (new DefaultPasswordHasher)->hash($password);
     }
 }

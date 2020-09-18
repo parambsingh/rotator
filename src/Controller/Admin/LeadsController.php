@@ -15,6 +15,7 @@ class LeadsController extends AppController {
      * @return \Cake\Http\Response|null|void Renders view
      */
     public function index() {
+        $this->paginate['contain'] = ['Users'];
         $leads = $this->paginate($this->Leads);
 
         $this->set(compact('leads'));
