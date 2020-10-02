@@ -529,16 +529,13 @@ class UsersController extends AppController {
 
     public function clickFunnel() {
         header('Content-Type: application/json');
-//        if ($json = json_decode(file_get_contents("php://input"), true)) {
-//            $data = $json;
-//        } else {
-//            $data = $_REQUEST;
-//        }
+        if ($json = json_decode(file_get_contents("php://input"), true)) {
+            $data = $json;
+        } else {
+            $data = $_REQUEST;
+        }
 
-        $data = json_decode(file_get_contents(WWW_ROOT . 'paid.json'), true);
-
-//        pr($data);
-//        die();
+        //$data = json_decode(file_get_contents(WWW_ROOT . 'paid.json'), true);
 
         file_put_contents(WWW_ROOT . 'click-funnel-data.txt', print_r($data, true));
 
@@ -549,9 +546,6 @@ class UsersController extends AppController {
             $amount = $data['original_amount'];
             $amountInCents = $data['original_amount_cents'];
             $subscriptionToken = $data['subscription_id'];
-
-            //pr($product); die;
-
             switch ($product['id']){
                 case "3087851": {
                     $qty = 2;
@@ -571,7 +565,6 @@ class UsersController extends AppController {
                 }
             }
 
-
             if (!empty($userData['name']) && !empty($userData['email'])) {
 
                 $user = $this->Users->find('all')->where(['email' => $userData['email']])->first();
@@ -582,8 +575,14 @@ class UsersController extends AppController {
 
                     $user->name = $userData['name'];
                     $user->email = $userData['email'];
+                    if(!empty($userData['rapid_funnel_distributor_id'])){
+                        $user->distributor_id = $userData['rapid_funnel_distributor_id'];
+                    }
+
                     $user->password = "Test123";
                     $user->status = true;
+                    $user->zip = $userData['zip'];
+                    $user->address = $userData['address'];
                     $user->click_funnel_json = json_encode($data);
 
                     $otherFields = ['phone', 'address', 'zip'];
@@ -624,13 +623,13 @@ class UsersController extends AppController {
 
                     if ($this->Users->save($user)) {
                         $subscriptionId = $this->saveSubscription($product, $user, $amount, $amountInCents, $subscriptionToken);
-                        $this->assignNewPosition($user->id, ($qty*100), $subscriptionId);
+                        $this->assignNewPosition($user->id, (100 * $qty), $subscriptionId);
 
                         //Save Subscription
                     }
                 } else {
-                    $subscriptionId = $this->saveSubscription($product, $user, $amount, $amountInCents, $subscriptionToken);
-                    $this->assignNewPosition($user->id, ($qty*100), $subscriptionId);
+                    // $subscriptionId = $this->saveSubscription($product, $user, $amount, $amountInCents, $subscriptionToken);
+                    // $this->assignNewPosition($user->id, (100 * $qty) , $subscriptionId);
                 }
             }
 
