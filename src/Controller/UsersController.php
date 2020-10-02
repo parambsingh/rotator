@@ -529,73 +529,152 @@ class UsersController extends AppController {
 
     public function clickFunnel() {
         header('Content-Type: application/json');
-        if ($json = json_decode(file_get_contents("php://input"), true)) {
-            $data = $json;
-        } else {
-            $data = $_REQUEST;
-        }
+//        if ($json = json_decode(file_get_contents("php://input"), true)) {
+//            $data = $json;
+//        } else {
+//            $data = $_REQUEST;
+//        }
 
+        $data = json_decode(file_get_contents(WWW_ROOT . 'paid.json'), true);
+
+//        pr($data);
+//        die();
 
         file_put_contents(WWW_ROOT . 'click-funnel-data.txt', print_r($data, true));
 
-        if (!empty($data['name']) && !empty($data['email'])) {
+        if (strtolower($data['status']) == "paid") {
 
-            $user = $this->Users->find('all')->where(['email' => $data['email']])->first();
+            $userData = $data['contact'];
+            $product = $data['products'][0];
+            $amount = $data['original_amount'];
+            $amountInCents = $data['original_amount_cents'];
+            $subscriptionToken = $data['subscription_id'];
 
-            if (empty($user)) {
+            //pr($product); die;
 
-                $user = $this->Users->newEmptyEntity();
-
-                $user->name = $data['name'];
-                $user->email = $data['email'];
-                $user->password = "Test123";
-                $user->status = true;
-
-                $otherFields = ['phone', 'address', 'zip'];
-                foreach ($otherFields as $field) {
-                    $user->phone = empty($data[$field]) ? "" : $data[$field];
+            switch ($product['id']){
+                case "3087851": {
+                    $qty = 2;
+                    break;
                 }
-
-                $this->loadModel('Cities');
-                $this->loadModel('States');
-
-                //Match State
-                $state = [];
-                if (!empty($data['state'])) {
-                    $state = $this->States->find('all')
-                        ->where([
-                            'OR' => [
-                                'name LIKE'       => '%' . $data['state'] . '%',
-                                'short_name LIKE' => '%' . $data['state'] . '%',
-                            ]
-
-                        ])->first();
-                    if (!empty($state)) {
-                        $user->state_id = $state->id;
-                    }
+                case "3087852": {
+                    $qty = 3;
+                    break;
                 }
-
-                //Match City
-                $city = [];
-                if (!empty($data['city'])) {
-                    $cityConditions = ['name LIKE' => '%' . $data['city'] . '%'];
-                    if (!empty($state)) {
-                        $cityConditions[] = ['state_id' => $state->id];
-                    }
-                    $city = $this->Cities->find('all')->where($cityConditions)->first();
-                    if (!empty($city)) {
-                        $user->city_id = $city->id;
-                    }
+                case "3087854": {
+                    $qty = 4;
+                    break;
                 }
-
-                if ($this->Users->save($user)) {
-                    $this->assignNewPosition($user->id);
+                default: {
+                    $qty = 1;
+                    break;
                 }
             }
+
+
+            if (!empty($userData['name']) && !empty($userData['email'])) {
+
+                $user = $this->Users->find('all')->where(['email' => $userData['email']])->first();
+
+                if (empty($user)) {
+
+                    $user = $this->Users->newEmptyEntity();
+
+                    $user->name = $userData['name'];
+                    $user->email = $userData['email'];
+                    $user->password = "Test123";
+                    $user->status = true;
+                    $user->click_funnel_json = json_encode($data);
+
+                    $otherFields = ['phone', 'address', 'zip'];
+                    foreach ($otherFields as $field) {
+                        $user->phone = empty($userData[$field]) ? "" : $userData[$field];
+                    }
+
+                    $this->loadModel('Cities');
+                    $this->loadModel('States');
+
+                    //Match State
+                    $state = [];
+                    if (!empty($userData['state'])) {
+                        $state = $this->States->find('all')
+                            ->where([
+                                'OR' => [
+                                    'name LIKE'       => '%' . $userData['state'] . '%',
+                                    'short_name LIKE' => '%' . $userData['state'] . '%',
+                                ]
+                            ])->first();
+                        if (!empty($state)) {
+                            $user->state_id = $state->id;
+                        }
+                    }
+
+                    //Match City
+                    $city = [];
+                    if (!empty($userData['city'])) {
+                        $cityConditions = ['name LIKE' => '%' . $userData['city'] . '%'];
+                        if (!empty($state)) {
+                            $cityConditions[] = ['state_id' => $state->id];
+                        }
+                        $city = $this->Cities->find('all')->where($cityConditions)->first();
+                        if (!empty($city)) {
+                            $user->city_id = $city->id;
+                        }
+                    }
+
+                    if ($this->Users->save($user)) {
+                        $subscriptionId = $this->saveSubscription($product, $user, $amount, $amountInCents, $subscriptionToken);
+                        $this->assignNewPosition($user->id, ($qty*100), $subscriptionId);
+
+                        //Save Subscription
+                    }
+                } else {
+                    $subscriptionId = $this->saveSubscription($product, $user, $amount, $amountInCents, $subscriptionToken);
+                    $this->assignNewPosition($user->id, ($qty*100), $subscriptionId);
+                }
+            }
+
+            echo json_encode(['time' => date(SQL_DATETIME)]);
+        } else {
+            echo json_encode(array('Failed'));
         }
-        echo json_encode(['time' => date(SQL_DATETIME)]);
-        //echo json_encode(array('OK'));
         exit;
+    }
+
+    public function saveSubscription($product, $user, $amount, $amountInCents, $subscriptionToken) {
+        $this->loadModel('Plans');
+        $this->loadModel('Subscriptions');
+
+        $plan = $this->Plans->find('all')->where(['stripe_plan' => $product['stripe_plan']])->first();
+
+        if (empty($plan)) {
+            $plan = $this->Plans->newEmptyEntity();
+            $plan->name = $product['name'];
+            $plan->stripe_plan = $product['stripe_plan'];
+            $plan->price = $amountInCents / 100;
+            $plan->type = "Subscription";
+            $plan->status = true;
+
+            $this->Plans->save($plan);
+        }
+
+
+        $subscription = $this->Subscriptions->newEmptyEntity();
+
+        $subscription->plan_id = $plan->id;
+        $subscription->user_id = $user->id;
+        $subscription->subscription_token = $subscriptionToken;
+        $subscription->amount = $amountInCents / 100;
+        $subscription->discount = 0;
+        $subscription->start_at = date(SQL_DATETIME);
+        $subscription->end_at = date(SQL_DATETIME, strtotime('+ 1 month'));
+        $subscription->response_json = json_encode(['product' => $product, 'amount' => $amount]);
+        $subscription->status = "active";
+
+        $this->Subscriptions->save($subscription);
+
+        return $subscription->id;
+
     }
 
 }

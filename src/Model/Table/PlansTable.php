@@ -29,16 +29,14 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class PlansTable extends Table
-{
+class PlansTable extends Table {
     /**
      * Initialize method
      *
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config): void
-    {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('plans');
@@ -58,8 +56,7 @@ class PlansTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator): Validator
-    {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -69,9 +66,6 @@ class PlansTable extends Table
             ->maxLength('name', 255)
             ->allowEmptyString('name');
 
-        $validator
-            ->scalar('description')
-            ->allowEmptyString('description');
 
         $validator
             ->scalar('type')
@@ -82,13 +76,6 @@ class PlansTable extends Table
             ->decimal('price')
             ->allowEmptyString('price');
 
-        $validator
-            ->integer('no_of_subscriptions')
-            ->allowEmptyString('no_of_subscriptions');
-
-        $validator
-            ->boolean('status')
-            ->allowEmptyString('status');
 
         return $validator;
     }

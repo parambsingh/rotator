@@ -172,7 +172,6 @@ class AppController extends Controller {
         $this->set('options', $options);
     }
 
-
     public function getContent($pageName) {
         $this->loadModel('Pages');
         $page = $this->Pages->find('all')->contain(['Images'])->where(['page' => $pageName])->first();
@@ -216,7 +215,7 @@ class AppController extends Controller {
         return 'data:image/' . $type . ';base64,' . base64_encode($data);
     }
 
-    public function assignNewPosition($userId) {
+    public function assignNewPosition($userId, $limitCount = 1, $subscriptionId = 1) {
         $this->loadModel('UsersPositions');
 
         //Get Max Position Order
@@ -228,10 +227,10 @@ class AppController extends Controller {
         $userPosition->user_id = $userId;
         $userPosition->position_no = 1;
         $userPosition->position_order = $maxPositionOrder + 1;
-        $userPosition->lead_limit = 1;
+        $userPosition->lead_limit = $limitCount;
 
         $userPosition->subscription_status = "Active";
-        $userPosition->subscription_id = 1;
+        $userPosition->subscription_id = $subscriptionId;
 
         $this->UsersPositions->save($userPosition);
     }

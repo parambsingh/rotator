@@ -20,8 +20,7 @@ use Cake\ORM\Entity;
  *
  * @property \App\Model\Entity\Subscription[] $subscriptions
  */
-class Plan extends Entity
-{
+class Plan extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -32,14 +31,15 @@ class Plan extends Entity
      * @var array
      */
     protected $_accessible = [
-        'name' => true,
-        'description' => true,
-        'type' => true,
-        'price' => true,
+        'name'                => true,
+        'stripe_plan'         => true,
+        'description'         => true,
+        'type'                => true,
+        'price'               => true,
         'no_of_subscriptions' => true,
-        'status' => true,
-        'created' => true,
-        'modified' => true,
-        'subscriptions' => true,
+        'status'              => true,
+        'created'             => true,
+        'modified'            => true,
+        'subscriptions'       => true,
     ];
 }

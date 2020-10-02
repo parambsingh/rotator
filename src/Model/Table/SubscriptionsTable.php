@@ -99,7 +99,6 @@ class SubscriptionsTable extends Table {
             ->notEmptyDateTime('end_at');
 
 
-
         return $validator;
     }
 
