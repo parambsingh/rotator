@@ -54,27 +54,34 @@ $menuItems = [
         ]
     ],
     [
-        'controller' => 'Webinars',
-        'icon_class' => 'fa fa-tv',
+        'label'            => 'Mail Chimp',
+        'controller'       => 'MailChimp',
+        'action'           => 'setting',
+        'icon_class'       => 'fa fa-envelope',
         'default_sub_menu' => false,
-        'custom_sub_menu' => [
-            [
-                'label'      => 'List Webinars',
-                'controller' => 'Webinars',
-                'action'     => 'index',
-                'icon_class' => 'fa fa-list',
-            ],
-            [
-                'label'      => 'Settings',
-                'controller' => 'Webinars',
-                'action'     => 'settings',
-                'icon_class' => 'fa fa-gear',
-            ],
-        ]
     ],
+//    [
+//        'controller'       => 'Webinars',
+//        'icon_class'       => 'fa fa-tv',
+//        'default_sub_menu' => false,
+//        'custom_sub_menu'  => [
+//            [
+//                'label'      => 'List Webinars',
+//                'controller' => 'Webinars',
+//                'action'     => 'index',
+//                'icon_class' => 'fa fa-list',
+//            ],
+//            [
+//                'label'      => 'Settings',
+//                'controller' => 'Webinars',
+//                'action'     => 'settings',
+//                'icon_class' => 'fa fa-gear',
+//            ],
+//        ]
+//    ],
     [
-        'controller' => 'Leads',
-        'icon_class' => 'fa fa-users',
+        'controller'      => 'Leads',
+        'icon_class'      => 'fa fa-users',
         'custom_sub_menu' => [
             [
                 'label'      => 'Import Leads',
@@ -90,57 +97,57 @@ $menuItems = [
             ],
         ]
     ],
-    [
-        'label'            => 'Email Campaigns',
-        'controller'       => 'Emails',
-        'action'           => 'scheduleEmail',
-        'icon_class'       => 'fa fa-clock-o',
-        'default_sub_menu' => false,
-        'custom_sub_menu'  => [
-            [
-                'label'      => 'New Campaign',
-                'controller' => 'EmailCampaigns',
-                'action'     => 'add',
-                'icon_class' => 'fa fa-plus',
-            ],
-            ['label'      => 'List Campaigns',
-                'controller' => 'EmailCampaigns',
-                'action'     => 'index',
-                'icon_class' => 'fa fa-list',
-            ],
-            [
-                'label'      => 'Not Seen Emails',
-                'controller' => 'EmailCampaigns',
-                'action'     => 'notSeenEmails',
-                'icon_class' => 'fa fa-eye-slash',
-            ],
-            [
-                'label'      => 'New Email Template',
-                'controller' => 'EmailTemplates',
-                'action'     => 'add',
-                'icon_class' => 'fa fa-envelope',
-            ],
-            [
-                'label'      => 'Email Templates',
-                'controller' => 'EmailTemplates',
-                'action'     => 'index',
-                'icon_class' => 'fa fa-envelope',
-            ],
-        ]
-    ],
-    [
-        'controller'       => 'Subscriptions',
-        'icon_class'       => 'fa fa-cc',
-        'default_sub_menu' => false,
-    ],
-    [
-        'controller' => 'Plans',
-        'icon_class' => 'fa fa-snowflake-o',
-    ],
-    [
-        'controller' => 'Coupons',
-        'icon_class' => 'fa fa-map',
-    ],
+//    [
+//        'label'            => 'Email Campaigns',
+//        'controller'       => 'Emails',
+//        'action'           => 'scheduleEmail',
+//        'icon_class'       => 'fa fa-clock-o',
+//        'default_sub_menu' => false,
+//        'custom_sub_menu'  => [
+//            [
+//                'label'      => 'New Campaign',
+//                'controller' => 'EmailCampaigns',
+//                'action'     => 'add',
+//                'icon_class' => 'fa fa-plus',
+//            ],
+//            ['label'      => 'List Campaigns',
+//             'controller' => 'EmailCampaigns',
+//             'action'     => 'index',
+//             'icon_class' => 'fa fa-list',
+//            ],
+//            [
+//                'label'      => 'Not Seen Emails',
+//                'controller' => 'EmailCampaigns',
+//                'action'     => 'notSeenEmails',
+//                'icon_class' => 'fa fa-eye-slash',
+//            ],
+//            [
+//                'label'      => 'New Email Template',
+//                'controller' => 'EmailTemplates',
+//                'action'     => 'add',
+//                'icon_class' => 'fa fa-envelope',
+//            ],
+//            [
+//                'label'      => 'Email Templates',
+//                'controller' => 'EmailTemplates',
+//                'action'     => 'index',
+//                'icon_class' => 'fa fa-envelope',
+//            ],
+//        ]
+//    ],
+//    [
+//        'controller'       => 'Subscriptions',
+//        'icon_class'       => 'fa fa-cc',
+//        'default_sub_menu' => false,
+//    ],
+//    [
+//        'controller' => 'Plans',
+//        'icon_class' => 'fa fa-snowflake-o',
+//    ],
+//    [
+//        'controller' => 'Coupons',
+//        'icon_class' => 'fa fa-map',
+//    ],
 
     [
         'controller' => 'States',

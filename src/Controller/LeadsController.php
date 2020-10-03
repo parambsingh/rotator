@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use \DrewM\MailChimp\MailChimp;
+
 /**
  * Leads Controller
  *
@@ -14,7 +16,8 @@ class LeadsController extends AppController {
     public function initialize(): void {
         parent::initialize();
         $allowedActions = [
-            'wpLead'
+            'wpLead',
+            'mcSubscribe'
         ];
         $this->Auth->allow($allowedActions);
 
@@ -267,6 +270,12 @@ class LeadsController extends AppController {
             $this->responseData['rf_contact_id'] = $savedLead->rf_contact;
             $this->responseData['rf_user_id'] = ROTATOR_TEST_MODE ? 181405 : $savedLead->user->distributor_id;
 
+            try {
+                $this->mcSubscribe($savedLead->id);
+            } catch (\Exception $e) {
+                //Do Nothing
+            }
+
             $options = [
                 'layout'      => 'reserve_spot',
                 'emailFormat' => 'both',
@@ -301,6 +310,8 @@ class LeadsController extends AppController {
                         'distributorPhone' => $savedLead->user->phone,
                     ]
                 ];
+
+                $this->EmailManager->sendEmail($options);
 
             } catch (\Error $e) {
                 //Something Went Wrong
@@ -480,6 +491,92 @@ class LeadsController extends AppController {
 
         echo $this->responseFormat();
         exit;
+    }
+
+    public function mcSubscribe($leadId, $slug = "nulife-leads") {
+        $this->loadModel('McDetails');
+
+        $mc = $this->McDetails->find()->where(['slug' => $slug])->first();
+        $lead = $this->Leads->find()->contain(['Users'])->where(['Leads.id' => $leadId])->first();
+        $mcFields = json_decode($mc->merged_fields_json, true);
+        $mcMergeFields = json_decode($mc->mc_merge_fields, true);
+
+        $MailChimp = new MailChimp($mc->api_key);
+
+        $finalFields = [];
+        $mergeFields = [];
+
+
+        foreach ($mcMergeFields as $field) {
+            $mergeFields[$field['tag']] = ($field['type'] == "text") ? "NA" : 1;
+        }
+
+
+        foreach ($mcFields as $field => $match) {
+            switch ($field) {
+                case "email":
+                    {
+                        $mergeFields[$match] = $lead->email;
+                        break;
+                    }
+                case "rf_distributor_id":
+                    {
+                        $mergeFields[$match] = $lead->user->distributor_id;
+                        break;
+                    }
+                case "rf_contact_id":
+                    {
+                        $mergeFields[$match] = $lead->rf_contact;
+                        break;
+                    }
+                case "phone":
+                    {
+                        $mergeFields[$match] = $lead->phone;
+                        break;
+                    }
+
+                case "first_name":
+                    {
+                        $mergeFields[$match] = empty($lead->first_name) ? "NA" : $lead->first_name;
+                        break;
+                    }
+                case "last_name":
+                    {
+                        $mergeFields[$match] = empty($lead->last_name) ? "NA" : $lead->last_name;
+                        break;
+                    }
+                case "address":
+                    {
+                        $mergeFields[$match] = empty($lead->address) ? "NA" : $lead->address;
+                        break;
+                    }
+                case "city":
+                    {
+                        $mergeFields[$match] = empty($lead->city) ? "NA" : $lead->city;
+                        break;
+                    }
+                case "state":
+                    {
+                        $mergeFields[$match] = empty($lead->state) ? "NA" : $lead->state;
+                        break;
+                    }
+                case "zip":
+                    {
+                        $mergeFields[$match] = empty($lead->zip) ? "NA" : $lead->zip;
+                        break;
+                    }
+
+            }
+        }
+
+
+        $finalFields['status'] = "subscribed";
+        $finalFields['email_address'] = $lead->email;
+        $finalFields['merge_fields'] = $mergeFields;
+
+        $result = $MailChimp->post("lists/" . $mc->list_id . "/members", $finalFields);
+
+        return true;
     }
 
 }
