@@ -202,7 +202,7 @@
 
         #templateHeader {
 
-            background-color: #4791D0;;
+            background-color: #ffffff;;
 
             background-image: none;
 
@@ -266,7 +266,7 @@
 
         #templateBody {
 
-            background-color: #4791D0;;
+            background-color: #ffffff;;
 
             background-image: none;
 
@@ -287,7 +287,7 @@
 
         .bodyContainer {
 
-            background-color: #4791D0;;
+            background-color: #ffffff;;
 
             background-image: none;
 
@@ -330,7 +330,7 @@
 
         #templateFooter {
 
-            background-color: #4791D0;
+            background-color: #ffffff;
 
             background-image: none;
 
@@ -668,7 +668,7 @@
                                                         </tr>
 
                                                         <tr>
-                                                            <td style="background-color:#4791D0;;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%; padding: 10px 0px;">
+                                                            <td style="background-color:#ffffff;;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%; padding: 10px 0px;">
                                                                 &nbsp;
                                                             </td>
                                                         </tr>
@@ -722,7 +722,7 @@
                                                         <tbody>
                                                         <tr>
                                                             <td class="mcnTextContent"
-                                                                style="padding:20px 18px 20px 18px; text-align: left; font-size: 14px; line-height: 150%; font-family: Helvetica; background-color: #4791D0;;"
+                                                                style="padding:20px 18px 20px 18px; text-align: left; font-size: 14px; line-height: 150%; font-family: Helvetica; background-color: #ffffff;;"
                                                                 valign="top">
                                                                 <?= $this->fetch('content'); ?>
                                                             </td>
@@ -769,7 +769,7 @@
                                                style="min-width:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;table-layout:fixed !important;">
                                             <tbody class="mcnDividerBlockOuter">
                                             <tr>
-                                                <td style="background-color:#4791D0;;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%; padding: 10px 0px;">
+                                                <td style="background-color:#ffffff;;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%; padding: 10px 0px;">
                                                     &nbsp;
                                                 </td>
                                             </tr>
@@ -779,7 +779,7 @@
                                                     <table class="mcnDividerContent"
 
                                                            width="100%" cellspacing="0" cellpadding="0" border="0"
-                                                           style="min-width:100%;border-top-width:2px;border-top-style:solid;border-top-color:#4791D0;;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
+                                                           style="min-width:100%;border-top-width:2px;border-top-style:solid;border-top-color:#ffffff;;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
                                                         <tbody>
                                                         <tr>
                                                             <td style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">

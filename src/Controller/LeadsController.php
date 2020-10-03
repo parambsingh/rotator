@@ -164,7 +164,7 @@ class LeadsController extends AppController {
 
         $lead = $this->Leads->find()->where(['Leads.email' => $requestData['email']])->first();
 
-        $distributorId = 181406;
+        $distributorId = 181405;
         if (empty($lead)) {
             $lead = $this->Leads->newEmptyEntity();
             if ($this->request->is('post')) {
@@ -179,7 +179,7 @@ class LeadsController extends AppController {
                     //Sending TO Rapid Funnel
                     $distributorId = $slot->user->distributor_id;
                     $params = [
-                        'userId'    => ROTATOR_TEST_MODE ? 181406 : $distributorId,
+                        'userId'    => ROTATOR_TEST_MODE ? 181405 : $distributorId,
                         'firstName' => empty($requestData['first_name']) ? 'NA' : $requestData['first_name'],
                         'lastName'  => empty($requestData['last_name']) ? 'NA' : $requestData['last_name'],
                         'email'     => empty($requestData['email']) ? 'na@na.com' : $requestData['email'],
@@ -258,7 +258,7 @@ class LeadsController extends AppController {
             }
         }
 
-        $this->responseData['rf_contact_id'] = 181406;
+        $this->responseData['rf_contact_id'] = 181405;
         $this->responseData['rf_user_id'] = $distributorId;
 
         if ($status != "Error") {
@@ -271,7 +271,7 @@ class LeadsController extends AppController {
                 'layout'      => 'reserve_spot',
                 'emailFormat' => 'both',
                 'template'    => 'reserve_lead_spot',
-                'to'          => EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
+                'to'          => !EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
                 'subject'     => " Reserve Your Spot",
                 'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
                 'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
@@ -286,6 +286,21 @@ class LeadsController extends AppController {
             $this->loadComponent('EmailManager');
             try {
                 $this->EmailManager->sendEmail($options);
+
+                $options = [
+                    'layout'      => 'reserve_spot',
+                    'emailFormat' => 'both',
+                    'template'    => 'water_report',
+                    'to'          => !EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
+                    'subject'     => "Water Report " . LEAD_FROM_EMAIL_TITLE,
+                    'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+                    'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+                    'viewVars'    => [
+                        'contactFirstName' => $savedLead->first_name,
+                        'distributorName'  => $savedLead->user->name,
+                        'distributorPhone' => $savedLead->user->phone,
+                    ]
+                ];
 
             } catch (\Error $e) {
                 //Something Went Wrong
