@@ -265,7 +265,7 @@ class LeadsController extends AppController {
             $savedLead = $this->Leads->find()->contain(['Users'])->where(['Leads.id' => $lead->id])->first();
 
             $this->responseData['rf_contact_id'] = $savedLead->rf_contact;
-            $this->responseData['rf_user_id'] = $savedLead->user->distributor_id;
+            $this->responseData['rf_user_id'] = ROTATOR_TEST_MODE ? 181405 : $savedLead->user->distributor_id;
 
             $options = [
                 'layout'      => 'reserve_spot',
@@ -279,7 +279,7 @@ class LeadsController extends AppController {
                     'contactFirstName' => $savedLead->first_name,
                     'distributorName'  => $savedLead->user->name,
                     'distributorPhone' => $savedLead->user->phone,
-                    'url'              => "https://nulifeinfo.com/res/16933/" . empty($savedLead->user->distributor_id) ? $distributorId :$savedLead->user->distributor_id . "/" . $savedLead->rf_contact . "?source=web",
+                    'url'              => "https://nulifeinfo.com/res/16933/" . $this->responseData['rf_user_id'] . "/" . $savedLead->rf_contact . "?source=web",
                 ]
             ];
 

@@ -1,341 +1,104 @@
 Array
 (
-    [id] => 66882111
-    [products] => Array
+    [id] => 1415417126
+    [page_id] => 42435427
+    [first_name] => Franklin
+    [last_name] => Johnson 
+    [name] => Franklin Johnson
+    [address] => 12002 66 Ave So
+    [city] => Seattle
+    [country] => US
+    [state] => WA
+    [zip] => 98178
+    [email] => laulima@msn.com
+    [phone] => 2062406078
+    [webinar_at] => 
+    [webinar_last_time] => 
+    [webinar_ext] => x1GEzwem
+    [created_at] => 2020-10-02T18:52:48.000Z
+    [updated_at] => 2020-10-02T18:52:54.000Z
+    [ip] => 2601:601:1001:ee40:c4db:5826:7bfe:c82d
+    [funnel_id] => 9713885
+    [funnel_step_id] => 56584455
+    [unsubscribed_at] => 
+    [cf_uvid] => null
+    [cart_affiliate_id] => 
+    [shipping_address] => 
+    [shipping_city] => 
+    [shipping_country] => 
+    [shipping_state] => 
+    [shipping_zip] => 
+    [vat_number] => 
+    [affiliate_id] => 
+    [aff_sub] => 
+    [aff_sub2] => 
+    [cf_affiliate_id] => 
+    [contact_profile] => Array
         (
-            [0] => Array
-                (
-                    [id] => 3087851
-                    [name] => NuLife Coop Rotator 2 Ad Slots
-                    [stripe_plan] => price_1HU4F5G2hJSb9zQlgt388BJ5
-                    [amount] => Array
-                        (
-                            [fractional] => 0.0
-                            [currency] => Array
-                                (
-                                    [id] => usd
-                                    [alternate_symbols] => Array
-                                        (
-                                            [0] => US$
-                                        )
-
-                                    [decimal_mark] => .
-                                    [disambiguate_symbol] => US$
-                                    [html_entity] => $
-                                    [iso_code] => USD
-                                    [iso_numeric] => 840
-                                    [name] => United States Dollar
-                                    [priority] => 1
-                                    [smallest_denomination] => 1
-                                    [subunit] => Cent
-                                    [subunit_to_unit] => 100
-                                    [symbol] => $
-                                    [symbol_first] => 1
-                                    [thousands_separator] => ,
-                                )
-
-                            [bank] => Array
-                                (
-                                    [store] => Array
-                                        (
-                                            [index] => Array
-                                                (
-                                                    [EUR_TO_USD] => 1.1787
-                                                    [EUR_TO_JPY] => 122.7
-                                                    [EUR_TO_BGN] => 1.9558
-                                                    [EUR_TO_CZK] => 26.98
-                                                    [EUR_TO_DKK] => 7.4408
-                                                    [EUR_TO_GBP] => 0.91608
-                                                    [EUR_TO_HUF] => 363.08
-                                                    [EUR_TO_PLN] => 4.4837
-                                                    [EUR_TO_RON] => 4.86
-                                                    [EUR_TO_SEK] => 10.4055
-                                                    [EUR_TO_CHF] => 1.0761
-                                                    [EUR_TO_ISK] => 161.6
-                                                    [EUR_TO_NOK] => 10.884
-                                                    [EUR_TO_HRK] => 7.5413
-                                                    [EUR_TO_RUB] => 89.9825
-                                                    [EUR_TO_TRY] => 8.971
-                                                    [EUR_TO_AUD] => 1.624
-                                                    [EUR_TO_BRL] => 6.4262
-                                                    [EUR_TO_CAD] => 1.5604
-                                                    [EUR_TO_CNY] => 7.9992
-                                                    [EUR_TO_HKD] => 9.1349
-                                                    [EUR_TO_IDR] => 17437.0
-                                                    [EUR_TO_ILS] => 4.0576
-                                                    [EUR_TO_INR] => 86.695
-                                                    [EUR_TO_KRW] => 1372.84
-                                                    [EUR_TO_MXN] => 25.3145
-                                                    [EUR_TO_MYR] => 4.8592
-                                                    [EUR_TO_NZD] => 1.759
-                                                    [EUR_TO_PHP] => 57.142
-                                                    [EUR_TO_SGD] => 1.6027
-                                                    [EUR_TO_THB] => 36.823
-                                                    [EUR_TO_ZAR] => 19.7416
-                                                    [EUR_TO_EUR] => 1
-                                                )
-
-                                            [options] => Array
-                                                (
-                                                )
-
-                                            [mutex] => Array
-                                                (
-                                                )
-
-                                            [in_transaction] => 
-                                        )
-
-                                    [rounding_method] => 
-                                    [currency_string] => 
-                                    [rates_updated_at] => 2020-09-21T00:00:00.000+00:00
-                                    [last_updated] => 2020-09-22T08:37:44.834+00:00
-                                )
-
-                        )
-
-                    [amount_currency] => USD
-                    [created_at] => 2020-09-22T05:47:13.000Z
-                    [updated_at] => 2020-09-22T08:34:11.000Z
-                    [subject] => 
-                    [html_body] => 
-                    [thank_you_page_id] => 58031242
-                    [stripe_cancel_after_payments] => 
-                    [bump] => 
-                    [cart_product_id] => 
-                    [billing_integration] => stripe_account-144131
-                    [infusionsoft_product_id] => 
-                    [infusionsoft_subscription_id] => 
-                    [ontraport_product_id] => 
-                    [ontraport_payment_count] => 
-                    [ontraport_payment_type] => 
-                    [ontraport_unit] => 
-                    [ontraport_gateway_id] => 
-                    [ontraport_invoice_id] => 
-                    [commissionable] => 
-                    [statement_descriptor] => 
-                    [netsuite_id] => 
-                    [netsuite_tag] => 
-                    [netsuite_class] => 
-                )
-
-        )
-
-    [member_id] => 
-    [contact] => Array
-        (
-            [id] => 1401698794
-            [page_id] => 42435427
-            [first_name] => Sport
-            [last_name] => Manager
-            [name] => Sport Manager
-            [address] => 3501 Jack Northrop Avenue
-            [city] => Hawthorne
+            [id] => 680600264
+            [first_name] => Franklin
+            [last_name] => Johnson
+            [address] => 12002 66 Ave So
+            [city] => Seattle
             [country] => US
-            [state] => California
-            [zip] => 90250
-            [email] => sport@strategiclight.com
-            [phone] => 8642726278
-            [webinar_at] => 
-            [webinar_last_time] => 
-            [webinar_ext] => nWVoxbPL
-            [created_at] => 2020-09-22T08:48:52.000Z
-            [updated_at] => 2020-09-22T08:49:00.000Z
-            [ip] => 216.151.180.15
-            [funnel_id] => 9713885
-            [funnel_step_id] => 56584455
+            [state] => WA
+            [zip] => 98178
+            [email] => laulima@msn.com
+            [phone] => 2062406078
+            [created_at] => 2020-10-02T18:47:51.000Z
+            [updated_at] => 2020-10-02T18:50:54.000Z
             [unsubscribed_at] => 
-            [cf_uvid] => null
-            [cart_affiliate_id] => 
+            [cf_uvid] => 2bff1071db7799a6a1183ff25c5ddd1c
             [shipping_address] => 
-            [shipping_city] => 
             [shipping_country] => 
+            [shipping_city] => 
             [shipping_state] => 
             [shipping_zip] => 
             [vat_number] => 
-            [affiliate_id] => 
-            [aff_sub] => 
-            [aff_sub2] => 
+            [middle_name] => 
+            [websites] => 
+            [location_general] => Seattle, Washington, United States
+            [normalized_location] => 
+            [deduced_location] => 
+            [age] => 44
+            [gender] => Female
+            [age_range_lower] => 39
+            [age_range_upper] => 49
+            [action_score] => 
+            [known_ltv] => 0.00
+            [tags] => Array
+                (
+                )
+
+        )
+
+    [additional_info] => Array
+        (
             [cf_affiliate_id] => 
-            [contact_profile] => Array
+            [time_zone] => Pacific Time (US & Canada)
+            [utm_source] => 
+            [utm_medium] => 
+            [utm_campaign] => 
+            [utm_term] => 
+            [utm_content] => 
+            [cf_uvid] => null
+            [webinar_delay] => -63768855037251
+            [purchase] => Array
                 (
-                    [id] => 675328047
-                    [first_name] => Sport
-                    [last_name] => Manager
-                    [address] => 3501 Jack Northrop Avenue
-                    [city] => Hawthorne
-                    [country] => US
-                    [state] => California
-                    [zip] => 90250
-                    [email] => sport@strategiclight.com
-                    [phone] => 8642726278
-                    [created_at] => 2020-09-22T08:48:52.000Z
-                    [updated_at] => 2020-09-22T08:48:52.000Z
-                    [unsubscribed_at] => 
-                    [cf_uvid] => 5902ff8d6474e822217df86196c4d5b6
-                    [shipping_address] => 
-                    [shipping_country] => 
-                    [shipping_city] => 
-                    [shipping_state] => 
-                    [shipping_zip] => 
-                    [vat_number] => 
-                    [middle_name] => 
-                    [websites] => 
-                    [location_general] => 
-                    [normalized_location] => 
-                    [deduced_location] => 
-                    [age] => 
-                    [gender] => 
-                    [age_range_lower] => 
-                    [age_range_upper] => 
-                    [action_score] => 
-                    [known_ltv] => 0.00
-                    [tags] => Array
+                    [product_ids] => Array
                         (
+                            [0] => 3087843
                         )
 
+                    [payment_method_nonce] => 
+                    [order_saas_url] => 
+                    [stripe_customer_token] => tok_1HXtN5G2hJSb9zQlpDARtTfp
                 )
 
-            [additional_info] => Array
-                (
-                    [cf_affiliate_id] => 
-                    [time_zone] => Eastern Time (US & Canada)
-                    [utm_source] => 
-                    [utm_medium] => 
-                    [utm_campaign] => 
-                    [utm_term] => 
-                    [utm_content] => 
-                    [cf_uvid] => null
-                    [webinar_delay] => -63767965854277
-                    [purchase] => Array
-                        (
-                            [product_ids] => Array
-                                (
-                                    [0] => 3087851
-                                )
-
-                            [payment_method_nonce] => 
-                            [order_saas_url] => 
-                            [stripe_customer_token] => tok_1HU7B9G2hJSb9zQlPTtcHYto
-                        )
-
-                    [rapid_funnel_distributor_id] => 88579
-                    [product_quantity] => 1
-                )
-
-            [time_zone] => Eastern Time (US & Canada)
-            [rapid_funnel_distributor_id] => 88579
             [product_quantity] => 1
         )
 
-    [funnel_id] => 9713885
-    [stripe_customer_token] => tok_1HU7B9G2hJSb9zQlPTtcHYto
-    [created_at] => 2020-09-22T08:48:54.000Z
-    [updated_at] => 2020-09-22T08:48:54.000Z
-    [subscription_id] => sub_I4FgKvNnAuM409
-    [charge_id] => 
-    [ctransreceipt] => 
-    [status] => paid
-    [fulfillment_status] => 
-    [fulfillment_id] => 
-    [fulfillments] => Array
-        (
-        )
-
-    [payments_count] => 1
-    [infusionsoft_ccid] => 
-    [oap_customer_id] => 
-    [payment_instrument_type] => 
-    [original_amount_cents] => 200
-    [original_amount] => Array
-        (
-            [fractional] => 200.0
-            [currency] => Array
-                (
-                    [id] => usd
-                    [alternate_symbols] => Array
-                        (
-                            [0] => US$
-                        )
-
-                    [decimal_mark] => .
-                    [disambiguate_symbol] => US$
-                    [html_entity] => $
-                    [iso_code] => USD
-                    [iso_numeric] => 840
-                    [name] => United States Dollar
-                    [priority] => 1
-                    [smallest_denomination] => 1
-                    [subunit] => Cent
-                    [subunit_to_unit] => 100
-                    [symbol] => $
-                    [symbol_first] => 1
-                    [thousands_separator] => ,
-                )
-
-            [bank] => Array
-                (
-                    [store] => Array
-                        (
-                            [index] => Array
-                                (
-                                    [EUR_TO_USD] => 1.1787
-                                    [EUR_TO_JPY] => 122.7
-                                    [EUR_TO_BGN] => 1.9558
-                                    [EUR_TO_CZK] => 26.98
-                                    [EUR_TO_DKK] => 7.4408
-                                    [EUR_TO_GBP] => 0.91608
-                                    [EUR_TO_HUF] => 363.08
-                                    [EUR_TO_PLN] => 4.4837
-                                    [EUR_TO_RON] => 4.86
-                                    [EUR_TO_SEK] => 10.4055
-                                    [EUR_TO_CHF] => 1.0761
-                                    [EUR_TO_ISK] => 161.6
-                                    [EUR_TO_NOK] => 10.884
-                                    [EUR_TO_HRK] => 7.5413
-                                    [EUR_TO_RUB] => 89.9825
-                                    [EUR_TO_TRY] => 8.971
-                                    [EUR_TO_AUD] => 1.624
-                                    [EUR_TO_BRL] => 6.4262
-                                    [EUR_TO_CAD] => 1.5604
-                                    [EUR_TO_CNY] => 7.9992
-                                    [EUR_TO_HKD] => 9.1349
-                                    [EUR_TO_IDR] => 17437.0
-                                    [EUR_TO_ILS] => 4.0576
-                                    [EUR_TO_INR] => 86.695
-                                    [EUR_TO_KRW] => 1372.84
-                                    [EUR_TO_MXN] => 25.3145
-                                    [EUR_TO_MYR] => 4.8592
-                                    [EUR_TO_NZD] => 1.759
-                                    [EUR_TO_PHP] => 57.142
-                                    [EUR_TO_SGD] => 1.6027
-                                    [EUR_TO_THB] => 36.823
-                                    [EUR_TO_ZAR] => 19.7416
-                                    [EUR_TO_EUR] => 1
-                                )
-
-                            [options] => Array
-                                (
-                                )
-
-                            [mutex] => Array
-                                (
-                                )
-
-                            [in_transaction] => 
-                        )
-
-                    [rounding_method] => 
-                    [currency_string] => 
-                    [rates_updated_at] => 2020-09-21T00:00:00.000+00:00
-                    [last_updated] => 2020-09-22T08:37:44.834+00:00
-                )
-
-        )
-
-    [original_amount_currency] => USD
-    [manual] => 
-    [error_message] => 
-    [nmi_customer_vault_id] => 
+    [time_zone] => Pacific Time (US & Canada)
+    [product_quantity] => 1
     [event] => updated
 )
