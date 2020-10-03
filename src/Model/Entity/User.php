@@ -60,6 +60,7 @@ class User extends Entity {
         'zip'                       => true,
         'role'                      => true,
         'status'                    => true,
+        'click_funnel_json'         => true,
         'created'                   => true,
         'modified'                  => true,
         'image'                     => true,

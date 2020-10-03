@@ -172,7 +172,6 @@ class AppController extends Controller {
         $this->set('options', $options);
     }
 
-
     public function getContent($pageName) {
         $this->loadModel('Pages');
         $page = $this->Pages->find('all')->contain(['Images'])->where(['page' => $pageName])->first();

@@ -578,10 +578,10 @@ class UsersController extends AppController {
                     if(!empty($userData['rapid_funnel_distributor_id'])){
                         $user->distributor_id = $userData['rapid_funnel_distributor_id'];
                     }
-                    
+
                     $user->password = "Test123";
                     $user->status = true;
-                     $user->zip = $userData['zip'];
+                    $user->zip = $userData['zip'];
                     $user->address = $userData['address'];
                     $user->click_funnel_json = json_encode($data);
 

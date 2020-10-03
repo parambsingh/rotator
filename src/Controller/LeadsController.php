@@ -161,9 +161,10 @@ class LeadsController extends AppController {
 
         $status = "Error";
         $requestData = $this->request->getData();
+
         $lead = $this->Leads->find()->where(['Leads.email' => $requestData['email']])->first();
 
-        $distributorId = 0;
+        $distributorId = 181405;
         if (empty($lead)) {
             $lead = $this->Leads->newEmptyEntity();
             if ($this->request->is('post')) {
@@ -178,7 +179,7 @@ class LeadsController extends AppController {
                     //Sending TO Rapid Funnel
                     $distributorId = $slot->user->distributor_id;
                     $params = [
-                        'userId'    => ROTATOR_TEST_MODE ? 181406 : $distributorId,
+                        'userId'    => ROTATOR_TEST_MODE ? 181405 : $distributorId,
                         'firstName' => empty($requestData['first_name']) ? 'NA' : $requestData['first_name'],
                         'lastName'  => empty($requestData['last_name']) ? 'NA' : $requestData['last_name'],
                         'email'     => empty($requestData['email']) ? 'na@na.com' : $requestData['email'],
@@ -209,6 +210,7 @@ class LeadsController extends AppController {
             $status = "Already Exists";
         }
 
+
         $leadLog = $this->LeadLogs->newEmptyEntity();
 
         //Test
@@ -229,21 +231,64 @@ class LeadsController extends AppController {
         if ($this->LeadLogs->save($leadLog)) {
             //Saved
         } else {
-            pr($leadLog->getErrors());
+            //pr($leadLog->getErrors());
         }
 
-        $apiResponse = json_decode($apiResponseData, true);
+        try {
+            if (is_string($apiResponseData)) {
+                $apiResponse = json_decode($apiResponseData, true);
+            } else {
+                $apiResponse['response']['contactId'] = empty($lead) ? 0 : $lead->rf_contact;
+            }
+        } catch (\Exception $e) {
+            $apiResponse['response']['status'] = 520;
+            $apiResponse['response']['contactId'] = empty($lead) ? 0 : $lead->rf_contact;
+        }
 
         //Update User Position as filled
         if (!empty($apiResponse['response'])) {
             if ($status == "Saved" && $apiResponse['response']['status'] == 200) {
-                $lead = $this->Leads->find('all')->where(['id'=>$lead->id])->first();
+                $lead = $this->Leads->find('all')->where(['id' => $lead->id])->first();
 
                 $lead->rf_contact = $apiResponse['response']['contactId'];
 
                 $this->Leads->save($lead);
 
                 $this->setSlotAsOccupied($slot, $lead);
+            }
+        }
+
+        $this->responseData['rf_contact_id'] = 181405;
+        $this->responseData['rf_user_id'] = $distributorId;
+
+        if ($status != "Error") {
+            $savedLead = $this->Leads->find()->contain(['Users'])->where(['Leads.id' => $lead->id])->first();
+
+            $this->responseData['rf_contact_id'] = $savedLead->rf_contact;
+            $this->responseData['rf_user_id'] = ROTATOR_TEST_MODE ? 181405 : $savedLead->user->distributor_id;
+
+            $options = [
+                'layout'      => 'reserve_spot',
+                'emailFormat' => 'both',
+                'template'    => 'reserve_lead_spot',
+                'to'          => !EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
+                'subject'     => " Reserve Your Spot",
+                'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+                'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+                'viewVars'    => [
+                    'contactFirstName' => $savedLead->first_name,
+                    'distributorName'  => $savedLead->user->name,
+                    'distributorPhone' => $savedLead->user->phone,
+                    'url'              => "https://nulifeinfo.com/res/16933/" . $this->responseData['rf_user_id'] . "/" . $savedLead->rf_contact . "?source=web",
+                ]
+            ];
+
+            $this->loadComponent('EmailManager');
+            try {
+                $this->EmailManager->sendEmail($options);
+
+            } catch (\Error $e) {
+                //Something Went Wrong
             }
         }
 
@@ -348,6 +393,78 @@ class LeadsController extends AppController {
 
         $this->RotatorLoops->save($rotatorLoop);
 
+    }
+
+    //TO update the lead status and webinar information
+    public function wpUpdateLead() {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Headers: *');
+        header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+        header('Content-Type: application/json');
+
+        $this->loadModel('LeadLogs');
+
+        $slot = $this->getAvailableSlot();
+
+        $apiResponseData = [
+            'response' => [
+                'message' => 'Not Send to RF',
+                'status'  => 400
+            ]
+        ];
+
+        $status = "Error";
+        $requestData = $this->request->getData();
+        $lead = $this->Leads->find()->where(['Leads.email' => $requestData['email']])->first();
+
+
+        if (!empty($lead)) {
+            if ($this->request->is('post')) {
+                $fieldsToUpdate = ['lead_status', 'go_to_webinar_id', 'go_to_webinar_title', 'is_webinar_regiatered'];
+                foreach ($fieldsToUpdate as $field) {
+                    if (!empty($requestData[$field])) {
+                        $lead->{$field} = $requestData[$field];
+                    }
+                }
+                if ($this->Leads->save($lead)) {
+                    $this->responseCode = SUCCESS_CODE;
+                    $this->responseMessage = 'The lead has been updated.';
+                    $status = "Updated";
+
+                    //Sending TO Rapid Funnel
+                } else {
+                    $errors = $lead->getErrors();
+                    $this->responseData['errors'] = $errors;
+                    $this->responseMessage = 'The lead could not be updated. Please, try again.';
+                }
+
+                $leadLog = $this->LeadLogs->newEmptyEntity();
+
+                //Test
+                $leadLog->distributor_id = $lead->user_id;
+                $leadLog->lead_id = $lead->id;
+                $leadLog->first_name = $lead->first_name;
+                $leadLog->last_name = $lead->last_name;
+                $leadLog->email = $lead->email;
+                $leadLog->ip = $requestData['ip'];
+                $leadLog->lead_from = $requestData['lead_from'];
+                $leadLog->request_json = json_encode($requestData);
+                $leadLog->response_json = ['RF API not called, only lead status updated.'];
+                $leadLog->status = $status;
+
+                if ($this->LeadLogs->save($leadLog)) {
+                    //Saved
+                } else {
+                    pr($leadLog->getErrors());
+                }
+            }
+        } else {
+            $this->responseMessage = 'The lead does not exist.';
+        }
+
+
+        echo $this->responseFormat();
+        exit;
     }
 
 }

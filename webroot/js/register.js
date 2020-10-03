@@ -151,3 +151,29 @@ $(window).on('resize', function () {
         $.HSCore.components.HSTabs.init('[role="tablist"]');
     }, 200);
 });
+
+
+$(function () {
+    setTimeout(function () {
+        // $('.elSelectInput').each(function () {
+        //     if ($(this).attr('data-custom-type') == "product_quantity") {
+        //         $(this).val(1);
+        //         $(this).change();
+        //     }
+        // });
+        $('.elSelectInput').change();
+    }, 2000)
+    $('.elOrderProductOptinProducts').hide();
+    $('.elOrderProductOptinProducts').first().fadeIn();
+    $('.elSelectInput').change(function () {
+        if ($(this).attr('data-custom-type') == "product_quantity") {
+            $('.elOrderProductOptinProducts').hide();
+            var productNo = parseInt($(this).val()) + 1;
+            $('.elOrderProductOptinProductName').removeClass('activeRadioProduct');
+            $(".elProductOptionsBox .elOrderProductOptinProducts:nth-child(" + productNo + ")").addClass('activeRadioProduct');
+            $(".elProductOptionsBox .elOrderProductOptinProducts:nth-child(" + productNo + ")").fadeIn();
+            $('input[name="purchase[product_id]"]').prop('checked', true);
+            $(".elProductOptionsBox .elOrderProductOptinProducts:nth-child(" + productNo + ")").children().children('input[type="radio"]').prop('checked', true);
+        }
+    });
+});

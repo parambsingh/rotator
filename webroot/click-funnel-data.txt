@@ -1,27 +1,27 @@
 Array
 (
-    [id] => 1413898314
-    [page_id] => 43030858
-    [first_name] => Julie
-    [last_name] => Leasure
-    [name] => Julie Leasure
-    [address] => 1288 Worthington Rd
-    [city] => Eagle Point
+    [id] => 1415417126
+    [page_id] => 42435427
+    [first_name] => Franklin
+    [last_name] => Johnson 
+    [name] => Franklin Johnson
+    [address] => 12002 66 Ave So
+    [city] => Seattle
     [country] => US
-    [state] => OR
-    [zip] => 97524
-    [email] => julie.leasure@gmail.com
-    [phone] => 5417702886
+    [state] => WA
+    [zip] => 98178
+    [email] => laulima@msn.com
+    [phone] => 2062406078
     [webinar_at] => 
     [webinar_last_time] => 
-    [webinar_ext] => pmXeeEP8
-    [created_at] => 2020-10-01T18:00:08.000Z
-    [updated_at] => 2020-10-01T18:00:08.000Z
-    [ip] => 166.181.253.64
+    [webinar_ext] => x1GEzwem
+    [created_at] => 2020-10-02T18:52:48.000Z
+    [updated_at] => 2020-10-02T18:52:54.000Z
+    [ip] => 2601:601:1001:ee40:c4db:5826:7bfe:c82d
     [funnel_id] => 9713885
-    [funnel_step_id] => 56584457
+    [funnel_step_id] => 56584455
     [unsubscribed_at] => 
-    [cf_uvid] => 2ed59ef69582fae3d956c0274bdf0311
+    [cf_uvid] => null
     [cart_affiliate_id] => 
     [shipping_address] => 
     [shipping_city] => 
@@ -35,20 +35,20 @@ Array
     [cf_affiliate_id] => 
     [contact_profile] => Array
         (
-            [id] => 680084850
-            [first_name] => Julie
-            [last_name] => Leasure
-            [address] => 1288 Worthington Rd
-            [city] => Eagle Point
+            [id] => 680600264
+            [first_name] => Franklin
+            [last_name] => Johnson
+            [address] => 12002 66 Ave So
+            [city] => Seattle
             [country] => US
-            [state] => OR
-            [zip] => 97524
-            [email] => julie.leasure@gmail.com
-            [phone] => 5417702886
-            [created_at] => 2020-10-01T18:00:01.000Z
-            [updated_at] => 2020-10-01T18:00:02.000Z
+            [state] => WA
+            [zip] => 98178
+            [email] => laulima@msn.com
+            [phone] => 2062406078
+            [created_at] => 2020-10-02T18:47:51.000Z
+            [updated_at] => 2020-10-02T18:50:54.000Z
             [unsubscribed_at] => 
-            [cf_uvid] => 2ed59ef69582fae3d956c0274bdf0311
+            [cf_uvid] => 2bff1071db7799a6a1183ff25c5ddd1c
             [shipping_address] => 
             [shipping_country] => 
             [shipping_city] => 
@@ -57,13 +57,13 @@ Array
             [vat_number] => 
             [middle_name] => 
             [websites] => 
-            [location_general] => 
+            [location_general] => Seattle, Washington, United States
             [normalized_location] => 
             [deduced_location] => 
-            [age] => 
+            [age] => 44
             [gender] => Female
-            [age_range_lower] => 
-            [age_range_upper] => 
+            [age_range_lower] => 39
+            [age_range_upper] => 49
             [action_score] => 
             [known_ltv] => 0.00
             [tags] => Array
@@ -72,6 +72,33 @@ Array
 
         )
 
-    [additional_info] => 
-    [event] => created
+    [additional_info] => Array
+        (
+            [cf_affiliate_id] => 
+            [time_zone] => Pacific Time (US & Canada)
+            [utm_source] => 
+            [utm_medium] => 
+            [utm_campaign] => 
+            [utm_term] => 
+            [utm_content] => 
+            [cf_uvid] => null
+            [webinar_delay] => -63768855037251
+            [purchase] => Array
+                (
+                    [product_ids] => Array
+                        (
+                            [0] => 3087843
+                        )
+
+                    [payment_method_nonce] => 
+                    [order_saas_url] => 
+                    [stripe_customer_token] => tok_1HXtN5G2hJSb9zQlpDARtTfp
+                )
+
+            [product_quantity] => 1
+        )
+
+    [time_zone] => Pacific Time (US & Canada)
+    [product_quantity] => 1
+    [event] => updated
 )
