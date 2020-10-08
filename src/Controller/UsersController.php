@@ -587,7 +587,7 @@ class UsersController extends AppController {
 
                     $otherFields = ['phone', 'address', 'zip'];
                     foreach ($otherFields as $field) {
-                        $user->phone = empty($userData[$field]) ? "" : $userData[$field];
+                        $user->{$field} = empty($userData[$field]) ? "" : $userData[$field];
                     }
 
                     $this->loadModel('Cities');

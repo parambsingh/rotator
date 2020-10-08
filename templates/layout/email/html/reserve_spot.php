@@ -821,10 +821,7 @@
 
                                                                 valign="top"
                                                                 style="padding-top:0;padding-right:18px;padding-bottom:9px;padding-left:18px;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;word-break:break-word;color:#000000;font-family:Helvetica;font-size:12px;line-height:150%;text-align:center;">
-
-                                                                <em>Copyright
-                                                                    © </em><?= date('Y'); ?> <?= LEAD_FROM_EMAIL_TITLE; ?><em>, All
-                                                                    rights reserved.</em><br>
+                                            Copyright © <?= date('Y'); ?> <?= LEAD_FROM_EMAIL_TITLE; ?>. All  rights reserved.<br>
                                                                 <br>
                                                             </td>
                                                         </tr>

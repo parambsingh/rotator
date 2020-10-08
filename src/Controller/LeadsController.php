@@ -285,6 +285,8 @@ class LeadsController extends AppController {
                 'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
                 'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
                 'viewVars'    => [
+                    'contactId' => $savedLead->id,
+                    'contactEmail' => $savedLead->email,
                     'contactFirstName' => $savedLead->first_name,
                     'distributorName'  => $savedLead->user->name,
                     'distributorPhone' => $savedLead->user->phone,
@@ -294,14 +296,14 @@ class LeadsController extends AppController {
 
             $this->loadComponent('EmailManager');
             try {
-                $this->EmailManager->sendEmail($options);
+                ///$this->EmailManager->sendEmail($options);
 
                 $options = [
                     'layout'      => 'reserve_spot',
                     'emailFormat' => 'both',
                     'template'    => 'water_report',
-                    'to'          => !EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
-                    'subject'     => "Water Report " . LEAD_FROM_EMAIL_TITLE,
+                    'to'          => EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
+                    'subject'     => "Congratulations! Your access to your in water analysis is here!",
                     'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
                     'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
                     'viewVars'    => [
