@@ -164,6 +164,13 @@ class LeadsController extends AppController {
                 'status'  => 400
             ]
         ];
+        
+        $apiResponse = [
+            'response' => [
+                'message' => 'Not Send to RF',
+                'status'  => 400
+            ]
+        ];
 
         $apiResponse = [
             'response' => [
@@ -208,7 +215,6 @@ class LeadsController extends AppController {
                     $savedLead = $this->Leads->find()->contain(['Users'])->where(['Leads.id' => $lead->id])->first();
 
                     $this->loadComponent('EmailManager');
-
                     $options = [
                         'layout'      => 'reserve_spot',
                         'emailFormat' => 'both',
@@ -224,7 +230,7 @@ class LeadsController extends AppController {
                         ]
                     ];
 
-                    //$this->EmailManager->sendEmail($options);
+                    $this->EmailManager->sendEmail($options);
 
                     $url = "https://apiv2.rapidfunnel.com/v1/contacts";
 
@@ -289,6 +295,8 @@ class LeadsController extends AppController {
                 $this->Leads->updateAll(['rf_contact'=>$apiResponse['response']['contactId']], ['id' => $lead->id]);
 
                 $this->Leads->save($lead);
+                
+                //$this->Leads->updateAll(['rf_contact'=>$apiResponse['response']['contactId']], ['id' => $lead->id]);
 
                 $this->setSlotAsOccupied($slot, $lead);
             }
@@ -309,41 +317,40 @@ class LeadsController extends AppController {
                 //Do Nothing
             }
 
-            $options = [
-                'layout'      => 'reserve_spot',
-                'emailFormat' => 'both',
-                'template'    => 'reserve_lead_spot',
-                'to'          => !EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
-                'subject'     => " Reserve Your Spot",
-                'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
-                'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
-                'viewVars'    => [
-                    'contactId' => $savedLead->id,
-                    'contactEmail' => $savedLead->email,
-                    'contactFirstName' => $savedLead->first_name,
-                    'distributorName'  => $savedLead->user->name,
-                    'distributorPhone' => $savedLead->user->phone,
-                    'url'              => "https://nulifeinfo.com/res/16933/" . $this->responseData['rf_user_id'] . "/" . $savedLead->rf_contact . "?source=web",
-                ]
-            ];
-
-            $options = [
-                'layout'      => 'reserve_spot',
-                'emailFormat' => 'both',
-                'template'    => 'reserve_lead_spot',
-                'to'          => !EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
-                'subject'     => " Reserve Your Spot",
-                'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
-                'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
-                'viewVars'    => [
-                    'contactId' => $savedLead->id,
-                    'contactEmail' => $savedLead->email,
-                    'contactFirstName' => $savedLead->first_name,
-                    'distributorName'  => $savedLead->user->name,
-                    'distributorPhone' => $savedLead->user->phone,
-                    'url'              => "https://nulifeinfo.com/res/16933/" . $this->responseData['rf_user_id'] . "/" . $savedLead->rf_contact . "?source=web",
-                ]
-            ];
+//            $options = [
+//                'layout'      => 'reserve_spot',
+//                'emailFormat' => 'both',
+//                'template'    => 'reserve_lead_spot',
+//                'to'          => !EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
+//                'subject'     => " Reserve Your Spot",
+//                'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+//                'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+//                'viewVars'    => [
+//                    'contactId' => $savedLead->id,
+//                    'contactEmail' => $savedLead->email,
+//                    'contactFirstName' => $savedLead->first_name,
+//                    'distributorName'  => $savedLead->user->name,
+//                    'distributorPhone' => $savedLead->user->phone,
+//                    'url'              => "https://nulifeinfo.com/res/16933/" . $this->responseData['rf_user_id'] . "/" . $savedLead->rf_contact . "?source=web",
+//                ]
+//            ];
+//            $options = [
+//                'layout'      => 'reserve_spot',
+//                'emailFormat' => 'both',
+//                'template'    => 'reserve_lead_spot',
+//                'to'          => !EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
+//                'subject'     => " Reserve Your Spot",
+//                'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+//                'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+//                'viewVars'    => [
+//                    'contactId' => $savedLead->id,
+//                    'contactEmail' => $savedLead->email,
+//                    'contactFirstName' => $savedLead->first_name,
+//                    'distributorName'  => $savedLead->user->name,
+//                    'distributorPhone' => $savedLead->user->phone,
+//                    'url'              => "https://nulifeinfo.com/res/16933/" . $this->responseData['rf_user_id'] . "/" . $savedLead->rf_contact . "?source=web",
+//                ]
+//            ];
 
             /*$this->loadComponent('EmailManager');
             try {
@@ -386,6 +393,9 @@ class LeadsController extends AppController {
                 'UsersPositions.lead_limit !='=>0,
             ])
             ->count();
+            
+            
+
 
         $occupiedPositions = $this->UsersPositions->find('all')
             ->where([
@@ -395,6 +405,8 @@ class LeadsController extends AppController {
                 'UsersPositions.lead_limit !='=>0,
             ])
             ->count();
+            
+            
 
         //if all positions occupied (To Restart entire loop)
         if ($activePositions == $occupiedPositions) {
@@ -415,6 +427,8 @@ class LeadsController extends AppController {
                 'UsersPositions.lead_limit !='=>0,
             ])
             ->count();
+            
+            
 
         //if all positions occupied
         if ($waitingPositions <= 0) {
@@ -436,6 +450,27 @@ class LeadsController extends AppController {
             ])
             ->order(['UsersPositions.position_order' => 'ASC'])
             ->first();
+            
+            if(empty($slot)){
+                $this->UsersPositions->updateAll([
+                    'slot_status' => 'waiting'
+                ], [
+                    'subscription_status' => 'Active',
+                    'occupied_leads < lead_limit',
+                ]);
+                
+                $slot = $this->UsersPositions->find('all')
+                ->contain(['Users'])
+                ->where([
+                    'UsersPositions.subscription_status' => 'Active',
+                    'UsersPositions.slot_status'         => 'waiting',
+                    'UsersPositions.occupied_leads < UsersPositions.lead_limit',
+                ])
+                ->order(['UsersPositions.position_order' => 'ASC'])
+                ->first();
+            }
+            
+            
 
         if(empty($slot)){
 

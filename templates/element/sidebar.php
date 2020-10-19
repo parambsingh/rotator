@@ -9,60 +9,68 @@ $menuItems = [
         'default_sub_menu' => false
     ],
     [
-        'controller' => 'Leads',
-        'icon_class' => 'fa fa-users',
-        'custom_sub_menu' => [
-            [
-                'label'      => 'Import Leads',
-                'controller' => 'Leads',
-                'action'     => 'import',
-                'icon_class' => 'fa fa-upload',
-            ],
-        ]
+        'label'            => 'List Leads',
+        'controller'       => 'Leads',
+        'action'           => 'index',
+        'icon_class'       => 'fa fa-list',
+        'default_sub_menu' => false
     ],
-    [
-        'label'            => 'Email Campaigns',
-        'controller'       => 'Emails',
-        'action'           => 'scheduleEmail',
-        'icon_class'       => 'fa fa-clock-o',
-        'default_sub_menu' => false,
-        'custom_sub_menu'  => [
-            [
-                'label'      => 'New Campaign',
-                'controller' => 'EmailCampaigns',
-                'action'     => 'add',
-                'icon_class' => 'fa fa-plus',
-            ],
-            ['label'      => 'List Campaigns',
-                'controller' => 'EmailCampaigns',
-                'action'     => 'index',
-                'icon_class' => 'fa fa-list',
-            ],
-            [
-                'label'      => 'Not Seen Emails',
-                'controller' => 'EmailCampaigns',
-                'action'     => 'notSeenEmails',
-                'icon_class' => 'fa fa-eye-slash',
-            ],
-            [
-                'label'      => 'New Email Template',
-                'controller' => 'EmailTemplates',
-                'action'     => 'add',
-                'icon_class' => 'fa fa-envelope',
-            ],
-            [
-                'label'      => 'Email Templates',
-                'controller' => 'EmailTemplates',
-                'action'     => 'index',
-                'icon_class' => 'fa fa-envelope',
-            ],
-        ]
-    ],
-    [
-        'controller'       => 'Subscriptions',
-        'icon_class'       => 'fa fa-cc',
-        'default_sub_menu' => false,
-    ],
+    // [
+    //     'controller' => 'Leads',
+    //     'icon_class' => 'fa fa-users',
+    //     'default_sub_menu' => false,
+    //     'custom_sub_menu' => [
+    //         [
+    //             'label'      => 'List Leads',
+    //             'controller' => 'Leads',
+    //             'action'     => 'index',
+    //             'icon_class' => 'fa fa-list',
+    //         ],
+    //     ]
+    // ],
+    // [
+    //     'label'            => 'Email Campaigns',
+    //     'controller'       => 'Emails',
+    //     'action'           => 'scheduleEmail',
+    //     'icon_class'       => 'fa fa-clock-o',
+    //     'default_sub_menu' => false,
+    //     'custom_sub_menu'  => [
+    //         [
+    //             'label'      => 'New Campaign',
+    //             'controller' => 'EmailCampaigns',
+    //             'action'     => 'add',
+    //             'icon_class' => 'fa fa-plus',
+    //         ],
+    //         ['label'      => 'List Campaigns',
+    //             'controller' => 'EmailCampaigns',
+    //             'action'     => 'index',
+    //             'icon_class' => 'fa fa-list',
+    //         ],
+    //         [
+    //             'label'      => 'Not Seen Emails',
+    //             'controller' => 'EmailCampaigns',
+    //             'action'     => 'notSeenEmails',
+    //             'icon_class' => 'fa fa-eye-slash',
+    //         ],
+    //         [
+    //             'label'      => 'New Email Template',
+    //             'controller' => 'EmailTemplates',
+    //             'action'     => 'add',
+    //             'icon_class' => 'fa fa-envelope',
+    //         ],
+    //         [
+    //             'label'      => 'Email Templates',
+    //             'controller' => 'EmailTemplates',
+    //             'action'     => 'index',
+    //             'icon_class' => 'fa fa-envelope',
+    //         ],
+    //     ]
+    // ],
+    // [
+    //     'controller'       => 'Subscriptions',
+    //     'icon_class'       => 'fa fa-cc',
+    //     'default_sub_menu' => false,
+    // ],
 
 ];
 ?>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use LogMeIn\GoToWebinar\Client;
+use Cake\Auth\DefaultPasswordHasher;
 
 /**
  * Users Controller
@@ -29,7 +30,6 @@ class UsersController extends AppController {
             'getSuggestions',
             'webinar',
             'clickFunnel',
-            'testAttachment',
         ]);
     }
 
@@ -45,32 +45,34 @@ class UsersController extends AppController {
                 $user = $this->Users->get($user['id'], ['contain' => ['Images']]);
 
                 $this->Auth->setUser($user);
-                if (isset($this->request->getData()['remember_me'])) {
-                    $this->getRequest()->getCookie()->write('remember_me', $this->encryptpass($this->request->getData('email')) . "^" . base64_encode($this->request->getData('password')), true);
-                }
+                // if (isset($this->request->getData()['remember_me'])) {
+                //   // $this->Cookie->write('remember_me', $this->encryptpass($this->request->getData('email')) . "^" . base64_encode($this->request->getData('password')), true);
+                // }
                 return $this->redirect($this->Auth->redirectUrl());
             } else {
                 $this->Flash->error(__('Email or password is incorrect'));
-                $this->redirect('/dashboard');
-            }
-        } elseif (empty($this->data)) {
-            $rememberToken = $this->request->getCookie('remember_me');
-            if (!is_null($rememberToken)) {
-                $rememberToken = explode("^", $rememberToken);
-                $data = $this->Users->find('all', ['conditions' => ['remember_me' => $rememberToken[0]]], ['fields' => ['email',
-                                                                                                                        'password']])->first();
-
-                $this->request->getData()['email'] = $data->email;
-                $this->request->getData()['password'] = base64_decode($rememberToken[1]);
-                $user = $this->Auth->identify();
-                if ($user) {
-                    $this->Auth->setUser($user);
-                    $this->redirect($this->Auth->redirectUrl());
-                } else {
-                    $this->redirect('/admin');
-                }
+                $this->redirect('/sign-in');
             }
         }
+
+        // elseif (empty($this->data)) {
+        //     $rememberToken = $this->request->getCookie('remember_me');
+        //     if (!is_null($rememberToken)) {
+        //         $rememberToken = explode("^", $rememberToken);
+        //         $data = $this->Users->find('all', ['conditions' => ['remember_me' => $rememberToken[0]]], ['fields' => ['email',
+        //                                                                                                                 'password']])->first();
+
+        //         $this->request->getData()['email'] = $data->email;
+        //         $this->request->getData()['password'] = base64_decode($rememberToken[1]);
+        //         $user = $this->Auth->identify();
+        //         if ($user) {
+        //             $this->Auth->setUser($user);
+        //             $this->redirect($this->Auth->redirectUrl());
+        //         } else {
+        //             $this->redirect('/admin');
+        //         }
+        //     }
+        // }
     }
 
     public function logout() {
@@ -456,11 +458,14 @@ class UsersController extends AppController {
         $this->autoRender = false;
         $query = $this->request->getData('query');
         if (!empty($query)) {
+
             $value = empty($this->request->getData('value')) ? "id" : $this->request->getData('value');
             $label = empty($this->request->getData('label')) ? "name" : $this->request->getData('label');
             $match = $this->request->getData('match');
             $model = $this->request->getData('find');
+
             $this->loadModel($model);
+
             $options = $this->{$model}
                 ->find('all')
                 ->select(['value' => $model . "." . $value, 'label' => $model . "." . $label])
@@ -544,27 +549,23 @@ class UsersController extends AppController {
             $amount = $data['original_amount'];
             $amountInCents = $data['original_amount_cents'];
             $subscriptionToken = $data['subscription_id'];
-            switch ($product['id']) {
-                case "3087851":
-                    {
-                        $qty = 2;
-                        break;
-                    }
-                case "3087852":
-                    {
-                        $qty = 3;
-                        break;
-                    }
-                case "3087854":
-                    {
-                        $qty = 4;
-                        break;
-                    }
-                default:
-                    {
-                        $qty = 1;
-                        break;
-                    }
+            switch ($product['id']){
+                case "3087851": {
+                    $qty = 2;
+                    break;
+                }
+                case "3087852": {
+                    $qty = 3;
+                    break;
+                }
+                case "3087854": {
+                    $qty = 4;
+                    break;
+                }
+                default: {
+                    $qty = 1;
+                    break;
+                }
             }
 
             if (!empty($userData['name']) && !empty($userData['email'])) {
@@ -577,7 +578,7 @@ class UsersController extends AppController {
 
                     $user->name = $userData['name'];
                     $user->email = $userData['email'];
-                    if (!empty($userData['rapid_funnel_distributor_id'])) {
+                    if(!empty($userData['rapid_funnel_distributor_id'])){
                         $user->distributor_id = $userData['rapid_funnel_distributor_id'];
                     }
 
@@ -676,32 +677,6 @@ class UsersController extends AppController {
 
         return $subscription->id;
 
-    }
-
-    public function testAttachment() {
-        $options = [
-            'layout'      => 'designed_without_unsubscribe',
-            'emailFormat' => 'both',
-            'template'    => 'forgot_password',
-            'to'          => EMAIL_TEST_MODE ? ADMIN_EMAIL : "satinder@strategiclight.com",
-            'subject'     => "Test Attachement",
-            'attachments'     => [
-                WWW_ROOT."files/BundlePageSpec190917.pdf",
-                WWW_ROOT."files/CapitalGainSummary.pdf",
-            ],
-            'viewVars'    => [
-                'name'     => "Satwinder",
-                'resetUrl' => "https://www.google.com",
-            ]
-        ];
-
-        pr($options);
-
-        $this->loadComponent('EmailManager');
-        $this->EmailManager->sendEmail($options);
-
-        echo "Sent.".rand();
-        exit;
     }
 
 }

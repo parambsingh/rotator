@@ -12,7 +12,7 @@
     <div class="row">
 
         
-        <div class="col-sm-6 col-lg-6 col-xl-3 g-mb-0">
+        <div class="col-sm-12 col-lg-12 col-xl-12 g-mb-0">
             <!-- Panel -->
             <div class="card h-100 g-brd-gray-light-v7 u-card-v1 g-rounded-3">
                 <div class="card-block g-font-weight-300 g-pa-20">
@@ -37,7 +37,7 @@
             </div>
             <!-- End Panel -->
         </div>
-
+<?php /*
         <div class="col-sm-6 col-lg-6 col-xl-3 g-mb-0">
             <!-- Panel -->
             <div class="card h-100 g-brd-gray-light-v7 u-card-v1 g-rounded-3">
@@ -113,6 +113,7 @@
             </div>
             <!-- End Panel -->
         </div>
+        */ ?>
 
         <div class="col-md-6 mt-4">
             <!-- Panel -->
