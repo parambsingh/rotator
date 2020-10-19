@@ -12,7 +12,7 @@
             <input type="hidden" name="user_position_id" value="<?= $userPosition->id; ?>"/>
         </div>
         <div class="col-md-12 mt-4">
-            <button class="btn-u btn-u-orange btn-u-md rounded pull-right" onclick="Custombox.modal.close();"><i
+            <button class="btn-u btn-u-orange btn-u-md rounded pull-right cancel-btn" onclick="Custombox.modal.close();"><i
                         class="fa fa-times"></i> Cancel
             </button>
             <button type="submit" class="btn-u btn-u-blue btn-u-md rounded pull-right mr-3"><i
@@ -23,6 +23,9 @@
 </form>
 <script>
     $(function () {
+        $('.cancel-btn').click(function (e) {
+            e.preventDefault();
+        });
         $('#changePositionOrderForm').validate({
             rules: {
                 position_order: {

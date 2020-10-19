@@ -25,6 +25,7 @@ class EmailManagerComponent extends Component {
             'from'        => [SMTP_USER => SITE_TITLE],
             'sender'      => [SMTP_USER => SITE_TITLE],
             'subject'     => SITE_TITLE,
+            'attachments' => [],
             'viewVars'    => [
                 'logo'    => SITE_URL . "img/logo-aptnet.png",
                 'appName' => SITE_TITLE,
@@ -40,7 +41,6 @@ class EmailManagerComponent extends Component {
 
         extract($finalOptions);
         $hasDestination = false;
-
 
 
         try {
@@ -96,6 +96,11 @@ class EmailManagerComponent extends Component {
             $email->setEmailFormat($emailFormat);
             $email->setSubject($subject);
             $email->setViewVars($viewVars);
+
+            if (!empty($attachments)) {
+                $email->setAttachments($attachments);
+            }
+
             if ($hasDestination) {
                 $this->emailResponse['error'] = false;
                 $this->emailResponse['status'] = 'Email Sent';

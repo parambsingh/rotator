@@ -5,9 +5,9 @@
             <label style="margin-top: 10px;">Lead Count:</label>
         </div>
         <div class="col-md-6">
-            <input type="number" name="lead_limit" placeholder="Lead Count"
-                   value="<?= (int)$userPosition['lead_limit']; ?>"
-                   class="form-control form-control-md g-brd-gray-light-v7 g-brd-gray-light-v3--focus rounded-0 g-px-14 g-py-10  not-ignore    "
+            <input type="number" name="consecutive_leads" placeholder="Consecutive Leads"
+                   value="<?= $userPosition['consecutive_leads']; ?>"
+                   class="form-control form-control-md g-brd-gray-light-v7 g-brd-gray-light-v3--focus rounded-0 g-px-14 g-py-10  not-ignore"
                    id="newPosition"/>
             <input type="hidden" name="user_position_id" value="<?= $userPosition->id; ?>"/>
         </div>
@@ -28,13 +28,17 @@
         });
         $('#changeLimitOrderForm').validate({
             rules: {
-                lead_limit: {
+                consecutive_leads: {
                     required: true,
+                    min: 1,
+                    max: <?= $userPosition->lead_limit; ?>,
                 }
             },
             messages: {
-                lead_limit: {
+                consecutive_leads: {
                     required: "Please enter max lead limit.",
+                    min: "Consecutive leads must be greater than zero.",
+                    max: "Consecutive leads must be less than  and equal to <?= $userPosition->lead_limit; ?>.",
                 }
             },
             submitHandler: function (form) {

@@ -69,7 +69,6 @@ class EmailTemplatesController extends AppController {
             } else {
                 $this->Flash->error(__('The email template could not be saved. Please, try again.'));
             }
-
         }
         $this->set(compact('emailTemplate'));
     }

@@ -475,14 +475,14 @@ class AdminsController extends AppController {
                         }
 
                     } else {
-                        if ($this->{$model}->save($entity)) {
-                            $successfullyImported++;
-                            $logs[] = $fullName . " saved successfully";
-                            $this->updatePosition($entity, $otherModelFields);
-                        } else {
-                            $logs[] = $fullName . " could not save.";
-                            $notImported++;
-                        }
+//                        if ($this->{$model}->save($entity)) {
+//                            $successfullyImported++;
+//                            $logs[] = $fullName . " saved successfully";
+//                            $this->updatePosition($entity, $otherModelFields);
+//                        } else {
+//                            $logs[] = $fullName . " could not save.";
+//                            $notImported++;
+//                        }
 
                     }
 

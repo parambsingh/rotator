@@ -36,7 +36,6 @@ $params = [
                     'required' => false,
                     'email'    => true,
                 ],
-
             ]
         ],
         [
@@ -88,7 +87,7 @@ $params = [
             'validate' => [
                 'rules' => [
                     'required'  => false,
-                    'maxlength' => 5,
+                    'maxlength' => 6,
                 ]
             ]
         ],

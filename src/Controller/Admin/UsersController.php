@@ -81,7 +81,7 @@ class UsersController extends AppController {
         }
 
         $states = $this->Users->States->find('list')->where(['States.status' => true])->order(['States.name' => 'ASC'])->toArray();
-        if(empty($user->state_id)){
+        if (empty($user->state_id)) {
             $cities = [];
         } else {
             $cities = $this->Users->Cities->find('list')->where(['Cities.state_id' => $user->state_id,
@@ -127,7 +127,7 @@ class UsersController extends AppController {
 //        $this->paginate['limit'] = $limit;
 //        $this->paginate['maxLimit'] = 500;
 
-        $this->paginate['sortWhitelist'] = [
+        $this->paginate['sortableFields'] = [
             'Users.name',
             'Users.email',
             'UsersPositions.position_no',
@@ -218,6 +218,39 @@ class UsersController extends AppController {
         $userPosition = $this->UsersPositions->find('all')->contain(['Users'])->where(['UsersPositions.id' => $id])->first();
 
         $userPosition->lead_limit = $leadLimit;
+
+
+        if ($this->UsersPositions->save($userPosition)) {
+            $this->responseCode = SUCCESS_CODE;
+        }
+
+
+        echo $this->responseFormat();
+        exit;
+
+    }
+
+    public function getConsecutiveLimit($id = null) {
+        $this->viewBuilder()->setLayout('ajax');
+        $this->loadModel('UsersPositions');
+
+        $userPosition = $this->UsersPositions->find('all')->contain(['Users'])->where(['UsersPositions.id' => $id])->first();
+
+        $this->set(compact('userPosition'));
+    }
+
+    public function editConsecutiveLimit() {
+
+        $this->responseCode = CODE_BAD_REQUEST;
+
+        $id = $this->request->getData('user_position_id');
+        $consecutiveLeads = $this->request->getData('consecutive_leads');
+
+        $this->loadModel('UsersPositions');
+
+        $userPosition = $this->UsersPositions->find('all')->contain(['Users'])->where(['UsersPositions.id' => $id])->first();
+
+        $userPosition->consecutive_leads = empty($consecutiveLeads) ? 1 : $consecutiveLeads;
 
 
         if ($this->UsersPositions->save($userPosition)) {

@@ -82,7 +82,6 @@ class MailChimpController extends AppController {
         $listId = $this->getRequest()->getData('list_id');
         $slug = "nulife-leads";
 
-
         if (empty($listId)) {
             $this->responseMessage = 'Please select a list.';
         } else {

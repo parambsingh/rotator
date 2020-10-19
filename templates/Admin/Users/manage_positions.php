@@ -1,5 +1,5 @@
 <style>
-    .actions{width: 32% !important;}
+    .actions{width: 33% !important;}
 </style>
 <?php
 $params = [
@@ -32,6 +32,16 @@ $params = [
             'sort_by' => 'UsersPositions.lead_limit',
             'label'   => 'Lead Count',
         ],
+        [
+            'name'    => 'occupied_leads',
+            'sort_by' => 'UsersPositions.occupied_leads',
+            'label'   => 'Occupied Leads',
+        ],
+        [
+            'name'    => 'slot_status',
+            'sort_by' => 'UsersPositions.slot_status',
+            'label'   => 'Slot Status',
+        ],
         //['name' => 'subscription_status'],
     ],
     'search'  => [
@@ -44,17 +54,24 @@ $params = [
 $this->AdminListing->create($params, [
 
     [
-        'label' => 'Change Position Sequence',
+        'label' => 'Position Sequence',
         'url'   => ['controller' => 'Users', 'action' => 'getUserPosition'],
         'id'    => true,
         'class' => 'btn-u btn-u-sea btn-u-sm rounded change-position',
         'icon'  => 'fa fa-pencil'
     ],
     [
-        'label' => 'Update Lead Count',
+        'label' => 'Lead Count',
         'url'   => ['controller' => 'Users', 'action' => 'editUserPosition'],
         'id'    => true,
         'class' => 'btn-u btn-u-dark btn-u-sm rounded change-limit',
+        'icon'  => 'fa fa-pencil'
+    ],
+    [
+        'label' => 'Consecutive Leads',
+        'url'   => ['controller' => 'Users', 'action' => 'getConsecutiveLimit'],
+        'id'    => true,
+        'class' => 'btn-u btn-u-danger btn-u-orange btn-u-sm rounded consecutive-limit',
         'icon'  => 'fa fa-pencil'
     ],
 ]);
@@ -71,13 +88,10 @@ $this->AdminListing->create($params, [
                 },
                 content: {
                     target: '#changePositionModal',
-                    effect: 'slit',
-                    animateFrom: 'left',
-                    animateTo: 'left',
                     positionX: 'center',
                     positionY: 'center',
-                    speedIn: 300,
-                    speedOut: 300,
+                    speedIn: false,
+                    speedOut: false,
                     fullscreen: false,
                     onClose: function () {
 
@@ -119,13 +133,10 @@ $this->AdminListing->create($params, [
                 },
                 content: {
                     target: '#changeLimitModal',
-                    effect: 'slit',
-                    animateFrom: 'left',
-                    animateTo: 'left',
                     positionX: 'center',
                     positionY: 'center',
-                    speedIn: 300,
-                    speedOut: 300,
+                    speedIn: false,
+                    speedOut: false,
                     fullscreen: false,
                     onClose: function () {
 
@@ -150,6 +161,53 @@ $this->AdminListing->create($params, [
     </button>
     <h4 class="g-mb-20">Update Lead Count</h4>
     <div calss="modal-body" id="changeLimit" style="position: relative;">
+    </div>
+    <div class="clear-both"></div>
+</div>
+<!-- End Demo modal window -->
+
+
+
+<script>
+    $(function () {
+        //$.HSCore.components.HSModalWindow.init('[data-modal-target]');
+        $('.consecutive-limit').click(function (e) {
+            e.preventDefault();
+
+            var newModal = new Custombox.modal({
+                overlay: {
+                    close: false
+                },
+                content: {
+                    target: '#consecutiveLimitModal',
+                    positionX: 'center',
+                    positionY: 'center',
+                    speedIn: false,
+                    speedOut: false,
+                    fullscreen: false,
+                    onClose: function () {
+
+                    }
+                }
+            });
+            newModal.open();
+            var url = 'admin/users/getConsecutiveLimit/' + $(this).attr('data-id');
+            $.get(SITE_URL + url, function (data) {
+                $("#consecutiveLimit").html(data);
+            });
+
+        });
+    })
+</script>
+
+<!-- Demo modal window -->
+<div id="consecutiveLimitModal" class="text-left g-bg-white g-overflow-y-auto  g-pa-20"
+     style="max-height: 700px; max-width: 600px; display: none; width: 80%;  ">
+    <button type="button" class="close" onclick="Custombox.modal.close();">
+        <i class="hs-icon hs-icon-close"></i>
+    </button>
+    <h4 class="g-mb-20">Update Consecutive Leads</h4>
+    <div calss="modal-body" id="consecutiveLimit" style="position: relative;">
     </div>
     <div class="clear-both"></div>
 </div>

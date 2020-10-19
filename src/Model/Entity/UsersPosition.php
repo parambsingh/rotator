@@ -37,6 +37,7 @@ class UsersPosition extends Entity {
         'position_order'      => true,
         'lead_limit'          => true,
         'occupied_leads'      => true,
+        'consecutive_leads'   => true,
         'subscription_status' => true,
         'slot_status'         => true,
         'created'             => true,

@@ -13,11 +13,15 @@ $params = [
             'label' => 'Distributor',
         ],
         [
+            'name'  => 'created'
+        ],
+        [
             'name'  => 'status',
             'label' => 'Status',
             'type'  => 'status',
             'model' => 'Leads',
         ],
+
     ],
     'search' => [
         'match' => [
