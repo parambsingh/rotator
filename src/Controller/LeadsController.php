@@ -17,7 +17,8 @@ class LeadsController extends AppController {
         parent::initialize();
         $allowedActions = [
             'wpLead',
-            'mcSubscribe'
+            'mcSubscribe',
+            'getAvailableSlot'
         ];
         $this->Auth->allow($allowedActions);
 
@@ -161,6 +162,13 @@ class LeadsController extends AppController {
                 'status'  => 400
             ]
         ];
+        
+        $apiResponse = [
+            'response' => [
+                'message' => 'Not Send to RF',
+                'status'  => 400
+            ]
+        ];
 
         $status = "Error";
         $requestData = $this->request->getData();
@@ -194,7 +202,28 @@ class LeadsController extends AppController {
 
                     $requestData['API_PARAMS'] = $params;
                     $requestData['LEAD_USER_ID'] = $slot->user_id;
+                    
+                    $savedLead = $this->Leads->find()->contain(['Users'])->where(['Leads.id' => $lead->id])->first();
 
+                    $this->loadComponent('EmailManager');
+                    
+                    $options = [
+                        'layout'      => 'reserve_spot',
+                        'emailFormat' => 'both',
+                        'template'    => 'water_report',
+                        'to'          => EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
+                        'subject'     => "Congratulations! Your access to your in water analysis is here!",
+                        'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+                        'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+                        'viewVars'    => [
+                            'contactFirstName' => $savedLead->first_name,
+                            'distributorName'  => $savedLead->user->name,
+                            'distributorPhone' => $savedLead->user->phone,
+                        ]
+                    ];
+    
+                    $this->EmailManager->sendEmail($options);
+        
                     $url = "https://apiv2.rapidfunnel.com/v1/contacts";
 
                     $this->loadComponent('RapidFunnel');
@@ -256,6 +285,8 @@ class LeadsController extends AppController {
                 $lead->rf_contact = $apiResponse['response']['contactId'];
 
                 $this->Leads->save($lead);
+                
+                //$this->Leads->updateAll(['rf_contact'=>$apiResponse['response']['contactId']], ['id' => $lead->id]);
 
                 $this->setSlotAsOccupied($slot, $lead);
             }
@@ -293,8 +324,26 @@ class LeadsController extends AppController {
                     'url'              => "https://nulifeinfo.com/res/16933/" . $this->responseData['rf_user_id'] . "/" . $savedLead->rf_contact . "?source=web",
                 ]
             ];
+            
+            $options = [
+                'layout'      => 'reserve_spot',
+                'emailFormat' => 'both',
+                'template'    => 'reserve_lead_spot',
+                'to'          => !EMAIL_TEST_MODE ? ADMIN_EMAIL : $savedLead->email,
+                'subject'     => " Reserve Your Spot",
+                'from'        => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+                'sender'      => [LEAD_FROM_EMAIL => LEAD_FROM_EMAIL_TITLE],
+                'viewVars'    => [
+                    'contactId' => $savedLead->id,
+                    'contactEmail' => $savedLead->email,
+                    'contactFirstName' => $savedLead->first_name,
+                    'distributorName'  => $savedLead->user->name,
+                    'distributorPhone' => $savedLead->user->phone,
+                    'url'              => "https://nulifeinfo.com/res/16933/" . $this->responseData['rf_user_id'] . "/" . $savedLead->rf_contact . "?source=web",
+                ]
+            ];
 
-            $this->loadComponent('EmailManager');
+            /*$this->loadComponent('EmailManager');
             try {
                 ///$this->EmailManager->sendEmail($options);
 
@@ -317,7 +366,7 @@ class LeadsController extends AppController {
 
             } catch (\Error $e) {
                 //Something Went Wrong
-            }
+            }*/
         }
 
         echo $this->responseFormat();
@@ -331,16 +380,24 @@ class LeadsController extends AppController {
         $activePositions = $this->UsersPositions->find('all')
             ->where([
                 'UsersPositions.subscription_status' => 'Active',
+                //'UsersPositions.occupied_leads >= lead_limit',
+                'UsersPositions.lead_limit !='=>0,
             ])
             ->count();
+            
+            
+
 
         $occupiedPositions = $this->UsersPositions->find('all')
             ->where([
                 'UsersPositions.subscription_status' => 'Active',
                 'UsersPositions.slot_status'         => 'occupied',
-                'UsersPositions.occupied_leads >= lead_limit',
+                'UsersPositions.occupied_leads >= UsersPositions.lead_limit',
+                'UsersPositions.lead_limit !='=>0,
             ])
             ->count();
+            
+            
 
         //if all positions occupied
         if ($activePositions == $occupiedPositions) {
@@ -358,9 +415,12 @@ class LeadsController extends AppController {
         $waitingPositions = $this->UsersPositions->find('all')
             ->where([
                 'UsersPositions.subscription_status' => 'Active',
-                'UsersPositions.slot_status'         => 'waiting'
+                'UsersPositions.slot_status'         => 'waiting',
+                'UsersPositions.lead_limit !='=>0,
             ])
             ->count();
+            
+            
 
         //if all positions occupied
         if ($waitingPositions <= 0) {
@@ -382,6 +442,27 @@ class LeadsController extends AppController {
             ])
             ->order(['UsersPositions.position_order' => 'ASC'])
             ->first();
+            
+            if(empty($slot)){
+                $this->UsersPositions->updateAll([
+                    'slot_status' => 'waiting'
+                ], [
+                    'subscription_status' => 'Active',
+                    'occupied_leads < lead_limit',
+                ]);
+                
+                $slot = $this->UsersPositions->find('all')
+                ->contain(['Users'])
+                ->where([
+                    'UsersPositions.subscription_status' => 'Active',
+                    'UsersPositions.slot_status'         => 'waiting',
+                    'UsersPositions.occupied_leads < UsersPositions.lead_limit',
+                ])
+                ->order(['UsersPositions.position_order' => 'ASC'])
+                ->first();
+            }
+            
+            
 
         return $slot;
     }

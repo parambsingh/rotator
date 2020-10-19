@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use LogMeIn\GoToWebinar\Client;
+use Cake\Auth\DefaultPasswordHasher;
 
 /**
  * Users Controller
@@ -44,32 +45,34 @@ class UsersController extends AppController {
                 $user = $this->Users->get($user['id'], ['contain' => ['Images']]);
 
                 $this->Auth->setUser($user);
-                if (isset($this->request->getData()['remember_me'])) {
-                    $this->Cookie->write('remember_me', $this->encryptpass($this->request->getData('email')) . "^" . base64_encode($this->request->getData('password')), true);
-                }
+                // if (isset($this->request->getData()['remember_me'])) {
+                //   // $this->Cookie->write('remember_me', $this->encryptpass($this->request->getData('email')) . "^" . base64_encode($this->request->getData('password')), true);
+                // }
                 return $this->redirect($this->Auth->redirectUrl());
             } else {
                 $this->Flash->error(__('Email or password is incorrect'));
-                $this->redirect('/dashboard');
+                $this->redirect('/sign-in');
             }
-        } elseif (empty($this->data)) {
-            $rememberToken = $this->request->getCookie('remember_me');
-            if (!is_null($rememberToken)) {
-                $rememberToken = explode("^", $rememberToken);
-                $data = $this->Users->find('all', ['conditions' => ['remember_me' => $rememberToken[0]]], ['fields' => ['email',
-                                                                                                                        'password']])->first();
+        } 
+        
+        // elseif (empty($this->data)) {
+        //     $rememberToken = $this->request->getCookie('remember_me');
+        //     if (!is_null($rememberToken)) {
+        //         $rememberToken = explode("^", $rememberToken);
+        //         $data = $this->Users->find('all', ['conditions' => ['remember_me' => $rememberToken[0]]], ['fields' => ['email',
+        //                                                                                                                 'password']])->first();
 
-                $this->request->getData()['email'] = $data->email;
-                $this->request->getData()['password'] = base64_decode($rememberToken[1]);
-                $user = $this->Auth->identify();
-                if ($user) {
-                    $this->Auth->setUser($user);
-                    $this->redirect($this->Auth->redirectUrl());
-                } else {
-                    $this->redirect('/admin');
-                }
-            }
-        }
+        //         $this->request->getData()['email'] = $data->email;
+        //         $this->request->getData()['password'] = base64_decode($rememberToken[1]);
+        //         $user = $this->Auth->identify();
+        //         if ($user) {
+        //             $this->Auth->setUser($user);
+        //             $this->redirect($this->Auth->redirectUrl());
+        //         } else {
+        //             $this->redirect('/admin');
+        //         }
+        //     }
+        // }
     }
 
     public function logout() {

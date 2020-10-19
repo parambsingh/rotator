@@ -127,7 +127,7 @@ class UsersController extends AppController {
 //        $this->paginate['limit'] = $limit;
 //        $this->paginate['maxLimit'] = 500;
 
-        $this->paginate['sortWhitelist'] = [
+        $this->paginate['sortableFields'] = [
             'Users.name',
             'Users.email',
             'UsersPositions.position_no',

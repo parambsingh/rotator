@@ -24,7 +24,7 @@
                         <?= $this->Form->control('password', ['type' => 'password', 'class' => 'form-control g-color-black g-bg-white g-bg-white--focus g-brd-gray-light-v4 g-brd-primary--hover rounded g-py-15 g-px-15 mb-3', 'placeholder' => 'Password', 'label' => false]) ?>
                     </div>
                     <div class="row justify-content-between mt-1 mb-4">
-                        <div class="col align-self-center">
+                        <!-- div class="col align-self-center">
                             <label class="form-check-inline u-check g-color-gray-dark-v5 g-font-size-12 g-pl-25 mb-0">
                                 <input type="checkbox" name="remember_me" value="1" class="js-select g-hidden-xs-up g-pos-abs g-top-0 g-left-0" id="remember-me">
                                 <div class="u-check-icon-checkbox-v6 g-absolute-centered--y g-left-0">
@@ -32,16 +32,15 @@
                                 </div>
                                 Stay signed in
                             </label>
-                        </div>
-                        <div class="col align-self-center text-right">
+                        </div -->
+                        <!-- div class="col align-self-center text-right">
                             <a class="g-font-size-12" href="<?= SITE_URL; ?>forgot-password">Forgot password?</a>
-                        </div>
+                        </div -->
                     </div>
 
                     <div class="mb-4">
                         <?= $this->Form->button(__('Sign In'), ['class' => 'btn btn-md btn-block u-btn-primary rounded g-py-13']); ?>
-
-                        <a href="<?= SITE_URL; ?>sign-up" style="width: 100%; text-align: center; float: left; margin-top: 8%;">Sign Up</a>
+                        <!-- a href="<?= SITE_URL; ?>sign-up" style="width: 100%; text-align: center; float: left; margin-top: 8%;">Sign Up</a -->
                     </div>
                     <?= $this->Form->end() ?>
                 </div>
